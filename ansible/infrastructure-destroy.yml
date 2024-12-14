@@ -1,0 +1,28 @@
+---
+- hosts: proxmox_servers
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: DESTROY TEMPLATE
+      pause:
+        prompt: |
+          Please confirm you want to destroy provisioned Proxmox Templates! 
+          DATA LOSS MAY OCCUR.
+          Press return to continue. Press Ctrl+c and then "a" to abort'
+    # Create proxmox base templates
+    - { import_role: { name: infrastructure/proxmox-template-destroy }, tags: [ proxmox-destroy ], become: no }
+
+    - name: "Are there existing .tf files in {{ terraform_dir }}?"
+      run_once: true
+      find:
+        paths: "{{ terraform_dir }}"
+        patterns: "*.tf"
+      register: files_to_delete
+
+    - name: "Delete any .tf files found in {{ terraform_dir }}"
+      run_once: true
+      file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items: "{{ files_to_delete.files }}"

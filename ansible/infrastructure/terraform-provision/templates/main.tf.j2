@@ -1,0 +1,15 @@
+terraform {
+  required_providers {
+    proxmox = {
+      source = "bpg/proxmox"
+      version = "0.68.1"
+    }
+  }
+}
+
+provider "proxmox" {
+  endpoint = "https://{{ ansible_host }}:8006/"
+  username = "{{ proxmox_host_username }}"
+  password = "{{ proxmox_host_password }}"
+  insecure = true # to skip SSL verification locally
+}

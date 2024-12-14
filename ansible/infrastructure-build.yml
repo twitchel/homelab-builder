@@ -1,0 +1,15 @@
+---
+- hosts: proxmox_servers
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: Print ubuntu version
+      ansible.builtin.debug:
+        var: proxmox_vm_ubuntu_version
+        verbosity: 0
+    # Provision terraform
+    - { import_role: { name: infrastructure/terraform-provision }, tags: [ infrastructure, proxmox ], become: no }
+
+    # Create Templates
+    - { import_role: { name: infrastructure/proxmox-template-create }, tags: [ infrastructure, proxmox ], become: no }

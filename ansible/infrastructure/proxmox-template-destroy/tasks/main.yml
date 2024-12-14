@@ -1,0 +1,15 @@
+- name: Destroy Proxmox templates
+  delegate_to: localhost
+  block:
+    - name: Run terraform init
+      command: terraform init
+      args:
+        chdir: "{{ terraform_dir }}"
+      when: "inventory_hostname in groups['proxmox_servers']"
+      run_once: true
+    - name: Run terraform DESTROY 💣
+      command: terraform destroy -auto-approve
+      args:
+        chdir: "{{ terraform_dir }}"
+      when: "inventory_hostname in groups['proxmox_servers']"
+      run_once: true
