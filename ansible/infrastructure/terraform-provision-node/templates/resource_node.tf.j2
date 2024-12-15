@@ -8,7 +8,7 @@ resource "proxmox_virtual_environment_vm" "{{ inventory_hostname_short }}" {
   stop_on_destroy = true
 
   clone {
-    vm_id = {{ hostvars[proxmox_node]['template_vm_id'] }}
+    vm_id = proxmox_virtual_environment_vm.homelab-builder-{{ proxmox_node }}.id
   }
 
   initialization {

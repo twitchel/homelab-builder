@@ -18,29 +18,6 @@
     # Provision terraform node config
     - { import_role: { name: infrastructure/terraform-provision-node }, tags: [ infrastructure, proxmox ], become: no }
 
-    - name: Run Terraform
-      delegate_to: localhost
-      run_once: true
-      block:
-        - name: Run terraform init
-          command: terraform init -upgrade
-          args:
-            chdir: "{{ terraform_dir }}"
+    # Run Terraform
+    - { import_role: { name: infrastructure/terraform-run }, tags: [ infrastructure, proxmox ], become: no }
 
-        - name: Run terraform plan
-          command: terraform plan
-          args:
-            chdir: "{{ terraform_dir }}"
-
-        - name: Run terraform apply
-          command: terraform apply -auto-approve
-          args:
-            chdir: "{{ terraform_dir }}"
-
-    - name: Don't exit this play until the machines are reachable (they might still be booting up)
-      remote_user: "{{ vm_username }}"
-      wait_for_connection:
-        delay: 60
-        timeout: 300
-      vars:
-        ansible_pipelining: no
