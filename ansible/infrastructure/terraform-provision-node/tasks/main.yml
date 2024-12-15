@@ -1,0 +1,7 @@
+- name: Bootstrap VM's using terraform
+  delegate_to: localhost
+  block:
+    - name: Create terraform plan for vms
+      template:
+        src: resource_node.tf.j2
+        dest: "{{ terraform_dir }}/resource_node_{{ inventory_hostname_short }}.tf"

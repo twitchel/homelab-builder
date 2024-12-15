@@ -4,12 +4,16 @@ terraform {
       source = "bpg/proxmox"
       version = "0.68.1"
     }
+    local = {
+      source = "hashicorp/local"
+      version = "2.5.2"
+    }
   }
 }
 
 provider "proxmox" {
-  endpoint = "https://{{ ansible_host }}:8006/"
-  username = "{{ proxmox_host_username }}"
-  password = "{{ proxmox_host_password }}"
+  endpoint = var.proxmox_endpoint
+  username = var.proxmox_username
+  password = var.proxmox_password
   insecure = true # to skip SSL verification locally
 }

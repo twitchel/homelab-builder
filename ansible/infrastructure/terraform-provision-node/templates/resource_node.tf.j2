@@ -1,0 +1,130 @@
+resource "proxmox_virtual_environment_vm" "{{ inventory_hostname_short }}" {
+  vm_id     = {{ vm_id }}
+  name      = "{{ inventory_hostname_short }}"
+  node_name = "{{ proxmox_node }}"
+  migrate   = true // migrate the VM on node change
+  tags      = ["terraform", "homelab-builder"]
+
+  stop_on_destroy = true
+
+  clone {
+    vm_id = {{ hostvars[proxmox_node]['template_vm_id'] }}
+  }
+
+  initialization {
+    datastore_id = "{{ proxmox_storage }}"
+    interface    = "ide2"
+
+    user_account {
+      username = var.node_ssh_user
+      keys = [trimspace(data.local_file.ssh_public_key.content)]
+    }
+
+    ip_config {
+      ipv4 {
+        address = "{{ ansible_host }}/24"
+        gateway  = var.node_network_gateway
+      }
+    }
+  }
+
+  network_device {
+    bridge = "vmbr0"
+    mac_address = "{{ mac }}"
+  }
+
+  disk {
+    datastore_id = "{{ proxmox_storage }}"
+    size    = var.node_disk1_size
+    file_format  = "raw"
+    interface    = "scsi1"
+  }
+}
+{##}
+{#resource "proxmox_virtual_environment_vm" "{{ inventory_hostname_short }}" {#}
+{#  vm_id     = "{{ vm_id }}#}
+{#  name      = "{{ inventory_hostname_short }}"#}
+{#  node_name = "{{ proxmox_node }}"#}
+{##}
+{#  initialization {#}
+{#    ip_config {#}
+{#      ipv4 {#}
+{#        address = "{{ ansible_host }}/24"#}
+{#        gateway = "{{ vm_network_gateway }}"#}
+{#      }#}
+{#    }#}
+{##}
+{#    user_account {#}
+{#      username = "{{ vm_username }}"#}
+{#      keys = [trimspace(data.local_file.ssh_public_key.content)]#}
+{#    }#}
+{#  }#}
+{##}
+{#  cpu {#}
+{#    cores = "{{ proxmox_vm_cores }}"#}
+{#  }#}
+{##}
+{#  memory {#}
+{#    dedicated = "{{ proxmox_vm_ram }}"#}
+{#  }#}
+{##}
+{#  disk {#}
+{#    datastore_id = "{{ proxmox_storage }}"#}
+{#    file_id      = proxmox_virtual_environment_download_file.ubuntu_cloud_image.id#}
+{#    interface    = "virtio0"#}
+{#    iothread     = true#}
+{#    discard      = "on"#}
+{#    size         = "{{ proxmox_vm_disk0_size }}"#}
+{##}
+{#  }#}
+{##}
+{#  network_device {#}
+{#    bridge = "vmbr0"#}
+{#  }#}
+{##}
+{##}
+{#  resource "proxmox_vm_qemu" "{{ inventory_hostname_short }}" {#}
+{#    name        = "{{ inventory_hostname_short }}"#}
+{#    target_node = "{{ proxmox_node }}"#}
+{#    clone       = "template-geek-cookbook-{{ proxmox_node }}"#}
+{#    full_clone  = true#}
+{#    os_type     = "cloud-init"#}
+{#    ipconfig0   = "ip={{ ansible_host }}/24,gw={{ proxmox_vlan_gateway }}"#}
+{#    nameserver  = "1.1.1.1"#}
+{#    memory      = {{ proxmox_vm_ram }}#}
+{#    cores = {{ proxmox_vm_cores }}#}
+{#    ciuser = "{{ admin_ssh_user }}"#}
+{#    scsihw = "virtio-scsi-single"#}
+{##}
+{#    sshkeys = <<EOF#}
+{#{{ admin_ssh_key }}#}
+{#EOF#}
+{#    vga {#}
+{#      type = "std"#}
+{#    }#}
+{##}
+{#    network {#}
+{#      id      = 0#}
+{#      model   = "virtio"#}
+{#      bridge  = "{{ proxmox_vm_network_bridge }}"#}
+{#      macaddr = "{{ mac }}"#}
+{#    }#}
+{#    disk {#}
+{#      storage = "{{ proxmox_storage }}"#}
+{#      size    = "{{ proxmox_vm_disk0_size }}"#}
+{#      type    = "disk"#}
+{#      slot    = "scsi0"#}
+{#    }#}
+{#    disk {#}
+{#      storage = "{{ proxmox_storage }}"#}
+{#      size    = "{{ proxmox_vm_disk1_size }}"#}
+{#      type    = "disk"#}
+{#      slot    = "scsi1"#}
+{#    }#}
+{#    disk {#}
+{#      type    = "cloudinit"#}
+{#      storage = "{{ proxmox_storage }}"#}
+{#      slot    = "ide2"#}
+{#    }#}
+{#  }#}
+{##}

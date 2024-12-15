@@ -1,0 +1,42 @@
+resource "proxmox_virtual_environment_vm" "homelab-builder-{{ inventory_hostname }}" {
+  vm_id       = {{ template_vm_id }}
+  name        = "homelab-builder-{{ inventory_hostname }}"
+  node_name   = "{{ inventory_hostname }}" # The Promox host the template will be built in
+  description = "Managed by Terraform/Homelab Builder"
+  tags        = ["terraform", "homelab-builder"]
+  template    = true
+
+  machine = "pc"
+
+  cpu {
+    cores = var.node_cpu_cores
+    type = "host"
+  }
+
+  memory {
+    dedicated = var.node_memory_mb
+  }
+
+  network_device {
+    bridge = "vmbr0"
+  }
+
+  disk {
+    datastore_id = "{{ proxmox_storage }}"
+    file_id      = proxmox_virtual_environment_download_file.ubuntu_cloud_image-{{ inventory_hostname }}.id
+    interface    = "scsi0"
+    size         = var.node_disk0_size
+  }
+
+  initialization {
+    datastore_id = "{{ proxmox_iso_storage }}"
+    interface    = "ide2"
+
+    ip_config {
+      ipv4 {
+        address = "dhcp"
+      }
+    }
+  }
+}
+

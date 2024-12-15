@@ -1,0 +1,9 @@
+resource "proxmox_virtual_environment_download_file" "ubuntu_cloud_image-{{ inventory_hostname }}" {
+  content_type        = "iso"
+  datastore_id        = "{{ proxmox_iso_storage }}"
+  node_name           = "{{ inventory_hostname }}"
+  overwrite_unmanaged = true
+  file_name = "ubuntu_cloud_image-{{ inventory_hostname }}.img"
+
+  url = var.node_ubuntu_cloudimage_url
+}

@@ -1,0 +1,20 @@
+- name: Provision Proxmox VM Templates
+  delegate_to: localhost
+  block:
+    - name: Create terraform resource_ubuntu_cloud_image.tf file per proxmox cluster node
+      when: "inventory_hostname in groups['proxmox_servers']"
+      template:
+        src: resource_ubuntu_cloud_image.tf.j2
+        dest: "{{ terraform_dir }}/resource_ubuntu_cloud_image_{{ inventory_hostname_short }}.tf"
+
+    - name: Create terraform vars_proxmox.tf file per proxmox cluster node
+      when: "inventory_hostname in groups['proxmox_servers']"
+      template:
+        src: vars_proxmox.tf.j2
+        dest: "{{ terraform_dir }}/vars_proxmox_{{ inventory_hostname_short }}.tf"
+
+    - name: Create terraform resource_template.tf file per proxmox cluster node
+      when: "inventory_hostname in groups['proxmox_servers']"
+      template:
+        src: resource_template.tf.j2
+        dest: "{{ terraform_dir }}/resource_template_{{ inventory_hostname_short }}.tf"

@@ -1,7 +1,7 @@
 ---
 - hosts: proxmox_servers
   gather_facts: no
-  become: yes
+  become: no
 
   tasks:
     - name: DESTROY TEMPLATE
@@ -11,9 +11,10 @@
           DATA LOSS MAY OCCUR.
           Press return to continue. Press Ctrl+c and then "a" to abort'
     # Create proxmox base templates
-    - { import_role: { name: infrastructure/proxmox-template-destroy }, tags: [ proxmox-destroy ], become: no }
+    - { import_role: { name: infrastructure/infrastructure-destroy }, tags: [ proxmox-destroy ], become: no }
 
     - name: "Are there existing .tf files in {{ terraform_dir }}?"
+      delegate_to: localhost
       run_once: true
       find:
         paths: "{{ terraform_dir }}"
@@ -21,6 +22,7 @@
       register: files_to_delete
 
     - name: "Delete any .tf files found in {{ terraform_dir }}"
+      delegate_to: localhost
       run_once: true
       file:
         path: "{{ item.path }}"
