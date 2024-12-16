@@ -21,3 +21,24 @@
     # Run Terraform
     - { import_role: { name: infrastructure/terraform-run }, tags: [ infrastructure, proxmox ], become: no }
 
+- hosts: swarm_nodes
+  gather_facts: yes
+  remote_user: "{{ vm_username }}"
+  become: yes
+
+  tasks:
+    # Install Docker
+    - {
+      import_role: { name: infrastructure/node-install-docker },
+      tags: [ infrastructure, node, dependencies ],
+      become: yes,
+      remote_user: "{{ vm_username }}"
+    }
+
+    # Install CEPH for distributed storage
+    - {
+        import_role: { name: infrastructure/node-install-ceph },
+        tags: [ infrastructure, node, dependencies ],
+        become: yes,
+        remote_user: "{{ vm_username }}"
+      }
