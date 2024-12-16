@@ -1,0 +1,28 @@
+# proxmox VM settings
+proxmox_vm_ubuntu_version: jammy
+proxmox_vm_ram: 4096                                  # How much RAM to give each VM
+proxmox_vm_cores: 2                                   # How many processors to give each VM
+proxmox_vm_network_bridge: vmbr0                      # Which network to attach to each VM
+proxmox_vm_disk0_size: 20                             # Size of the primary (system) disk on each VM in gigabytes
+proxmox_vm_disk1_size: 60                             # Size of the secondary (data) disk on each VM in gigabytes
+proxmox_storage: local-lvm
+proxmox_iso_storage: local
+proxmox_host_username: root@pam
+proxmox_host_password: password
+
+# Terraform
+terraform_dir: ~/.terraform/homelab-builder
+
+# VM Node settings
+vm_username: ubuntu
+vm_public_key: /full/path/to/ssh-key.pub
+vm_private_key: /full/path/to/ssh-key
+vm_network_gateway: 192.168.1.1
+
+# Top level homelab domain - URL's for all services will be a subdomain of this
+# For example, if dns_domain = example.com, gitea would be hosted at gitea.example.com
+dns_domain: home.example.com
+
+# Ceph Configuration
+ceph_dashboard_username: "username"
+ceph_dashboard_password: "password"
