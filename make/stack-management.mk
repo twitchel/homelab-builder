@@ -2,7 +2,7 @@
 ##@ Stack Management
 #####################
 
-deploy: ## This will deploy a fresh copy of the swarm stack to your hosts
+deploy: log ## This will deploy the swarm stack to your hosts . This can be rerun to add new services
 	@echo "Deploying stack"
 
 start: ## This starts the application stack

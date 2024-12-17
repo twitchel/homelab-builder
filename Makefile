@@ -16,4 +16,4 @@ ENVIRONMENT ?= 'dev'
 ##@ Kick off
 #####################
 
-autorun: log install configure infra-build deploy start ## Run all steps to get the stack deployed and running
+autorun: log confirm install configure infra-build deploy start ## Run all steps to get the stack deployed and running
