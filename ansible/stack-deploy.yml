@@ -1,0 +1,15 @@
+---
+- hosts: swarm_nodes[0]
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: Display all variables/facts known for a host
+      ansible.builtin.debug:
+        var: mac
+        verbosity: 0
+
+    - name: Display all variables/facts known for a host
+      ansible.builtin.debug:
+        var: meowmeow
+        verbosity: 0
