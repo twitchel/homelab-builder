@@ -38,3 +38,9 @@
         import_role: { name: infrastructure/node-install-ceph },
         tags: [ infrastructure, node, dependencies ],
       }
+
+    # Setup Keepalived for a shared virtual IP
+    - {
+        import_role: { name: infrastructure/node-install-keepalived },
+        tags: [ infrastructure, node, dependencies ],
+      }
