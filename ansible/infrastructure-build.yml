@@ -31,14 +31,10 @@
     - {
       import_role: { name: infrastructure/node-install-docker },
       tags: [ infrastructure, node, dependencies ],
-      become: yes,
-      remote_user: "{{ vm_username }}"
     }
 
     # Install CEPH for distributed storage
     - {
         import_role: { name: infrastructure/node-install-ceph },
         tags: [ infrastructure, node, dependencies ],
-        become: yes,
-        remote_user: "{{ vm_username }}"
       }
