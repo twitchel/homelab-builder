@@ -1,0 +1,6 @@
+.idea
+
+# Don't allow committing of config related files
+.env
+config/
+ansible/group_vars/
