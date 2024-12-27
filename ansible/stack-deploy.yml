@@ -2,6 +2,7 @@
 - hosts: swarm_nodes[0]
   gather_facts: no
   become: yes
+  remote_user: "{{ vm_username }}"
 
   tasks:
     - name: Display all variables/facts known for a host

@@ -4,6 +4,8 @@
   become: no
 
   tasks:
+    - name: Combine configuration
+      include_tasks: common/tasks/combine-config.yml
     # Provision terraform base
     - { import_role: { name: infrastructure/terraform-provision-base }, tags: [ infrastructure, proxmox ], become: no }
 

@@ -4,6 +4,8 @@
   become: no
 
   tasks:
+    - name: Combine configuration
+      include_tasks: common/tasks/combine-config.yml
     - name: DESTROY TEMPLATE
       pause:
         prompt: |

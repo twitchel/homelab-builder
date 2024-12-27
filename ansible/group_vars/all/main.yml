@@ -28,7 +28,7 @@ ceph_dashboard_username: "username"
 ceph_dashboard_password: "password"
 
 # recipe configs
-recipes:
+recipes_default:
   keepalived:
     enabled: true
     version: 2.0.20

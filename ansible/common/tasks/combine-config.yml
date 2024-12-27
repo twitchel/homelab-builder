@@ -1,0 +1,7 @@
+- name: Combine configs from all and env
+  delegate_to: localhost
+  block:
+  - name: combine default values with user values (used to conditionally run tasks)
+    set_fact:
+      recipes: "{{ recipes_default | combine(recipes, recursive=True) }}"
+    tags: always
