@@ -58,7 +58,15 @@
     - {
         import_role: { name: infrastructure/node-install-ceph },
         tags: [ infrastructure, node, dependencies ],
+        when: distributed_storage == 'ceph'
       }
+
+    # Install GlusterFS for distributed storage
+    - {
+      import_role: { name: infrastructure/node-install-glusterfs },
+      tags: [ infrastructure, node, dependencies ],
+      when: distributed_storage == 'glusterfs'
+    }
 
     # Setup Keepalived for a shared virtual IP
     - {
