@@ -55,21 +55,6 @@
 #    var: play_hosts
 #    verbosity: 0
 
-- name: add the hosts in the group to /etc/hosts
-  lineinfile:
-    dest: /etc/hosts
-    regexp: '.*{{ item }}$'
-    line: "{{ hostvars[item]['ansible_host'] }} {{item}}"
-    state: present
-  with_items:
-    - "{{ play_hosts }}"
-
-- name: prevent cloud-init from overwriting /etc/hosts
-  lineinfile:
-    dest: /etc/cloud/cloud.cfg
-    regex: "update_etc_hosts"
-    state: absent
-
 - name: Configure Ceph on first host
   run_once: true
   delegate_to: "{{ play_hosts[0] }}"
