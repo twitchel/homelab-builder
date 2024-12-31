@@ -1,0 +1,53 @@
+version: "3.8"
+
+networks:
+  cloud-public:
+    external: true
+
+services:
+  traefik:
+    image: traefik:v3.2
+    env_file: /var/data/stack/traefik/.env
+    # Note below that we use host mode to avoid source nat being applied to our ingress HTTP/HTTPS sessions
+    # Without host mode, all inbound sessions would have the source IP of the swarm nodes, rather than the
+    # original source IP, which would impact logging. If you don't care about this, you can expose ports the
+    # "minimal" way instead
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: host
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+      - target: 8080
+        published: 8080
+        protocol: tcp
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/data/appdata/traefik/etc/traefik:/etc/traefik
+      - /var/data/appdata/traefik/logs:/logs
+      - /var/data/appdata/traefik/acme.json:/acme.json
+    deploy:
+      replicas: 1
+      labels:
+        - traefik.enable=true
+        # define basic auth middleware for dashboard
+        # how to set a real password:
+        # sudo apt-get install apache2-utils
+        # htpasswd -Bnb username password | sed -e s/\\$/\\$\\$/g
+
+        # define traefik dashboard router and service
+        - traefik.http.routers.traefik.rule=Host(`traefik.$DOMAIN_NAME`) || Host(`$DOMAIN_NAME`)
+        - traefik.http.routers.traefik.service=api@internal
+        - traefik.http.routers.traefik.middlewares=traefik-auth
+        - traefik.http.services.traefik.loadbalancer.server.port=9999
+        - traefik.http.routers.traefik.entrypoints=websecure
+
+        # uncomment this to enable forward authentication on the traefik api/dashboard
+        #- "traefik.http.routers.api.middlewares=forward-auth"
+      placement:
+        constraints: [ node.role == manager ]
+    networks:
+      - cloud-public

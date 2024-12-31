@@ -1,16 +1,29 @@
 ---
 - hosts: swarm_nodes[0]
-  gather_facts: no
+  gather_facts: yes
   become: yes
   remote_user: "{{ vm_username }}"
 
-  tasks:
-    - name: Display all variables/facts known for a host
-      ansible.builtin.debug:
-        var: mac
-        verbosity: 0
+  environment:
+    DOMAIN_NAME: "{{ dns_domain }}"
 
-    - name: Display all variables/facts known for a host
-      ansible.builtin.debug:
-        var: meowmeow
-        verbosity: 0
+  tasks:
+    - name: Combine configuration
+      include_tasks: common/tasks/combine-config.yml
+
+    # Setup baseline networking
+    - name: Create swarm networks
+      block:
+        - name: Create cloud-public network
+          docker_network:
+            name: cloud-public
+            scope: swarm
+            driver: overlay
+            attachable: yes
+
+    # Deploy Stacks
+    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: traefik } }
+
+    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: cloudflared } }
+
+    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: whoami } }
