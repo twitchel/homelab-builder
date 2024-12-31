@@ -33,10 +33,6 @@ services:
       replicas: 1
       labels:
         - traefik.enable=true
-        # define basic auth middleware for dashboard
-        # how to set a real password:
-        # sudo apt-get install apache2-utils
-        # htpasswd -Bnb username password | sed -e s/\\$/\\$\\$/g
 
         # define traefik dashboard router and service
         - traefik.http.routers.traefik.rule=Host(`traefik.$DOMAIN_NAME`) || Host(`$DOMAIN_NAME`)
