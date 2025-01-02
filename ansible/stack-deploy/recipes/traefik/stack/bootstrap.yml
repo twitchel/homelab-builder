@@ -1,14 +1,14 @@
-- name: "{{ traefik }} --> ensure /var/data/appdata/traefik/etc/traefik exists"
+- name: "{{ recipe }} --> ensure /var/data/appdata/traefik/etc/traefik exists"
   file:
     path: "/var/data/appdata/traefik/etc/traefik"
     state: directory
 
-- name: "{{ traefik }} --> ensure /var/data/appdata/traefik/logs exists"
+- name: "{{ recipe }} --> ensure /var/data/appdata/traefik/logs exists"
   file:
     path: "/var/data/appdata/traefik/logs"
     state: directory
 
-- name: "{{ traefik }} --> ensure /var/data/appdata/traefik/acme.json exists"
+- name: "{{ recipe }} --> ensure /var/data/appdata/traefik/acme.json exists"
   file:
     path: "/var/data/appdata/traefik/acme.json"
     state: touch

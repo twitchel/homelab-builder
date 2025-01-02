@@ -19,16 +19,6 @@
         - "recipes/{{ recipe }}/stack/bootstrap.yml"
       skip: true
 
-- name: "{{ recipe }} --> destroy recipe stack"
-  docker_stack:
-    state: absent
-    name: "{{ recipe }}"
-    compose: "/var/data/stack/{{ recipe }}/docker-compose.yml"
-  register: _result
-  until: _result.failed == false
-  retries: 20 # retry X times
-  delay: 30     # pause for X sec b/w each call
-
 - name: "{{ recipe }} --> deploy recipe stack"
   docker_stack:
     state: present

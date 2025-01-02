@@ -7,7 +7,6 @@ networks:
 services:
   cloudflared-tunnel:
     image: cloudflare/cloudflared
-    restart: unless-stopped
     command: tunnel run
     env_file: /var/data/stack/cloudflared/.env
     deploy:
