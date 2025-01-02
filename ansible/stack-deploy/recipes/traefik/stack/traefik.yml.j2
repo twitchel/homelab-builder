@@ -8,8 +8,10 @@ api:
 
 # Write out Traefik logs
 log:
-  level: "DEBUG"
+  level: "INFO"
   filePath: "/logs/traefik.log"
+  maxSize: 100 # In megabytes
+  compress: true # gzip compression when rotating
 
 accessLog:
   filePath: "/logs/access.log"
