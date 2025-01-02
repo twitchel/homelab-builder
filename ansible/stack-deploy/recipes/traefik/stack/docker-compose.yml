@@ -34,7 +34,8 @@ services:
     deploy:
       replicas: 1
       labels:
-        - traefik.enable=true
+        - "traefik.enable=true"
+        - "traefik.swarm.network=cloud-public"
 
         # define traefik dashboard router and service
         - traefik.http.routers.traefik.rule=Host(`traefik.$DOMAIN_NAME`) || Host(`$DOMAIN_NAME`)
