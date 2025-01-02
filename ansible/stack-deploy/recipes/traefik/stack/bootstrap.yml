@@ -8,6 +8,17 @@
     path: "/var/data/appdata/traefik/logs"
     state: directory
 
+- name: "{{ recipe }} --> ensure /var/data/appdata/traefik/data exists"
+  file:
+    path: "/var/data/appdata/traefik/data"
+    state: directory
+
+- name: "{{ recipe }} --> copy rules"
+  copy:
+    force: true
+    src: ../appdata/rules
+    dest: /var/data/appdata/traefik
+
 - name: "{{ recipe }} --> ensure /var/data/appdata/traefik/acme.json exists"
   file:
     path: "/var/data/appdata/traefik/acme.json"

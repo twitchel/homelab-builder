@@ -27,6 +27,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /var/data/appdata/traefik/etc/traefik:/etc/traefik
+      - /var/data/appdata/traefik/data:/data
+      - /var/data/appdata/traefik/rules:/rules
       - /var/data/appdata/traefik/logs:/logs
       - /var/data/appdata/traefik/acme.json:/acme.json
     deploy:

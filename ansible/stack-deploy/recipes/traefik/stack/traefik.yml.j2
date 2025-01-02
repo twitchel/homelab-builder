@@ -38,16 +38,6 @@ entryPoints:
             sans:
               - "*.{{ dns_domain }}"
 
-# Traefik dashboard config
-http:
-  middlewares:
-    traefik-auth:
-      basicAuth:
-        removeHeader: true
-        users:
-          - "{{ traefik_username }}:{{ traefik_password }}"
-
-
 # Let's Encrypt
 certificatesResolvers:
   cloudflare:
@@ -69,6 +59,10 @@ providers:
     watch: true
     exposedByDefault: false
     network: "cloud-public"
+  file:
+    # Apps, LoadBalancers, TLS Options, Middlewares, Middleware Chains
+    directory: /rules
+    watch: true
 
 tls:
   options:
