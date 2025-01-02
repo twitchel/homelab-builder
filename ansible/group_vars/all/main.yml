@@ -22,7 +22,7 @@ vm_network_gateway: 192.168.1.1
 # Top level homelab domain - URL's for all services will be a subdomain of this
 # For example, if dns_domain = example.com, gitea would be hosted at gitea.example.com
 dns_domain: home.example.com
-email: foobarr@example.com
+email: foobar@example.com
 
 # Distributed Storage
 distributed_storage: "glusterfs" # 'ceph' or 'glusterfs'
