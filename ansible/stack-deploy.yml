@@ -26,4 +26,6 @@
 
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: cloudflared } }
 
+    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: authentik } }
+
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: whoami } }

@@ -47,6 +47,11 @@ common_env_default:
 
 # recipe configs
 recipes_default:
+  authentik:
+    enabled: true
+    env:
+      AUTHENTIK_BOOTSTRAP_EMAIL:
+      AUTHENTIK_BOOTSTRAP_PASSWORD:
   cloudflared:
     enabled: true
     env:
