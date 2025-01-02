@@ -64,7 +64,7 @@ services:
         - "traefik.http.services.authentik-svc.loadbalancer.server.port=9000"
 
         ## Individual Application forwardAuth regex (catch any subdomain using individual application forwardAuth)
-        - "traefik.http.routers.authentik-output-rtr.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.${$DOMAIN_NAME}`) && PathPrefix(`/outpost.goauthentik.io/`)"
+        - "traefik.http.routers.authentik-output-rtr.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.$$DOMAIN_NAME`) && PathPrefix(`/outpost.goauthentik.io/`)"
     networks:
       - cloud-public
       - authentik
