@@ -15,6 +15,7 @@ services:
         - "traefik.http.routers.whoami-rtr.rule=Host(`whoami.$DOMAIN_NAME`)"
         # HTTP Services
         - "traefik.http.routers.whoami-rtr.service=whoami-svc"
+        - "traefik.http.routers.whoami-rtr.middlewares=middlewares-authentik@file"
         - "traefik.http.services.whoami-svc.loadbalancer.server.port=80"
     networks:
       - cloud-public
