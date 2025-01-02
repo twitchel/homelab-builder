@@ -39,7 +39,7 @@ ceph_dashboard_password: "password"
 
 # GlusterFS Configuration
 gluster_brick_name: gluster
-gluster_brick_dir: "/srv/gluster/brick"
+gluster_brick_dir: "/gluster-brick"
 gluster_mount_dir: "{{ distributed_storage_root }}"
 
 # Traefik login

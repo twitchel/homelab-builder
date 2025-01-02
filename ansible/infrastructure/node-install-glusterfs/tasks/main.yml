@@ -1,3 +1,27 @@
+- name: Ensure Gluster brick and mount directories exist.
+  file: "path={{ item }} state=directory mode=0775"
+  with_items:
+    - "{{ gluster_brick_dir }}"
+    - "{{ gluster_mount_dir }}"
+
+- name: "Create and mount partition on data drive"
+  block:
+    - parted:
+        device: /dev/sdb
+        number: 1
+        flags: [ lvm ]
+        state: present
+
+    - filesystem:
+        fstype: ext4
+        dev: /dev/sdb1
+
+    - mount:
+        fstype: ext4
+        src: /dev/sdb1
+        path: "{{ gluster_brick_dir }}"
+        state: mounted
+
 - name: install gluster packages (try to get apt lock for up to 10 min)
   apt:
     name: "{{ packages }}"
@@ -18,12 +42,6 @@
   until: _result.failed == false
   retries: 30 # retry X times
   delay: 5     # pause for X sec b/w each call
-
-- name: Ensure Gluster brick and mount directories exist.
-  file: "path={{ item }} state=directory mode=0775"
-  with_items:
-    - "{{ gluster_brick_dir }}"
-    - "{{ gluster_mount_dir }}"
 
 - name: Configure Gluster volume
   gluster_volume:
