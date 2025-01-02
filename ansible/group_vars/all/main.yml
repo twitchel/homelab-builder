@@ -24,6 +24,11 @@ vm_network_gateway: 192.168.1.1
 dns_domain: home.example.com
 email: foobar@example.com
 
+# Docker hub login details (to get around rate limits)
+docker_hub_username:
+docker_hub_password:
+docker_hub_email:
+
 # Distributed Storage
 distributed_storage: "glusterfs" # 'ceph' or 'glusterfs'
 distributed_storage_root: "/var/data"

@@ -33,6 +33,14 @@
     - name: Combine configuration
       include_tasks: common/tasks/combine-config.yml
 
+    - name: Log into DockerHub (to avoid ratelimits)
+      docker_login:
+        username: "{{ docker_hub_username }}"
+        password: "{{ docker_hub_password}}"
+      when:
+        - docker_hub_username is defined
+        - docker_hub_password is defined
+
     - name: add the hosts in the group to /etc/hosts
       lineinfile:
         dest: /etc/hosts

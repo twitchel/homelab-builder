@@ -21,6 +21,14 @@
             driver: overlay
             attachable: yes
 
+    - name: Log into DockerHub (to avoid ratelimits)
+      docker_login:
+        username: "{{ docker_hub_username }}"
+        password: "{{ docker_hub_password}}"
+      when:
+        - docker_hub_username is defined
+        - docker_hub_password is defined
+
     # Deploy Stacks
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: traefik } }
 

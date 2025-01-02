@@ -24,6 +24,7 @@
     state: present
     name: "{{ recipe }}"
     compose: "/var/data/stack/{{ recipe }}/docker-compose.yml"
+    with_registry_auth: yes
   register: _result
   until: _result.failed == false
   retries: 20 # retry X times
