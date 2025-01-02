@@ -27,7 +27,7 @@
 - name: "{{ requested_recipe }} --> copy env file"
   copy:
     force: true
-    src: ../recipes/{{ requested_recipe }}/stack/.env
+    src: ../recipes/{{ requested_recipe }}/stack/service.env
     dest: /var/data/stack/{{ requested_recipe }}/.env
 
 - name: "{{ requested_recipe }} -> set global env vars for this recipe"
