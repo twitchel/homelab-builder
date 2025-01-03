@@ -1,0 +1,4 @@
+- name: add protected whoami route
+  include_tasks: stack-deploy/tasks/add-authentik-auth.yml
+  vars:
+    auth_recipe: "whoami"
