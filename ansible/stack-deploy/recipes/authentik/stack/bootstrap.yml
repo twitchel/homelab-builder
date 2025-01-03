@@ -75,3 +75,17 @@
       path: "/var/data/stack/authentik/.env"
       regexp: "^AUTHENTIK_SECRET_KEY="
       line: "AUTHENTIK_SECRET_KEY={{ authentik_secret.stdout }}"
+
+  - name: "{{ recipe }} --> generate authentik API token"
+    shell: "openssl rand -base64 36 | tr -d '\n' > /var/data/stack/authentik/secrets/authentik_bootstrap_token"
+    args:
+      creates: /var/data/stack/authentik/secrets/authentik_bootstrap_token
+
+  - command: cat /var/data/stack/authentik/secrets/authentik_bootstrap_token
+    register: authentik_bootstrap_token
+
+  - name: "{{ recipe }} -> set AUTHENTIK_BOOTSTRAP_TOKEN env"
+    lineinfile:
+      path: "/var/data/stack/authentik/.env"
+      regexp: "^AUTHENTIK_BOOTSTRAP_TOKEN="
+      line: "AUTHENTIK_BOOTSTRAP_TOKEN={{ authentik_bootstrap_token.stdout }}"
