@@ -8,6 +8,7 @@
     DOMAIN_NAME: "{{ dns_domain }}"
 
   tasks:
+    # Combine recipe fact with defaults fact. output fact: recipes
     - name: Combine configuration
       include_tasks: common/tasks/combine-config.yml
 
@@ -29,11 +30,12 @@
         - docker_hub_username is defined
         - docker_hub_password is defined
 
-    # Deploy Stacks
+    # Deploy Supporting Stacks
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: traefik } }
 
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: cloudflared } }
 
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: authentik } }
 
+    # Debug container
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: whoami } }

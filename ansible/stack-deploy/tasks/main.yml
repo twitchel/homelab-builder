@@ -30,8 +30,6 @@
   retries: 20 # retry X times
   delay: 30     # pause for X sec b/w each call
 
-# Post deploy actions
-
 - name: "{{ recipe }} --> Test whether the stack is running as desired"
   shell: "docker stack ps {{ recipe }} --filter \"desired-state=running\"  --format \"{{'{{'}} .CurrentState {{'}}'}}\" | grep -v Running"
   register: _result
