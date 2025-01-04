@@ -25,6 +25,7 @@
 
   - name: "{{ recipe }} --> copy app media icons"
     copy:
+      force: false
       src: "../appdata/media/"
       dest: "/var/data/appdata/authentik/media/public/icons"
 
