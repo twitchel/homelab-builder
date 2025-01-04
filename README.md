@@ -34,6 +34,14 @@ These changes will be persisted to a JSON file in this project root, and then ba
 make configure
 ```
 
+## Set environment
+
+This setup supports multiple environments (for exanple, a production env vs a testing dev env). Each env supports its own infra + app configuration.
+
+```shell
+make set-env
+```
+
 ## Bootstrapping Infrastructure
 
 You can run the below command once you've configured your environment
@@ -46,4 +54,23 @@ This will use the currently set environment to bake the swarm nodes (VM's) in yo
 
 ## Stack Management
 
-You can start your stack by running the below
+You can deploy and boot your stack but running the following
+
+```shell
+make deploy
+```
+
+## Destroy Infrastrucfture
+
+This will destroy the stack and all the nodes created in the initial bootstrap
+
+> **WARNING, THIS WILL CAUSE DATA LOSS**
+
+```shell
+make infra-destroy
+```
+
+## Thanks
+- Inspired by the geek cookbook's premix: https://github.com/geek-cookbook/premix
+- A lot of information here: https://geek-cookbook.funkypenguin.co.nz/
+- Icons from: https://github.com/NX211/homer-icons

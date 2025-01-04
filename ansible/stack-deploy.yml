@@ -30,11 +30,14 @@
         - docker_hub_username is defined
         - docker_hub_password is defined
 
-    # Deploy Supporting Stacks
+    ## Deploy Supporting Stacks
+    # Traefik Router
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: traefik } }
 
+    # Cloudflare tunnel
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: cloudflared } }
 
+    # Authentik for auth
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: authentik } }
 
     # Debug container
