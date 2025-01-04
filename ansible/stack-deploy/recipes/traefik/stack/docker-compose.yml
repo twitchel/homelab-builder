@@ -8,19 +8,18 @@ services:
   traefik:
     image: traefik:v3.2
     env_file: /var/data/stack/traefik/.env
-    # Note below that we use host mode to avoid source nat being applied to our ingress HTTP/HTTPS sessions
-    # Without host mode, all inbound sessions would have the source IP of the swarm nodes, rather than the
-    # original source IP, which would impact logging. If you don't care about this, you can expose ports the
-    # "minimal" way instead
     ports:
+      # We expose the standard 80 and 443 ports via bridged mode so that local DNS can be setup (can connect to the
+      # stack on your local network if configured in your DNS server without reaching out via the internet and tunnels).
+      # This can cause problems with source IP's to be reported incorrectly, if so you can add the `mode: host`
+      # attribute to both the 80 and 443 ports.
       - target: 80
         published: 80
         protocol: tcp
-        mode: host
       - target: 443
         published: 443
         protocol: tcp
-        mode: host
+      # Traefik dashboard port exposed separately so it can be inspected from the local network
       - target: 8080
         published: 8080
         protocol: tcp
@@ -43,9 +42,6 @@ services:
         - "traefik.http.routers.traefik-rtr.middlewares=middlewares-authentik@file"
         - "traefik.http.routers.traefik-rtr.entrypoints=websecure"
         - "traefik.http.services.traefik-svc.loadbalancer.server.port=9999"
-
-        # uncomment this to enable forward authentication on the traefik api/dashboard
-        #- "traefik.http.routers.api.middlewares=forward-auth"
       placement:
         constraints: [ node.role == manager ]
     networks:
