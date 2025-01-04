@@ -23,6 +23,11 @@
       path: "/var/data/appdata/authentik/media"
       state: directory
 
+  - name: "{{ recipe }} --> copy app media icons"
+    copy:
+      src: "../appdata/media/"
+      dest: "/var/data/appdata/authentik/media/public/icons"
+
   - name: "{{ recipe }} --> ensure  /var/data/appdata/authentik/custom-templates exists"
     file:
       path: "/var/data/appdata/authentik/custom-templates"

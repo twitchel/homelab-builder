@@ -42,6 +42,22 @@
 
 - set_fact: auth_app="{{ _result_application_get if (_result_application_get.status == 200) else _result_application_post }}"
 
+- name: "Set app icon in Authentik"
+  uri:
+    url: "{{ authentik_base_url }}/core/applications/{{ auth_app_settings.app_slug }}/set_icon_url/"
+    method: POST
+    body_format: json
+    body: |
+      {
+        "url": "{{ recipes.authentik.domain }}/media/public/icons/{{ auth_app_settings.app_icon }}"
+      }
+    status_code:
+      - 200
+    headers:
+      Accept: application/json
+      Authorization: 'Bearer {{ authentik_token }}'
+  register: _result_application_get
+
 - name: "Create Provider in Authentik"
   when: auth_app.json.provider == None
   block:
