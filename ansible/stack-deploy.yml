@@ -48,3 +48,5 @@
 
     ## Service Recipes
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: actual-budget } }
+
+    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: overseerr } }
