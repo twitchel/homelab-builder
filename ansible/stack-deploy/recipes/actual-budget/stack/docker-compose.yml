@@ -4,11 +4,6 @@ services:
   # ActualBudget - Where my money at!?
   actual-budget:
     image: actualbudget/actual-server:latest
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.actual-server.rule=Host(`budget.example.org`)"
-      - "traefik.http.routers.actual-server.entrypoints=websecure"
-      - "traefik.http.services.actual-server.loadbalancer.server.port=5006"
     volumes:
       - /var/data/appdata/actual-budget:/data
     env_file: /var/data/stack/actual-budget/.env
