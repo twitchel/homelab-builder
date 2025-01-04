@@ -48,6 +48,13 @@ common_env_default:
 
 # recipe configs
 recipes_default:
+  actual-budget:
+    enabled: true
+    auth_app_settings:
+      app_name: Actual Budget
+      app_slug: actual-budget
+      app_icon: actual.png
+      domain: actual-budget.{{ dns_domain }}
   authentik:
     enabled: true
     domain: "https://authentik.{{ dns_domain }}"

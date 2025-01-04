@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  # ActualBudget - Where my money at!?
+  actual-budget:
+    image: actualbudget/actual-server:latest
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.actual-server.rule=Host(`budget.example.org`)"
+      - "traefik.http.routers.actual-server.entrypoints=websecure"
+      - "traefik.http.services.actual-server.loadbalancer.server.port=5006"
+    volumes:
+      - /var/data/appdata/actual-budget:/data
+    env_file: /var/data/stack/actual-budget/.env
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.swarm.network=cloud-public"
+        # HTTP Routers
+        - "traefik.http.routers.actual-budget-rtr.entrypoints=websecure"
+        - "traefik.http.routers.actual-budget-rtr.rule=Host(`actual-budget.$DOMAIN_NAME`)"
+        # HTTP Services
+        - "traefik.http.routers.actual-budget-rtr.service=actual-budget-svc"
+        - "traefik.http.routers.actual-budget-rtr.middlewares=middlewares-authentik@file"
+        - "traefik.http.services.actual-budget-svc.loadbalancer.server.port=5006"
+    networks:
+      - cloud-public
+
+networks:
+  cloud-public:
+    external: true

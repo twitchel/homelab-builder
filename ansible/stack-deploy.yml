@@ -45,3 +45,6 @@
 
     # Debug container
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: whoami } }
+
+    ## Service Recipes
+    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: actual-budget } }
