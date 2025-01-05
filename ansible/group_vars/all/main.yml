@@ -74,6 +74,8 @@ recipes_default:
       app_slug: gitea
       app_icon: gitea.png
       domain: gitea.{{ dns_domain }}
+    env:
+      DISABLE_REGISTRATION: true
   keepalived:
     enabled: true
     version: 2.0.20
