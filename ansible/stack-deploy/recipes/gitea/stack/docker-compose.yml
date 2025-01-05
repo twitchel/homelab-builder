@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  # Gitea - Self hosted git project hosting
+  server:
+    image: docker.io/gitea/gitea:1.22.6
+    volumes:
+      - /var/data/appdata/gitea/server-data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    env_file: /var/data/stack/gitea/.env
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.swarm.network=cloud-public"
+        # HTTP Routers
+        - "traefik.http.routers.gitea-rtr.entrypoints=websecure"
+        - "traefik.http.routers.gitea-rtr.rule=Host(`gitea.$DOMAIN_NAME`)"
+        # HTTP Services
+        - "traefik.http.routers.gitea-rtr.service=gitea-svc"
+        - "traefik.http.routers.gitea-rtr.middlewares=middlewares-authentik@file"
+        - "traefik.http.services.gitea-svc.loadbalancer.server.port=3000"
+#        # SSH connectivity @TODO
+#        - "traefik.tcp.routers.gitea-ssh.entrypoints=ssh"
+#        - "traefik.tcp.routers.gitea-ssh.rule=HostSNI(`*`)"
+#        - "traefik.tcp.services.gitea-ssh.loadbalancer.server.port=22"
+    networks:
+      - cloud-public
+      - gitea
+
+  db:
+    image: docker.io/library/postgres:14
+    env_file: /var/data/stack/gitea/.env
+    networks:
+      - gitea
+    volumes:
+      - /var/data/appdata/gitea/postgresql-data:/var/lib/postgresql/data
+
+networks:
+  cloud-public:
+    external: true
+  gitea:
+    external: true
