@@ -51,4 +51,6 @@
 
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: gitea } }
 
+    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: homepage } }
+    -
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: overseerr } }

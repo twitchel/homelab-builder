@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+  # Homepage
+  overseerr:
+    image: ghcr.io/gethomepage/homepage:latest
+    volumes:
+      - /var/data/appdata/homepage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file: /var/data/stack/overseerr/.env
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.swarm.network=cloud-public"
+        # HTTP Routers
+        - "traefik.http.routers.homepage-rtr.entrypoints=websecure"
+        - "traefik.http.routers.homepage-rtr.rule=Host(`$DOMAIN_NAME`)"
+        # HTTP Services
+        - "traefik.http.routers.homepage-rtr.service=homepage-svc"
+        - "traefik.http.routers.homepage-rtr.middlewares=middlewares-authentik@file"
+        - "traefik.http.services.homepage-svc.loadbalancer.server.port=3000"
+    networks:
+      - cloud-public
+
+networks:
+  cloud-public:
+    external: true
