@@ -20,6 +20,7 @@
     headers:
       Accept: application/json
       Authorization: 'Bearer {{ authentik_token }}'
+    validate_certs: false
   register: _result_application_get
 
 - name: "{{ auth_recipe }} --> Create App in Authentik"
@@ -56,6 +57,7 @@
     headers:
       Accept: application/json
       Authorization: 'Bearer {{ authentik_token }}'
+    validate_certs: false
   register: _result_application_get
 
 - name: "Create Provider in Authentik"
@@ -71,6 +73,7 @@
       headers:
         Accept: application/json
         Authorization: 'Bearer {{ authentik_token }}'
+      validate_certs: false
     register: _result_provider_flow_auth
 
   #default-provider-invalidation-flow
@@ -83,6 +86,7 @@
       headers:
         Accept: application/json
         Authorization: 'Bearer {{ authentik_token }}'
+      validate_certs: false
     register: _result_provider_flow_invalidation
 
   - name: "{{ auth_recipe }} --> Provider--> Create Provider in Authentik"
@@ -105,6 +109,7 @@
       headers:
         Accept: application/json
         Authorization: 'Bearer {{ authentik_token }}'
+      validate_certs: false
     register: _result_provider_create
 
   - name: "{{ auth_recipe }} --> Provider --> Associate Provider to App in Authentik"
@@ -121,6 +126,7 @@
       headers:
         Accept: application/json
         Authorization: 'Bearer {{ authentik_token }}'
+      validate_certs: false
     register: _result_application_post
 
 - name: "{{ auth_recipe }} --> Get App from Authentik"
@@ -133,6 +139,7 @@
     headers:
       Accept: application/json
       Authorization: 'Bearer {{ authentik_token }}'
+    validate_certs: false
   register: _result_application_get
 
 - set_fact: auth_app="{{ _result_application_get }}"
@@ -146,6 +153,7 @@
     headers:
       Accept: application/json
       Authorization: 'Bearer {{ authentik_token }}'
+    validate_certs: false
   register: _result_outposts_get
 
 - set_fact: outpost_count="{{ _result_outposts_get.json.pagination.count }}"
@@ -166,6 +174,7 @@
         headers:
           Accept: application/json
           Authorization: 'Bearer {{ authentik_token }}'
+        validate_certs: false
       register: _result_outposts_get
 
     - set_fact: docker_outpost="{{ _result_outposts_get.json.results[0] }}"
@@ -185,6 +194,7 @@
         headers:
           Accept: application/json
           Authorization: 'Bearer {{ authentik_token }}'
+        validate_certs: false
       register: _result_provider_create
 
 

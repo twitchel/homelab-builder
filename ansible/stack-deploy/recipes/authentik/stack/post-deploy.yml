@@ -12,6 +12,7 @@
     headers:
       Accept: application/json
       Authorization: 'Bearer {{ authentik_token }}'
+    validate_certs: false
   register: _result
   until: _result.status == 200
   retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
@@ -26,6 +27,7 @@
     headers:
       Accept: application/json
       Authorization: 'Bearer {{ authentik_token }}'
+    validate_certs: false
   register: _result_outposts_get
 
 - set_fact: docker_outpost="{{ _result_outposts_get.json.results[0] }}"
