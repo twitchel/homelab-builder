@@ -39,9 +39,15 @@
     headers:
       Accept: application/json
       Authorization: 'Bearer {{ authentik_token }}'
+    validate_certs: false
   register: _result_application_post
 
 - set_fact: auth_app="{{ _result_application_get if (_result_application_get.status == 200) else _result_application_post }}"
+
+- name: Download app icon from selfh.st
+  ansible.builtin.get_url:
+    url: https://cdn.jsdelivr.net/gh/selfhst/icons/png/{{ auth_app_settings.app_icon }}
+    dest: /var/data/appdata/authentik/media/public/icons/{{ auth_app_settings.app_icon }}
 
 - name: "Set app icon in Authentik"
   uri:

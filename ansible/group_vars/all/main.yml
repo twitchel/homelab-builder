@@ -53,7 +53,7 @@ recipes_default:
     auth_app_settings:
       app_name: Actual Budget
       app_slug: actual-budget
-      app_icon: actual.png
+      app_icon: actual-budget.png
       domain: actual-budget.{{ dns_domain }}
   authentik:
     enabled: true
@@ -116,5 +116,5 @@ recipes_default:
     auth_app_settings:
       app_name: WhoAmI Debugger
       app_slug: whoami
-      app_icon: whoami.png
+      app_icon: traefik.png
       domain: whoami.{{ dns_domain }}
