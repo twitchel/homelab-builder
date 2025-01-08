@@ -1,16 +1,16 @@
 resource "proxmox_virtual_environment_vm" "homelab-builder-{{ inventory_hostname }}" {
   vm_id       = {{ template_vm_id }}
   name        = "homelab-builder-{{ inventory_hostname }}"
-  node_name   = "{{ inventory_hostname }}" # The Promox host the template will be built in
+  node_name = "{{ inventory_hostname }}" # The Promox host the template will be built in
   description = "Managed by Terraform/Homelab Builder"
-  tags        = ["terraform", "homelab-builder"]
+  tags = ["terraform", "homelab-builder"]
   template    = true
 
   machine = "pc"
 
   cpu {
     cores = var.node_cpu_cores
-    type = "host"
+    type  = "host"
   }
 
   memory {

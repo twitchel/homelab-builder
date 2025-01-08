@@ -64,10 +64,10 @@
 
     # Install CEPH for distributed storage
     - {
-        import_role: { name: infrastructure/node-install-ceph },
-        tags: [ infrastructure, node, dependencies ],
-        when: distributed_storage == 'ceph'
-      }
+      import_role: { name: infrastructure/node-install-ceph },
+      tags: [ infrastructure, node, dependencies ],
+      when: distributed_storage == 'ceph'
+    }
 
     # Install GlusterFS for distributed storage
     - {
@@ -78,6 +78,6 @@
 
     # Setup Keepalived for a shared virtual IP
     - {
-        import_role: { name: infrastructure/node-install-keepalived },
-        tags: [ infrastructure, node, dependencies ],
-      }
+      import_role: { name: infrastructure/node-install-keepalived },
+      tags: [ infrastructure, node, dependencies ],
+    }

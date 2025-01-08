@@ -41,9 +41,9 @@
   run_once: true
 
 - set_fact:
-    worker_token:   "{{ docker_swarm_init.swarm_facts.JoinTokens.Worker }}"
-    manager_token:  "{{ docker_swarm_init.swarm_facts.JoinTokens.Manager }}"
-    master_ip:      "{{ hostvars[play_hosts[0]].ansible_host }}"
+    worker_token: "{{ docker_swarm_init.swarm_facts.JoinTokens.Worker }}"
+    manager_token: "{{ docker_swarm_init.swarm_facts.JoinTokens.Manager }}"
+    master_ip: "{{ hostvars[play_hosts[0]].ansible_host }}"
 
 - name: join the swarm on the remaining nodes as a master
   docker_swarm:
