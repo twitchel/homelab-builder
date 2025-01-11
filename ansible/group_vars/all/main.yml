@@ -30,7 +30,7 @@ docker_hub_password:
 docker_hub_email:
 
 # Distributed Storage
-distributed_storage: "glusterfs" # 'ceph' or 'glusterfs'
+distributed_storage: "ceph" # 'ceph' or 'glusterfs'
 distributed_storage_root: "/var/data"
 
 # Ceph Configuration

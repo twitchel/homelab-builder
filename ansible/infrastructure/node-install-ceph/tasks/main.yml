@@ -10,18 +10,6 @@
   retries: 30 # retry X times
   delay: 5     # pause for X sec b/w each call
 
-- name: add ceph repo apt-key
-  apt_key:
-    url: https://download.ceph.com/keys/release.asc
-    state: present
-  register: _result
-  until: _result.failed == false
-  retries: 30 # retry X times
-  delay: 5     # pause for X sec b/w each call
-
-- name: install ceph repo
-  shell: cephadm add-repo --release squid
-
 - name: install ceph tools
   apt:
     update_cache: yes
