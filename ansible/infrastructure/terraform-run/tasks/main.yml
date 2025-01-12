@@ -11,6 +11,25 @@
       command: tofu plan
       args:
         chdir: "{{ terraform_dir }}"
+      register: _plan_output
+
+    - set_fact:
+        plan_output: "{{ _plan_output.stdout }}"
+
+    - name: Tofu Plan Output
+      ansible.builtin.debug:
+        var: plan_output
+        verbosity: 0
+      when: "'forces replacement' in plan_output"
+
+    - name: BREAKING CHANGE CHECK
+      delegate_to: localhost
+      pause:
+        prompt: |
+          Replacements required, this will require manual intervention to fix CEPH pool. 
+          DATA LOSS MAY OCCUR. 
+          Press return to continue. Press Ctrl+c and then "a" to abort'
+      when: "'forces replacement' in plan_output"
 
     - name: Run tofu apply
       command: tofu apply -auto-approve
