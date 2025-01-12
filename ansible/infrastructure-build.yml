@@ -10,8 +10,8 @@
     # Provision terraform base
     - { import_role: { name: infrastructure/terraform-provision-base }, tags: [ infrastructure, proxmox ], become: no }
 
-    # Provision terraform proxmox config
-    - { import_role: { name: infrastructure/terraform-provision-proxmox }, tags: [ infrastructure, proxmox ], become: no }
+    # Provision base cloud images
+    - { import_role: { name: infrastructure/terraform-provision-cloud-image }, tags: [ infrastructure, proxmox ], become: no }
 
 - hosts: swarm_nodes
   gather_facts: no
