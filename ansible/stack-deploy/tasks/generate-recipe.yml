@@ -1,12 +1,6 @@
-- name: Display all variables/facts known for a host
-  ansible.builtin.debug:
-    var: recipes
-    verbosity: 0
-
-- name: Display all variables/facts known for a host
-  ansible.builtin.debug:
-    var: dns_domain
-    verbosity: 0
+# Combine recipe fact with defaults fact. output fact: recipes
+- name: Combine configuration
+  include_tasks: common/tasks/combine-config.yml
 
 - name: "{{ requested_recipe }} --> ensure {{ distributed_storage_root }}/stack/{{ requested_recipe }} exists"
   file:
