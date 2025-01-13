@@ -8,7 +8,7 @@ services:
   cloudflared-tunnel:
     image: cloudflare/cloudflared
     command: tunnel run
-    env_file: /var/data/stack/cloudflared/.env
+    env_file: {{ distributed_storage_root }}/stack/cloudflared/.env
     deploy:
       replicas: 1
     networks:

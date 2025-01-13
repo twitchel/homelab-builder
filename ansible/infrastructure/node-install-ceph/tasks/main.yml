@@ -1,6 +1,6 @@
-- name: ensure /var/data exists
+- name: "ensure {{ distributed_storage_root }} exists"
   file:
-    path: /var/data
+    path: "{{ distributed_storage_root }}"
     state: directory
 
 - name: ensure /etc/ceph exists
@@ -125,7 +125,7 @@
 - name: add cephfs mount to /etc/fstab, and mount it
   mount:
     src: "{{ _ceph_mons }}:/"
-    path: /var/data
+    path: "{{ distributed_storage_root }}"
     state: mounted
     fstype: ceph
     opts: name=admin,fs=data

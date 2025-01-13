@@ -1,8 +1,22 @@
-- name: Display auth_recipe
-  ansible.builtin.debug:
-    var: recipes[auth_recipe]
+## add-authentik-auth.yml
+#
+# This task set adds an application to authentik automatically. It is defined as a single auth application and has a
+# name + icon associated to it
+#
+# input:
+#   name_prefix: string
+#   authentik_base_url: string
+#   authentik_token: string
+#   app:
+#     name: string
+#     slug: string
+#     domain: string
+#     icon: string
 
-- command: cat /var/data/stack/authentik/secrets/authentik_bootstrap_token
+- set_fact:
+    name_prefix: "{{ recipe }} --> Add Authentik Auth"
+
+- command: cat {{ distributed_storage_root }}/stack/authentik/secrets/authentik_bootstrap_token
   register: authentik_bootstrap_token
   become: true
 
@@ -46,8 +60,8 @@
 
 - name: Download app icon from selfh.st
   ansible.builtin.get_url:
-    url: https://cdn.jsdelivr.net/gh/selfhst/icons/png/{{ auth_app_settings.app_icon }}
-    dest: /var/data/appdata/authentik/media/public/icons/{{ auth_app_settings.app_icon }}
+    url: "https://cdn.jsdelivr.net/gh/selfhst/icons/png/{{ auth_app_settings.app_icon }}"
+    dest: "{{ distributed_storage_root }}/appdata/authentik/media/public/icons/{{ auth_app_settings.app_icon }}"
 
 - name: "Set app icon in Authentik"
   uri:

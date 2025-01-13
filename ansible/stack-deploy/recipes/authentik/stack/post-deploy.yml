@@ -1,4 +1,4 @@
-- command: cat /var/data/stack/authentik/secrets/authentik_bootstrap_token
+- command: "cat {{ distributed_storage_root }}/stack/authentik/secrets/authentik_bootstrap_token"
   register: authentik_bootstrap_token
   become: true
 

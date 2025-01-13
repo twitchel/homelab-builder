@@ -5,8 +5,8 @@ services:
   actual-budget:
     image: actualbudget/actual-server:latest
     volumes:
-      - /var/data/appdata/actual-budget:/data
-    env_file: /var/data/stack/actual-budget/.env
+      - "{{ distributed_storage_root }}/appdata/actual-budget:/data"
+    env_file: {{ distributed_storage_root }}/stack/actual-budget/.env
     deploy:
       replicas: 1
       labels:

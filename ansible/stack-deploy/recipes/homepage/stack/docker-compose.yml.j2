@@ -5,9 +5,9 @@ services:
   overseerr:
     image: ghcr.io/gethomepage/homepage:latest
     volumes:
-      - /var/data/appdata/homepage:/app/config
+      - {{ distributed_storage_root }}/appdata/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock
-    env_file: /var/data/stack/homepage/.env
+    env_file: {{ distributed_storage_root }}/stack/homepage/.env
     deploy:
       replicas: 1
       labels:

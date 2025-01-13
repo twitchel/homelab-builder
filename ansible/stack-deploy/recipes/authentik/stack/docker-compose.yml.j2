@@ -16,12 +16,12 @@ services:
       retries: 5
       timeout: 5s
     volumes:
-      - /var/data/appdata/authentik/database:/var/lib/postgresql/data
+      - {{ distributed_storage_root }}/appdata/authentik/database:/var/lib/postgresql/data
     deploy:
       mode: replicated
       replicas: 1
     env_file:
-      - /var/data/stack/authentik/.env
+      - {{ distributed_storage_root }}/stack/authentik/.env
     networks:
       - authentik
   redis:
@@ -37,16 +37,16 @@ services:
       retries: 5
       timeout: 3s
     volumes:
-      - /var/data/appdata/authentik/redis:/data
+      - {{ distributed_storage_root }}/appdata/authentik/redis:/data
     networks:
       - authentik
   server:
     image: ghcr.io/goauthentik/server:2024.12.1
     command: server
     volumes:
-      - /var/data/appdata/authentik/media:/media
-      - /var/data/appdata/authentik/custom-templates:/templates
-    env_file: /var/data/stack/authentik/.env
+      - {{ distributed_storage_root }}/appdata/authentik/media:/media
+      - {{ distributed_storage_root }}/appdata/authentik/custom-templates:/templates
+    env_file: {{ distributed_storage_root }}/stack/authentik/.env
     ports:
       - "9000:9000"
       - "9443:9443"
@@ -71,7 +71,7 @@ services:
   worker:
     image: ghcr.io/goauthentik/server:2024.12.1
     command: worker
-    env_file: /var/data/stack/authentik/.env
+    env_file: {{ distributed_storage_root }}/stack/authentik/.env
     # `user: root` and the docker socket volume are optional.
     # See more for the docker socket integration here:
     # https://goauthentik.io/docs/outposts/integrations/docker
@@ -84,9 +84,9 @@ services:
       replicas: 1
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /var/data/appdata/authentik/media:/media
-      - /var/data/appdata/authentik/certs:/certs
-      - /var/data/appdata/authentik/custom-templates:/templates
+      - {{ distributed_storage_root }}/appdata/authentik/media:/media
+      - {{ distributed_storage_root }}/appdata/authentik/certs:/certs
+      - {{ distributed_storage_root }}/appdata/authentik/custom-templates:/templates
     networks:
       - cloud-public
       - authentik

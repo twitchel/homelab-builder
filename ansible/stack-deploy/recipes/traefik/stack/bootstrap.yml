@@ -1,31 +1,31 @@
-- name: "{{ recipe }} --> ensure /var/data/appdata/traefik/etc/traefik exists"
+- name: "{{ recipe }} --> ensure {{ distributed_storage_root }}/appdata/traefik/etc/traefik exists"
   file:
-    path: "/var/data/appdata/traefik/etc/traefik"
+    path: "{{ distributed_storage_root }}/appdata/traefik/etc/traefik"
     state: directory
 
-- name: "{{ recipe }} --> ensure /var/data/appdata/traefik/logs exists"
+- name: "{{ recipe }} --> ensure {{ distributed_storage_root }}/appdata/traefik/logs exists"
   file:
-    path: "/var/data/appdata/traefik/logs"
+    path: "{{ distributed_storage_root }}/appdata/traefik/logs"
     state: directory
 
-- name: "{{ recipe }} --> ensure /var/data/appdata/traefik/data exists"
+- name: "{{ recipe }} --> ensure {{ distributed_storage_root }}/appdata/traefik/data exists"
   file:
-    path: "/var/data/appdata/traefik/data"
+    path: "{{ distributed_storage_root }}/appdata/traefik/data"
     state: directory
 
 - name: "{{ recipe }} --> copy rules"
   copy:
     force: true
     src: ../appdata/rules
-    dest: /var/data/appdata/traefik
+    dest: "{{ distributed_storage_root }}/appdata/traefik"
 
-- name: "{{ recipe }} --> ensure /var/data/appdata/traefik/acme.json exists"
+- name: "{{ recipe }} --> ensure {{ distributed_storage_root }}/appdata/traefik/acme.json exists"
   file:
-    path: "/var/data/appdata/traefik/acme.json"
+    path: "{{ distributed_storage_root }}/appdata/traefik/acme.json"
     state: touch
     mode: '600'
 
 - name: Copy traefik.yml.j2 file
   template:
     src: traefik.yml.j2
-    dest: "/var/data/appdata/traefik/etc/traefik/traefik.yml"
+    dest: "{{ distributed_storage_root }}/appdata/traefik/etc/traefik/traefik.yml"

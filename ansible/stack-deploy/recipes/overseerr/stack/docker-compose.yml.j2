@@ -5,8 +5,8 @@ services:
   overseerr:
     image: sctx/overseerr:latest
     volumes:
-      - /var/data/appdata/overseerr:/app/config
-    env_file: /var/data/stack/overseerr/.env
+      - {{ distributed_storage_root }}/appdata/overseerr:/app/config
+    env_file: {{ distributed_storage_root }}/stack/overseerr/.env
     deploy:
       replicas: 1
       labels:
