@@ -6,8 +6,8 @@ networks:
 
 services:
   traefik:
-    image: traefik:v3.2
-    env_file: {{ distributed_storage_root }}/stack/traefik/.env
+    image: "traefik:{{ recipes.traefik.version }}"
+    env_file: "{{ distributed_storage_root }}/stack/traefik/.env"
     ports:
       # We expose the standard 80 and 443 ports via bridged mode so that local DNS can be setup (can connect to the
       # stack on your local network if configured in your DNS server without reaching out via the internet and tunnels).

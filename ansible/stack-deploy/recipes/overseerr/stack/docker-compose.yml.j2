@@ -3,7 +3,7 @@ version: "3.8"
 services:
   # Overseerr - Movie/TV Requests
   overseerr:
-    image: sctx/overseerr:latest
+    image: "sctx/overseerr:{{ recipes.overseerr.version }}"
     volumes:
       - {{ distributed_storage_root }}/appdata/overseerr:/app/config
     env_file: {{ distributed_storage_root }}/stack/overseerr/.env

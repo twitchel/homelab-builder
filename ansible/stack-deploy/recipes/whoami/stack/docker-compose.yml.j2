@@ -3,7 +3,7 @@ version: "3.8"
 services:
   # WhoAmI - For Testing and Troubleshooting
   whoami:
-    image: traefik/whoami
+    image: "traefik/whoami:{{ recipes.whoami.version }}"
     env_file: {{ distributed_storage_root }}/stack/whoami/.env
     deploy:
       mode: global

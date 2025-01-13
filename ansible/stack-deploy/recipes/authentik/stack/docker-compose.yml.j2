@@ -8,7 +8,7 @@ networks:
 
 services:
   postgresql:
-    image: docker.io/library/postgres:16-alpine
+    image: "docker.io/library/postgres:{{ recipes.authentik.version.postgres }}"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       start_period: 20s
@@ -25,7 +25,7 @@ services:
     networks:
       - authentik
   redis:
-    image: docker.io/library/redis:alpine
+    image: "docker.io/library/redis:{{ recipes.authentik.version.redis }}"
     command: --save 60 1 --loglevel warning
     deploy:
       mode: replicated
@@ -41,7 +41,7 @@ services:
     networks:
       - authentik
   server:
-    image: ghcr.io/goauthentik/server:2024.12.1
+    image: "ghcr.io/goauthentik/server:{{ recipes.authentik.version.authentik }}"
     command: server
     volumes:
       - {{ distributed_storage_root }}/appdata/authentik/media:/media
@@ -69,7 +69,7 @@ services:
       - cloud-public
       - authentik
   worker:
-    image: ghcr.io/goauthentik/server:2024.12.1
+    image: "ghcr.io/goauthentik/server:{{ recipes.authentik.version.authentik }}"
     command: worker
     env_file: {{ distributed_storage_root }}/stack/authentik/.env
     # `user: root` and the docker socket volume are optional.

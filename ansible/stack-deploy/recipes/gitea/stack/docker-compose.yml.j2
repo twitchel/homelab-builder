@@ -3,7 +3,7 @@ version: "3.8"
 services:
   # Gitea - Self hosted git project hosting
   server:
-    image: docker.io/gitea/gitea:1.22.6
+    image: "docker.io/gitea/gitea:{{ recipes.gitea.version.gitea }}"
     volumes:
       - {{ distributed_storage_root }}/appdata/gitea/server-data:/data
       - /etc/timezone:/etc/timezone:ro
@@ -30,7 +30,7 @@ services:
       - gitea
 
   db:
-    image: docker.io/library/postgres:14
+    image: "docker.io/library/postgres:{{ recipes.gitea.version.postgres }}"
     env_file: {{ distributed_storage_root }}/stack/gitea/.env
     networks:
       - gitea
