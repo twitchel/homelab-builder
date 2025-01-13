@@ -7,6 +7,7 @@ HOSTS_PATH="config/$(ENVIRONMENT)/hosts.yml"
 
 config-bootstrap: log ## Run through configuration script to bootstrap your environment
 	@echo "Configuring Homelab Builder Environment"
+	@echo "NOT IMPLEMENTED YET"
 
 config-edit-vars: confirm ## Edit the configuration for the homelab stack and recipes
 	@if which xdg-open &> /dev/null; then \

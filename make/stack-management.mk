@@ -8,3 +8,4 @@ deploy: log preflight-checks confirm ## This will deploy the swarm stack to your
 
 deploy-sensors: log preflight-checks confirm ## This will deploy the sensor stack (Zigbee/Zwave) to the defined host.
 	@echo "🤖 Deploying sensors"
+	@echo "NOT IMPLEMENTED YET"
