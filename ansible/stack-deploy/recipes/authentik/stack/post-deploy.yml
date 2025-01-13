@@ -48,6 +48,7 @@
     headers:
       Accept: application/json
       Authorization: 'Bearer {{ authentik_token }}'
+    validate_certs: false
 
 # Protect Traefik
 - name: add protected traefik route
