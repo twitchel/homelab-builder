@@ -12,8 +12,11 @@ log: ## log env vars
 	@echo "DEBUG                $(DEBUG)"
 	@echo "\n======================================================\n"
 
-confirm: log ## Confirm before running
+confirm: log
 	@echo "⚠️ Please confirm your environment and other details above. Are you sure? [y/N] " && read ans && [ $${ans:-N} = y ]
+
+confirm-danger: log
+	@echo "⚠️ Please confirm your environment and other details above. Enter env name to continue (from above) " && read ans && [ $${ans:-N} = $(ENVIRONMENT) ]
 
 # HELP
 # This will output the help for each task

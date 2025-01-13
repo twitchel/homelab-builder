@@ -13,6 +13,7 @@ ENVIRONMENT ?= 'production'
 # Make bootstrapping
 PROJECT_ROOT:=$(shell pwd)
 MAKE_LIB:=$(PROJECT_ROOT)/make
+-include $(MAKE_LIB)/config.mk
 -include $(MAKE_LIB)/bootstrap.mk
 -include $(MAKE_LIB)/infrastructure.mk
 -include $(MAKE_LIB)/stack-management.mk
@@ -22,4 +23,4 @@ MAKE_LIB:=$(PROJECT_ROOT)/make
 ##@ Kick off
 #####################
 
-autorun: log confirm install configure infra-build deploy start ## Run all steps to get the stack deployed and running
+autorun: log confirm install config-bootstrap infra-build deploy ## Run all steps to get the stack deployed and running
