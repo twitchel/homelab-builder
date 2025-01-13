@@ -18,7 +18,9 @@ services:
         - "traefik.http.routers.homepage-rtr.rule=Host(`$DOMAIN_NAME`)"
         # HTTP Services
         - "traefik.http.routers.homepage-rtr.service=homepage-svc"
+{% if recipes.homepage.auth_enabled %}
         - "traefik.http.routers.homepage-rtr.middlewares=middlewares-authentik@file"
+{% endif %}
         - "traefik.http.services.homepage-svc.loadbalancer.server.port=3000"
     networks:
       - cloud-public

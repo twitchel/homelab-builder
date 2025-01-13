@@ -19,7 +19,9 @@ services:
         - "traefik.http.routers.gitea-rtr.rule=Host(`gitea.$DOMAIN_NAME`)"
         # HTTP Services
         - "traefik.http.routers.gitea-rtr.service=gitea-svc"
+{% if recipes.gitea.auth_enabled %}
         - "traefik.http.routers.gitea-rtr.middlewares=middlewares-authentik@file"
+{% endif %}
         - "traefik.http.services.gitea-svc.loadbalancer.server.port=3000"
 #        # SSH connectivity @TODO
 #        - "traefik.tcp.routers.gitea-ssh.entrypoints=ssh"

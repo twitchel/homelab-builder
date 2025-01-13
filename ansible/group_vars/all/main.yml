@@ -50,6 +50,7 @@ common_env_default:
 recipes_default:
   actual_budget:
     enabled: true
+    auth_enabled: true
     auth_app_settings:
       app_name: Actual Budget
       app_slug: actual-budget
@@ -75,6 +76,7 @@ recipes_default:
     version: latest
   gitea:
     enabled: true
+    auth_enabled: true
     auth_app_settings:
       app_name: Gitea
       app_slug: gitea
@@ -87,6 +89,7 @@ recipes_default:
       gitea: 1.22.6
   homepage:
     enabled: true
+    auth_enabled: true
     auth_app_settings:
       app_name: Homepage
       app_slug: homepage
@@ -98,6 +101,7 @@ recipes_default:
     version: 2.0.20
   overseerr:
     enabled: true
+    auth_enabled: true
     auth_app_settings:
       app_name: Overseerr
       app_slug: overseerr
@@ -106,6 +110,7 @@ recipes_default:
     version: latest
   portainer:
     enabled: true
+    auth_enabled: true
     auth_app_settings:
       app_name: Portainer
       app_slug: portainer
@@ -116,6 +121,7 @@ recipes_default:
       portainer: 2.21.5
   traefik:
     enabled: true
+    auth_enabled: true
     auth_app_settings:
       app_name: Traefik Dashboard
       app_slug: traefik
@@ -128,6 +134,7 @@ recipes_default:
     version: v3.2
   whoami:
     enabled: true
+    auth_enabled: true
     auth_app_settings:
       app_name: WhoAmI Debugger
       app_slug: whoami

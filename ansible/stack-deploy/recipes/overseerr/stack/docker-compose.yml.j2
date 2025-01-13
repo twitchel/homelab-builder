@@ -17,7 +17,9 @@ services:
         - "traefik.http.routers.overseerr-rtr.rule=Host(`overseerr.$DOMAIN_NAME`)"
         # HTTP Services
         - "traefik.http.routers.overseerr-rtr.service=overseerr-svc"
+{% if recipes.overseerr.auth_enabled %}
         - "traefik.http.routers.overseerr-rtr.middlewares=middlewares-authentik@file"
+{% endif %}
         - "traefik.http.services.overseerr-svc.loadbalancer.server.port=5055"
     networks:
       - cloud-public
