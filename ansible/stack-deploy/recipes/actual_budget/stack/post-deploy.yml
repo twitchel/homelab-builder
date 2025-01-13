@@ -1,5 +1,5 @@
-# Protect Traefik
+# Protect Actual Budget
 - name: add protected traefik route
   include_tasks: stack-deploy/tasks/add-authentik-auth.yml
   vars:
-    auth_recipe: "actual-budget"
+    auth_recipe: "actual_budget"

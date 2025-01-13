@@ -48,7 +48,7 @@ common_env_default:
 
 # recipe configs
 recipes_default:
-  actual-budget:
+  actual_budget:
     enabled: true
     auth_app_settings:
       app_name: Actual Budget
