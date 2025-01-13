@@ -18,6 +18,14 @@
   become: no
 
   tasks:
+    - block:
+        - name: "Check build hosts"
+          debug:
+            msg: "No proxmox hosts defined, ending job"
+        - meta: end_play
+      when: (groups.proxmox_servers | length) < 1
+      run_once: true
+
     # Provision terraform node config
     - { import_role: { name: infrastructure/terraform-provision-node }, tags: [ infrastructure, proxmox ], become: no }
 
