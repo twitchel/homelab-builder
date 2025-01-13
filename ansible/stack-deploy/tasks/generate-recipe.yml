@@ -19,9 +19,9 @@
     state: directory
 
 - name: "{{ requested_recipe }} --> copy docker-compose template file"
-  copy:
+  template:
     force: true
-    src: ../recipes/{{ requested_recipe }}/stack/docker-compose.yml
+    src: ../recipes/{{ requested_recipe }}/stack/docker-compose.yml.j2
     dest: /var/data/stack/{{ requested_recipe }}/docker-compose.yml
 
 - name: "{{ requested_recipe }} --> copy env file"

@@ -7,7 +7,7 @@ services:
     volumes:
       - /var/data/appdata/homepage:/app/config
       - /var/run/docker.sock:/var/run/docker.sock
-    env_file: /var/data/stack/overseerr/.env
+    env_file: /var/data/stack/homepage/.env
     deploy:
       replicas: 1
       labels:
