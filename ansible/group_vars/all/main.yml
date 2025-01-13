@@ -1,5 +1,5 @@
 # proxmox VM settings
-proxmox_vm_ubuntu_version: jammy
+proxmox_vm_ubuntu_version: noble
 proxmox_vm_ram: 4096                                  # How much RAM to give each VM
 proxmox_vm_cores: 2                                   # How many processors to give each VM
 proxmox_vm_network_bridge: vmbr0                      # Which network to attach to each VM
