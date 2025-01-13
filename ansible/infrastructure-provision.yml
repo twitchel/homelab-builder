@@ -1,0 +1,58 @@
+---
+- hosts: swarm_nodes
+  gather_facts: yes
+  remote_user: "{{ vm_username }}"
+  become: yes
+
+  tasks:
+    - name: Combine configuration
+      include_tasks: common/tasks/combine-config.yml
+
+    - name: add the hosts in the group to /etc/hosts
+      lineinfile:
+        dest: /etc/hosts
+        regexp: '.*{{ item }}$'
+        line: "{{ hostvars[item]['ansible_host'] }} {{item}}"
+        state: present
+      with_items:
+        - "{{ play_hosts }}"
+
+    - name: prevent cloud-init from overwriting /etc/hosts
+      lineinfile:
+        dest: /etc/cloud/cloud.cfg
+        regex: "update_etc_hosts"
+        state: absent
+
+    # Install Docker
+    - {
+      import_role: { name: infrastructure/node-install-docker },
+      tags: [ infrastructure, node, dependencies ],
+    }
+
+    - name: Log into DockerHub (to avoid ratelimits)
+      docker_login:
+        username: "{{ docker_hub_username }}"
+        password: "{{ docker_hub_password}}"
+      when:
+        - docker_hub_username is defined
+        - docker_hub_password is defined
+
+    # Install CEPH for distributed storage
+    - {
+      import_role: { name: infrastructure/node-install-ceph },
+      tags: [ infrastructure, node, dependencies ],
+      when: distributed_storage == 'ceph'
+    }
+
+    # Install GlusterFS for distributed storage
+    - {
+      import_role: { name: infrastructure/node-install-glusterfs },
+      tags: [ infrastructure, node, dependencies ],
+      when: distributed_storage == 'glusterfs'
+    }
+
+    # Setup Keepalived for a shared virtual IP
+    - {
+      import_role: { name: infrastructure/node-install-keepalived },
+      tags: [ infrastructure, node, dependencies ],
+    }
