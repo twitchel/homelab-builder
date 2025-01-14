@@ -15,18 +15,9 @@
     # Create proxmox base templates
     - { import_role: { name: infrastructure/infrastructure-destroy }, tags: [ proxmox-destroy ], become: no }
 
-    - name: "Are there existing .tf files in {{ terraform_dir }}?"
-      delegate_to: localhost
-      run_once: true
-      find:
-        paths: "{{ terraform_dir }}"
-        patterns: "*.tf"
-      register: files_to_delete
-
-    - name: "Delete any .tf files found in {{ terraform_dir }}"
+    - name: "Delete the terraform dir once destroyed: {{ terraform_dir }}"
       delegate_to: localhost
       run_once: true
       file:
-        path: "{{ item.path }}"
+        path: "{{ terraform_dir }}"
         state: absent
-      with_items: "{{ files_to_delete.files }}"
