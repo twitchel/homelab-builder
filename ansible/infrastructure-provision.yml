@@ -23,36 +23,16 @@
         regex: "update_etc_hosts"
         state: absent
 
-    # Install Docker
+    # Docker Provision
     - {
-      import_role: { name: infrastructure/node-install-docker },
-      tags: [ infrastructure, node, dependencies ],
+      import_role: { name: provision/provision-docker },
+      tags: [ infrastructure, node, dependencies, docker ],
+      when: runtime == 'docker'
     }
 
-    - name: Log into DockerHub (to avoid ratelimits)
-      docker_login:
-        username: "{{ docker_hub_username }}"
-        password: "{{ docker_hub_password}}"
-      when:
-        - docker_hub_username is defined
-        - docker_hub_password is defined
-
-    # Install CEPH for distributed storage
+    # Kubernetes Provision
     - {
-      import_role: { name: infrastructure/node-install-ceph },
-      tags: [ infrastructure, node, dependencies ],
-      when: distributed_storage == 'ceph'
-    }
-
-    # Install GlusterFS for distributed storage
-    - {
-      import_role: { name: infrastructure/node-install-glusterfs },
-      tags: [ infrastructure, node, dependencies ],
-      when: distributed_storage == 'glusterfs'
-    }
-
-    # Setup Keepalived for a shared virtual IP
-    - {
-      import_role: { name: infrastructure/node-install-keepalived },
-      tags: [ infrastructure, node, dependencies ],
+      import_role: { name: provision/provision-kubernetes },
+      tags: [ infrastructure, node, dependencies, kubernetes ],
+      when: runtime == 'kubernetes'
     }

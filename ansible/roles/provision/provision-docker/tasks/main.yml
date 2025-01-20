@@ -1,0 +1,33 @@
+# Install Docker
+- {
+  import_role: { name: provision/node-install-docker },
+  tags: [ infrastructure, node, dependencies ],
+}
+
+- name: Log into DockerHub (to avoid ratelimits)
+  docker_login:
+    username: "{{ docker_hub_username }}"
+    password: "{{ docker_hub_password}}"
+  when:
+    - docker_hub_username is defined
+    - docker_hub_password is defined
+
+# Install CEPH for distributed storage
+- {
+  import_role: { name: provision/node-install-ceph },
+  tags: [ infrastructure, node, dependencies ],
+  when: distributed_storage == 'ceph'
+}
+
+# Install GlusterFS for distributed storage
+- {
+  import_role: { name: provision/node-install-glusterfs },
+  tags: [ infrastructure, node, dependencies ],
+  when: distributed_storage == 'glusterfs'
+}
+
+# Setup Keepalived for a shared virtual IP
+- {
+  import_role: { name: provision/node-install-keepalived },
+  tags: [ infrastructure, node, dependencies ],
+}
