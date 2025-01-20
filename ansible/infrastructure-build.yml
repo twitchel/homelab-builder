@@ -8,16 +8,17 @@
       include_tasks: common/tasks/combine-config.yml
 
     # Provision terraform base
-    - { import_role: { name: infrastructure/terraform-provision-base }, tags: [ infrastructure, proxmox ], become: no }
+    - { import_role: { name: build/terraform-provision-base }, tags: [ build, infrastructure, proxmox ], become: no }
 
     # Provision base cloud images
-    - { import_role: { name: infrastructure/terraform-provision-cloud-image }, tags: [ infrastructure, proxmox ], become: no }
+    - { import_role: { name: build/terraform-provision-cloud-image }, tags: [ build, infrastructure, proxmox ], become: no }
 
 - hosts: swarm_nodes
   gather_facts: no
   become: no
 
   tasks:
+    # Verify we have proxmox hosts defined before running this job.
     - block:
         - name: "Check build hosts"
           debug:
@@ -27,7 +28,7 @@
       run_once: true
 
     # Provision terraform node config
-    - { import_role: { name: infrastructure/terraform-provision-node }, tags: [ infrastructure, proxmox ], become: no }
+    - { import_role: { name: build/terraform-provision-node }, tags: [ build, infrastructure, proxmox ], become: no }
 
     # Run Terraform
-    - { import_role: { name: infrastructure/terraform-run }, tags: [ infrastructure, proxmox ], become: no }
+    - { import_role: { name: build/terraform-run }, tags: [ build, infrastructure, proxmox ], become: no }
