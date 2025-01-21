@@ -53,7 +53,7 @@
     state: join
   when:
     - inventory_hostname != play_hosts[0]
-    - swarm_role == "master"
+    - cluster_role == "master"
 
 - name: join the swarm on the remaining nodes as a worker
   docker_swarm:
@@ -63,4 +63,4 @@
     state: join
   when:
     - inventory_hostname != play_hosts[0]
-    - swarm_role == "worker"
+    - cluster_role == "worker"
