@@ -1,5 +1,5 @@
 ---
-- hosts: swarm_nodes
+- hosts: cluster_nodes
   gather_facts: yes
   remote_user: "{{ vm_username }}"
   become: yes

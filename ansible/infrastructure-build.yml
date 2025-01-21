@@ -13,7 +13,7 @@
     # Provision base cloud images
     - { import_role: { name: build/terraform-provision-cloud-image }, tags: [ build, infrastructure, proxmox ], become: no }
 
-- hosts: swarm_nodes
+- hosts: cluster_nodes
   gather_facts: no
   become: no
 
