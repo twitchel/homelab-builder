@@ -25,14 +25,14 @@
 
     # Docker Provision
     - {
-      import_role: { name: provision/provision-docker },
+      include_role: { name: provision/provision-docker },
       tags: [ infrastructure, node, dependencies, docker ],
       when: runtime == 'docker'
     }
 
     # Kubernetes Provision
     - {
-      import_role: { name: provision/provision-kubernetes },
+      include_role: { name: provision/provision-kubernetes },
       tags: [ infrastructure, node, dependencies, kubernetes ],
       when: runtime == 'kubernetes'
     }
