@@ -18,7 +18,7 @@
 - name: create keepalived containers
   docker_container:
     name: "keepalived"
-    image: "osixia/keepalived:{{ recipes.keepalived.version }}"
+    image: "osixia/keepalived:{{ services.keepalived.version }}"
     capabilities: "NET_ADMIN"
     network_mode: "host"
     state: started
@@ -27,5 +27,5 @@
     env:
       KEEPALIVED_INTERFACE: "eth0"
       KEEPALIVED_UNICAST_PEERS: "#PYTHON2BASH:[ '{{ \"', '\".join(keepalived_peers) }}' ]"
-      KEEPALIVED_VIRTUAL_IPS: "{{ keepalived_virtual_ip }}"
+      KEEPALIVED_VIRTUAL_IPS: "{{ runtime.docker.keepalived.virtual_ip }}"
       KEEPALIVED_PRIORITY: "{{ keepalived_priority | quote }}"

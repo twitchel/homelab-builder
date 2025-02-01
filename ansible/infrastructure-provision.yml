@@ -1,13 +1,10 @@
 ---
 - hosts: cluster_nodes
   gather_facts: yes
-  remote_user: "{{ vm_username }}"
+  remote_user: "{{ cluster_node.username }}"
   become: yes
 
   tasks:
-    - name: Combine configuration
-      include_tasks: common/tasks/combine-config.yml
-
     - name: add the hosts in the group to /etc/hosts
       lineinfile:
         dest: /etc/hosts
@@ -27,12 +24,12 @@
     - {
       include_role: { name: provision/provision-docker },
       tags: [ infrastructure, node, dependencies, docker ],
-      when: runtime == 'docker'
+      when: runtime.type == 'docker'
     }
 
     # Kubernetes Provision
     - {
       include_role: { name: provision/provision-kubernetes },
       tags: [ infrastructure, node, dependencies, kubernetes ],
-      when: runtime == 'kubernetes'
+      when: runtime.type == 'kubernetes'
     }

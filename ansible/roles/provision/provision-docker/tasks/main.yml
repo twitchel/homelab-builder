@@ -6,24 +6,24 @@
 
 - name: Log into DockerHub (to avoid ratelimits)
   docker_login:
-    username: "{{ docker_hub_username }}"
-    password: "{{ docker_hub_password}}"
+    username: "{{ docker_hub.username }}"
+    password: "{{ docker_hub.password }}"
   when:
-    - docker_hub_username is defined
-    - docker_hub_password is defined
+    - docker_hub.username is defined
+    - docker_hub.password is defined
 
 # Install CEPH for distributed storage
 - {
   include_role: { name: provision/node-install-ceph },
   tags: [ infrastructure, node, dependencies ],
-  when: distributed_storage == 'ceph'
+  when: storage.engine == 'ceph'
 }
 
 # Install GlusterFS for distributed storage
 - {
   include_role: { name: provision/node-install-glusterfs },
   tags: [ infrastructure, node, dependencies ],
-  when: distributed_storage == 'glusterfs'
+  when: storage.engine == 'glusterfs'
 }
 
 # Setup Keepalived for a shared virtual IP

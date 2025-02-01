@@ -31,9 +31,9 @@ endif
 ifndef TOFU_INSTALLED
 	$(error "OpenTofu is not installed, please install")
 endif
-	@if [[ ! -f "./ansible/group_vars/$(ENVIRONMENT)/main.yml" ]]; then \
+	@if [[ ! -f "./ansible/inventory/$(ENVIRONMENT)/group_vars/all.yml" ]]; then \
 	 	echo "Group vars directory for environment missing" && exit 1; \
 	fi
-	@if [[ ! -f "./config/$(ENVIRONMENT)/hosts.yml" ]]; then \
+	@if [[ ! -f "./ansible/inventory/$(ENVIRONMENT)/hosts.yml" ]]; then \
 		echo "Hosts data for environment missing" && exit 1; \
 	fi

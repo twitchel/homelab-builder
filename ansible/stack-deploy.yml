@@ -2,16 +2,12 @@
 - hosts: cluster_nodes[0]
   gather_facts: yes
   become: yes
-  remote_user: "{{ vm_username }}"
+  remote_user: "{{ cluster_node.username }}"
 
   environment:
     DOMAIN_NAME: "{{ dns_domain }}"
 
   tasks:
-    # Combine recipe fact with defaults fact. output fact: recipes
-    - name: Combine configuration
-      include_tasks: common/tasks/combine-config.yml
-
     # Setup baseline networking
     - name: Create swarm networks
       block:
@@ -24,11 +20,11 @@
 
     - name: Log into DockerHub (to avoid ratelimits)
       docker_login:
-        username: "{{ docker_hub_username }}"
-        password: "{{ docker_hub_password}}"
+        username: "{{ docker_hub.username }}"
+        password: "{{ docker_hub.password}}"
       when:
-        - docker_hub_username is defined
-        - docker_hub_password is defined
+        - docker_hub.username is defined
+        - docker_hub.password is defined
 
     ## Deploy Supporting Stacks
     # Traefik Router

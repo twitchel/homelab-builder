@@ -3,7 +3,10 @@ locals {
     index(data.proxmox_virtual_environment_vms.homelab-builder-vms.vms.*.name, "{{ inventory_hostname_short }}"),
     ""
   )
+
   {{ inventory_hostname_short }}_node_name = local.{{ inventory_hostname_short }}_existing_vm_index != "" ? data.proxmox_virtual_environment_vms.homelab-builder-vms.vms[local.{{ inventory_hostname_short }}_existing_vm_index].node_name : "{{ proxmox_node }}"
+
+  {{ inventory_hostname_short }}_node_cores = {{ hostvars[inventory_hostname_short].node_cores_override | default('""') }} != "" ? {{ hostvars[inventory_hostname_short].node_cores_override | default('""') }} : var.node_cpu_cores
 }
 
 resource "proxmox_virtual_environment_vm" "{{ inventory_hostname_short }}" {
@@ -11,13 +14,13 @@ resource "proxmox_virtual_environment_vm" "{{ inventory_hostname_short }}" {
   name            = "{{ inventory_hostname_short }}"
   node_name       = local.{{ inventory_hostname_short }}_node_name
   description     = "Managed by Terraform/Homelab Builder"
-  tags            = ["homelab-builder", "{{ environment_name }}"]
+  tags            = ["homelab-builder", "{{ env }}"]
   stop_on_destroy = true
 
   machine = "pc"
 
   cpu {
-    cores = var.node_cpu_cores
+    cores = local.{{ inventory_hostname_short }}_node_cores
     type  = "host"
   }
 
@@ -31,21 +34,21 @@ resource "proxmox_virtual_environment_vm" "{{ inventory_hostname_short }}" {
   }
 
   disk {
-    datastore_id = "{{ proxmox_storage }}"
+    datastore_id = "{{ proxmox.disk_storage }}"
     file_id      = proxmox_virtual_environment_download_file.ubuntu_cloud_image-{{ proxmox_node }}.id
     interface    = "scsi0"
     size         = var.node_disk0_size
   }
 
   disk {
-    datastore_id = "{{ proxmox_storage }}"
+    datastore_id = "{{ proxmox.disk_storage }}"
     size         = var.node_disk1_size
     file_format  = "raw"
     interface    = "scsi1"
   }
 
   initialization {
-    datastore_id = "{{ proxmox_storage }}"
+    datastore_id = "{{ proxmox.disk_storage }}"
     interface    = "ide2"
 
     user_account {

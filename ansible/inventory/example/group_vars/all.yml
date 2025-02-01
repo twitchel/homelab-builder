@@ -1,53 +1,53 @@
-# proxmox VM settings
-proxmox_vm_ubuntu_version: noble
-proxmox_vm_ram: 4096                                  # How much RAM to give each VM
-proxmox_vm_cores: 2                                   # How many processors to give each VM
-proxmox_vm_network_bridge: vmbr0                      # Which network to attach to each VM
-proxmox_vm_disk0_size: 20                             # Size of the primary (system) disk on each VM in gigabytes
-proxmox_vm_disk1_size: 60                             # Size of the secondary (data) disk on each VM in gigabytes
-proxmox_storage: local-lvm
-proxmox_iso_storage: local
-proxmox_host_username: root@pam
-proxmox_host_password: password
+---
+env: "{{ lookup('env', 'ENVIRONMENT') }}"
+dns_domain: "example.com"
+terraform:
+  dir: "~/.terraform/homelab-builder-{{ env }}/"
 
-# Terraform
-terraform_dir: ~/.terraform/homelab-builder
+proxmox:
+  host_username: root@pam
+  host_password: password
+  iso_storage: local
+  disk_storage: local-lvm
 
-# VM Node settings
-vm_username: ubuntu
-vm_public_key: /full/path/to/ssh-key.pub
-vm_private_key: /full/path/to/ssh-key
-vm_network_gateway: 192.168.1.1
+cluster_node:
+  cpu_cores: 1
+  memory: 4096
+  network_gateway: 192.168.1.1
+  network_bridge: vmbr0
+  ubuntu_version: noble
+  disk0_size: 20
+  disk1_size: 100
+  username: ubuntu
+  public_key: /Users/my-user/.ssh/some-key.pub
+  private_key: /Users/my-user/.ssh/some-key
 
-# Top level homelab domain - URL's for all services will be a subdomain of this
-# For example, if dns_domain = example.com, gitea would be hosted at gitea.example.com
-dns_domain: home.example.com
-email: foobar@example.com
+docker_hub:
+  username:
+  password:
 
-# Docker hub login details (to get around rate limits)
-docker_hub_username:
-docker_hub_password:
-docker_hub_email:
+runtime:
+  type: docker
+  docker:
 
-# Distributed Storage
-distributed_storage: "ceph" # 'ceph' or 'glusterfs'
-distributed_storage_root: "/var/data"
+  kubernetes:
+    version: v1.30.2+k3s2
 
-# Ceph Configuration
-ceph_dashboard_username: "username"
-ceph_dashboard_password: "password"
+storage:
+  engine: "ceph" # 'ceph' or 'glusterfs'
+  root_dir: "/var/data"
 
-# GlusterFS Configuration
-gluster_brick_name: gluster
-gluster_brick_dir: "/gluster-brick"
-gluster_mount_dir: "{{ distributed_storage_root }}"
+  ceph:
+    dashboard_username: username
+    dashboard_password: password
+  glusterfs:
+    brick_name: gluster
+    brick_dir: "/gluster-brick"
 
-# Common recipe ENV
-common_env_default:
+common_service_env:
   DOMAIN_NAME: "{{ dns_domain }}"
 
-# recipe configs
-recipes_default:
+services:
   actual_budget:
     enabled: true
     auth_enabled: true
@@ -128,6 +128,7 @@ recipes_default:
       app_icon: traefik.png
       domain: traefik.{{ dns_domain }}
     env:
+      CF_DNS_API_TOKEN: ""
       DOMAIN_NAME: "{{ dns_domain }}"
     localIps: "127.0.0.1/32,10.0.0.0/8,192.168.0.0/16,172.16.0.0/12"
     cloudflareIps: "173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22"
@@ -141,3 +142,15 @@ recipes_default:
       app_icon: traefik.png
       domain: whoami.{{ dns_domain }}
     version: v1.10
+
+external_services:
+  unraid:
+    app_name: unraid
+    app_icon: unraid.png
+    domain: unraid.{{ dns_domain }}
+    dest: "https://192.168.1.2"
+  proxmox:
+    app_name: proxmox
+    app_icon: proxmox.png
+    domain: proxmox.{{ dns_domain }}
+    dest: "https://192.168.10.11:8006"

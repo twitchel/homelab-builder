@@ -4,8 +4,6 @@
   become: no
 
   tasks:
-    - name: Combine configuration
-      include_tasks: common/tasks/combine-config.yml
     - name: DESTROY TEMPLATE
       pause:
         prompt: |
@@ -15,9 +13,9 @@
     # Create proxmox base templates
     - { import_role: { name: infrastructure/infrastructure-destroy }, tags: [ proxmox-destroy ], become: no }
 
-    - name: "Delete the terraform dir once destroyed: {{ terraform_dir }}"
+    - name: "Delete the terraform dir once destroyed: {{ terraform.dir }}"
       delegate_to: localhost
       run_once: true
       file:
-        path: "{{ terraform_dir }}"
+        path: "{{ terraform.dir }}"
         state: absent

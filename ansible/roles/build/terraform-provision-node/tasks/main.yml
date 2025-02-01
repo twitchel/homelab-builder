@@ -5,10 +5,10 @@
       run_once: true
       template:
         src: vars_node.tf.j2
-        dest: "{{ terraform_dir }}/vars_node.tf"
+        dest: "{{ terraform.dir }}/vars_node.tf"
 
     - name: Create terraform plan for vms
       template:
         src: resource_node.tf.j2
-        dest: "{{ terraform_dir }}/resource_node_{{ inventory_hostname_short }}.tf"
+        dest: "{{ terraform.dir }}/resource_node_{{ inventory_hostname_short }}.tf"
         force: no

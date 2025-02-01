@@ -5,5 +5,5 @@
       when: "inventory_hostname in groups['proxmox_servers']"
       template:
         src: resource_ubuntu_cloud_image.tf.j2
-        dest: "{{ terraform_dir }}/resource_ubuntu_cloud_image_{{ inventory_hostname_short }}.tf"
+        dest: "{{ terraform.dir }}/resource_ubuntu_cloud_image_{{ inventory_hostname_short }}.tf"
         force: no

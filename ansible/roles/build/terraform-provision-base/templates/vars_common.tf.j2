@@ -1,5 +1,5 @@
 data "local_file" "ssh_public_key" {
-  filename = "{{ vm_public_key }}"
+  filename = "{{ cluster_node.public_key }}"
 }
 
 variable "proxmox_endpoint" {
@@ -11,59 +11,59 @@ variable "proxmox_endpoint" {
 variable "proxmox_username" {
   type        = string
   description = "Proxmox authentication user"
-  default     = "{{ proxmox_host_username }}"
+  default     = "{{ proxmox.host_username }}"
 }
 
 variable "proxmox_password" {
   type        = string
   description = "Password of the Proxmox authentication user"
-  default     = "{{ proxmox_host_password }}"
+  default     = "{{ proxmox.host_password }}"
 }
 
 variable "node_cpu_cores" {
   type        = number
   description = "Number of CPU cores"
-  default     = {{ proxmox_vm_cores }}
+  default     = {{ cluster_node.cpu_cores }}
 }
 
 variable "node_memory_mb" {
   type        = number
   description = "Node Memory in megabytes"
-  default     = {{ proxmox_vm_ram }}
+  default     = {{ cluster_node.memory }}
 }
 
 variable "node_disk0_size" {
   type        = number
   description = "Node Disk 0 size in gigabytes"
-  default     = {{ proxmox_vm_disk0_size }}
+  default     = {{ cluster_node.disk0_size }}
 }
 
 variable "node_disk1_size" {
   type        = number
   description = "Node Disk 1 size in gigabytes"
-  default     = {{ proxmox_vm_disk1_size }}
+  default     = {{ cluster_node.disk1_size }}
 }
 
 variable "node_ubuntu_version" {
   type        = string
   description = "Node ubuntu version"
-  default     = "{{ proxmox_vm_ubuntu_version }}"
+  default     = "{{ cluster_node.ubuntu_version }}"
 }
 
 variable "node_ubuntu_cloudimage_url" {
   type        = string
   description = "Cloud Docker image download URL"
-  default     = "https://cloud-images.ubuntu.com/{{ proxmox_vm_ubuntu_version }}/current/{{ proxmox_vm_ubuntu_version }}-server-cloudimg-amd64.img"
+  default     = "https://cloud-images.ubuntu.com/{{ cluster_node.ubuntu_version }}/current/{{ cluster_node.ubuntu_version }}-server-cloudimg-amd64.img"
 }
 
 variable "node_ssh_user" {
   type        = string
   description = "Username to connect to each node"
-  default     = "{{ vm_username }}"
+  default     = "{{ cluster_node.username }}"
 }
 
 variable "node_network_gateway" {
   type        = string
   description = "Network gateway the nodes use to connect to the internet"
-  default     = "{{ vm_network_gateway }}"
+  default     = "{{ cluster_node.network_gateway }}"
 }

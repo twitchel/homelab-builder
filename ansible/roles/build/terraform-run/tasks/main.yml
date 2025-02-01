@@ -5,12 +5,12 @@
     - name: Run tofu init
       command: tofu init
       args:
-        chdir: "{{ terraform_dir }}"
+        chdir: "{{ terraform.dir }}"
 
     - name: Run tofu plan
       command: tofu plan
       args:
-        chdir: "{{ terraform_dir }}"
+        chdir: "{{ terraform.dir }}"
       register: _plan_output
 
     - set_fact:
@@ -34,10 +34,10 @@
     - name: Run tofu apply
       command: tofu apply -auto-approve
       args:
-        chdir: "{{ terraform_dir }}"
+        chdir: "{{ terraform.dir }}"
 
 - name: Don't exit this play until the machines are reachable (they might still be booting up)
-  remote_user: "{{ vm_username }}"
+  remote_user: "{{ cluster_node.username }}"
   wait_for_connection:
     delay: 5
     timeout: 300

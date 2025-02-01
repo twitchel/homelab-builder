@@ -4,33 +4,19 @@
     - name: Create temporary directory for terraform plan
       run_once: true
       file:
-        name: "{{ terraform_dir }}"
+        name: "{{ terraform.dir }}"
         state: directory
-
-#    - name: "Are there existing .tf files in {{ terraform_dir }}?"
-#      run_once: true
-#      find:
-#        paths: "{{ terraform_dir }}"
-#        patterns: "*.tf"
-#      register: files_to_delete
-#
-#    - name: "Delete any .tf files found in {{ terraform_dir }}"
-#      run_once: true
-#      file:
-#        path: "{{ item.path }}"
-#        state: absent
-#      with_items: "{{ files_to_delete.files }}"
 
     - name: Create terraform main.tf file
       when: "inventory_hostname in groups['proxmox_servers']"
       run_once: true
       template:
         src: main.tf.j2
-        dest: "{{ terraform_dir }}/main.tf"
+        dest: "{{ terraform.dir }}/main.tf"
 
     - name: Create terraform vars_common.tf file
       when: "inventory_hostname in groups['proxmox_servers']"
       run_once: true
       template:
         src: vars_common.tf.j2
-        dest: "{{ terraform_dir }}/vars_common.tf"
+        dest: "{{ terraform.dir }}/vars_common.tf"
