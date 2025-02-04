@@ -16,13 +16,13 @@
 - set_fact:
     name_prefix: "{{ recipe }} --> Add Authentik Auth"
 
-- command: cat {{ distributed_storage_root }}/stack/authentik/secrets/authentik_bootstrap_token
+- command: cat {{ storage.root_dir }}/stack/authentik/secrets/authentik_bootstrap_token
   register: authentik_bootstrap_token
   become: true
 
-- set_fact: authentik_base_url="{{ recipes.authentik.api_base_url }}"
+- set_fact: authentik_base_url="{{ services.authentik.api_base_url }}"
 - set_fact: authentik_token="{{ authentik_bootstrap_token.stdout }}"
-- set_fact: auth_app_settings="{{ recipes[auth_recipe].auth_app_settings }}"
+- set_fact: auth_app_settings="{{ services[auth_recipe].auth_app_settings }}"
 
 - name: "{{ auth_recipe }} --> Get App from Authentik"
   uri:
@@ -61,7 +61,7 @@
 - name: Download app icon from selfh.st
   ansible.builtin.get_url:
     url: "https://cdn.jsdelivr.net/gh/selfhst/icons/png/{{ auth_app_settings.app_icon }}"
-    dest: "{{ distributed_storage_root }}/appdata/authentik/media/public/icons/{{ auth_app_settings.app_icon }}"
+    dest: "{{ storage.root_dir }}/appdata/authentik/media/public/icons/{{ auth_app_settings.app_icon }}"
 
 - name: "Set app icon in Authentik"
   uri:
@@ -70,7 +70,7 @@
     body_format: json
     body: |
       {
-        "url": "{{ recipes.authentik.domain }}/media/public/icons/{{ auth_app_settings.app_icon }}"
+        "url": "{{ services.authentik.domain }}/media/public/icons/{{ auth_app_settings.app_icon }}"
       }
     status_code:
       - 200

@@ -1,11 +1,11 @@
-- name: ensure {{ distributed_storage_root }}/stack exists
+- name: ensure {{ storage.root_dir }}/stack exists
   file:
-    path: "{{ distributed_storage_root }}/stack"
+    path: "{{ storage.root_dir }}/stack"
     state: directory
 
-- name: ensure {{ distributed_storage_root }}/appdata exists
+- name: ensure {{ storage.root_dir }}/appdata exists
   file:
-    path: "{{ distributed_storage_root }}/appdata"
+    path: "{{ storage.root_dir }}/appdata"
     state: directory
 
 - name: run the recipe-generator
@@ -23,7 +23,7 @@
   docker_stack:
     state: present
     name: "{{ recipe }}"
-    compose: "{{ distributed_storage_root }}/stack/{{ recipe }}/docker-compose.yml"
+    compose: "{{ storage.root_dir }}/stack/{{ recipe }}/docker-compose.yml"
     with_registry_auth: yes
   register: _result
   until: _result.failed == false

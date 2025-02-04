@@ -3,8 +3,8 @@ version: "3.8"
 services:
   # WhoAmI - For Testing and Troubleshooting
   whoami:
-    image: "traefik/whoami:{{ recipes.whoami.version }}"
-    env_file: {{ distributed_storage_root }}/stack/whoami/.env
+    image: "traefik/whoami:{{ services.whoami.version }}"
+    env_file: {{ storage.root_dir }}/stack/whoami/.env
     deploy:
       mode: global
       labels:
@@ -15,7 +15,7 @@ services:
         - "traefik.http.routers.whoami-rtr.rule=Host(`whoami.$DOMAIN_NAME`)"
         # HTTP Services
         - "traefik.http.routers.whoami-rtr.service=whoami-svc"
-{% if recipes.whoami.auth_enabled == true %}
+{% if services.whoami.auth_enabled == true %}
         - "traefik.http.routers.whoami-rtr.middlewares=middlewares-authentik@file"
 {% endif %}
         - "traefik.http.services.whoami-svc.loadbalancer.server.port=80"

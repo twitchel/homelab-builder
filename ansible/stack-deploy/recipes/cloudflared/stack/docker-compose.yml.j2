@@ -6,9 +6,9 @@ networks:
 
 services:
   cloudflared-tunnel:
-    image: "cloudflare/cloudflared:{{ recipes.cloudflared.version }}"
+    image: "cloudflare/cloudflared:{{ services.cloudflared.version }}"
     command: tunnel run
-    env_file: {{ distributed_storage_root }}/stack/cloudflared/.env
+    env_file: {{ storage.root_dir }}/stack/cloudflared/.env
     deploy:
       replicas: 1
     networks:

@@ -33,7 +33,7 @@ entryPoints:
   websecure:
     address: ":443"
     forwardedHeaders:
-      trustedIps: "{{ recipes.traefik.cloudflareIps }},{{ recipes.traefik.localIps }}"
+      trustedIps: "{{ services.traefik.cloudflareIps }},{{ services.traefik.localIps }}"
     http:
       tls:
         certResolver: "cloudflare"
@@ -46,7 +46,7 @@ entryPoints:
 certificatesResolvers:
   cloudflare:
     acme:
-      email: "{{ email }}"
+      email: "{{ admin_user.email }}"
       storage: "/acme.json"
       # uncomment to use staging CA for testing
       #caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"

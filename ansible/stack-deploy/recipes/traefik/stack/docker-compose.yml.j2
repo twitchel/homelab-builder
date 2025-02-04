@@ -6,8 +6,8 @@ networks:
 
 services:
   traefik:
-    image: "traefik:{{ recipes.traefik.version }}"
-    env_file: "{{ distributed_storage_root }}/stack/traefik/.env"
+    image: "traefik:{{ services.traefik.version }}"
+    env_file: "{{ storage.root_dir }}/stack/traefik/.env"
     ports:
       # We expose the standard 80 and 443 ports via bridged mode so that local DNS can be setup (can connect to the
       # stack on your local network if configured in your DNS server without reaching out via the internet and tunnels).
@@ -25,11 +25,11 @@ services:
         protocol: tcp
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - {{ distributed_storage_root }}/appdata/traefik/etc/traefik:/etc/traefik
-      - {{ distributed_storage_root }}/appdata/traefik/data:/data
-      - {{ distributed_storage_root }}/appdata/traefik/rules:/rules
-      - {{ distributed_storage_root }}/appdata/traefik/logs:/logs
-      - {{ distributed_storage_root }}/appdata/traefik/acme.json:/acme.json
+      - {{ storage.root_dir }}/appdata/traefik/etc/traefik:/etc/traefik
+      - {{ storage.root_dir }}/appdata/traefik/data:/data
+      - {{ storage.root_dir }}/appdata/traefik/rules:/rules
+      - {{ storage.root_dir }}/appdata/traefik/logs:/logs
+      - {{ storage.root_dir }}/appdata/traefik/acme.json:/acme.json
     deploy:
       replicas: 1
       labels:
@@ -39,7 +39,7 @@ services:
         # define traefik dashboard router and service
         - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAIN_NAME`)"
         - "traefik.http.routers.traefik-rtr.service=api@internal"
-{% if recipes.traefik.auth_enabled %}
+{% if services.traefik.auth_enabled %}
         - "traefik.http.routers.traefik-rtr.middlewares=middlewares-authentik@file"
 {% endif %}
         - "traefik.http.routers.traefik-rtr.entrypoints=websecure"

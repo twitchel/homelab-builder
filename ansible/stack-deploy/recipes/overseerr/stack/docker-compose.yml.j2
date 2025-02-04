@@ -3,10 +3,10 @@ version: "3.8"
 services:
   # Overseerr - Movie/TV Requests
   overseerr:
-    image: "sctx/overseerr:{{ recipes.overseerr.version }}"
+    image: "sctx/overseerr:{{ services.overseerr.version }}"
     volumes:
-      - {{ distributed_storage_root }}/appdata/overseerr:/app/config
-    env_file: {{ distributed_storage_root }}/stack/overseerr/.env
+      - {{ storage.root_dir }}/appdata/overseerr:/app/config
+    env_file: {{ storage.root_dir }}/stack/overseerr/.env
     deploy:
       replicas: 1
       labels:
@@ -17,7 +17,7 @@ services:
         - "traefik.http.routers.overseerr-rtr.rule=Host(`overseerr.$DOMAIN_NAME`)"
         # HTTP Services
         - "traefik.http.routers.overseerr-rtr.service=overseerr-svc"
-{% if recipes.overseerr.auth_enabled %}
+{% if services.overseerr.auth_enabled %}
         - "traefik.http.routers.overseerr-rtr.middlewares=middlewares-authentik@file"
 {% endif %}
         - "traefik.http.services.overseerr-svc.loadbalancer.server.port=5055"

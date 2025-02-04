@@ -1,28 +1,28 @@
-- name: "{{ requested_recipe }} --> ensure {{ distributed_storage_root }}/stack/{{ requested_recipe }} exists"
+- name: "{{ requested_recipe }} --> ensure {{ storage.root_dir }}/stack/{{ requested_recipe }} exists"
   file:
-    path: "{{ distributed_storage_root }}/stack/{{ requested_recipe }}"
+    path: "{{ storage.root_dir }}/stack/{{ requested_recipe }}"
     state: directory
 
-- name: "{{ requested_recipe }} --> ensure {{ distributed_storage_root }}/appdata/{{ requested_recipe }} exists"
+- name: "{{ requested_recipe }} --> ensure {{ storage.root_dir }}/appdata/{{ requested_recipe }} exists"
   file:
-    path: "{{ distributed_storage_root }}/appdata/{{ requested_recipe }}"
+    path: "{{ storage.root_dir }}/appdata/{{ requested_recipe }}"
     state: directory
 
 - name: "{{ requested_recipe }} --> copy docker-compose template file"
   template:
     force: true
     src: ../recipes/{{ requested_recipe }}/stack/docker-compose.yml.j2
-    dest: "{{ distributed_storage_root }}/stack/{{ requested_recipe }}/docker-compose.yml"
+    dest: "{{ storage.root_dir }}/stack/{{ requested_recipe }}/docker-compose.yml"
 
 - name: "{{ requested_recipe }} --> copy env file"
   copy:
     force: true
     src: ../recipes/{{ requested_recipe }}/stack/service.env
-    dest: "{{ distributed_storage_root }}/stack/{{ requested_recipe }}/.env"
+    dest: "{{ storage.root_dir }}/stack/{{ requested_recipe }}/.env"
 
 - name: "{{ requested_recipe }} -> set global env vars for this recipe"
   lineinfile:
-    path: "{{ distributed_storage_root }}/stack/{{ requested_recipe }}/.env"
+    path: "{{ storage.root_dir }}/stack/{{ requested_recipe }}/.env"
     regexp: '^{{ item.key }}='
     line: '{{ item.key }}={{ item.value}}'
   with_items: "{{ common_env | dict2items }}"
@@ -31,10 +31,10 @@
 
 - name: "{{ requested_recipe }} -> set env vars for this recipe"
   lineinfile:
-    path: "{{ distributed_storage_root }}/stack/{{ requested_recipe }}/.env"
+    path: "{{ storage.root_dir }}/stack/{{ requested_recipe }}/.env"
     regexp: '^{{ item.key }}='
     line: '{{ item.key }}={{ item.value}}'
-  with_items: "{{ recipes[requested_recipe].env | dict2items }}"
+  with_items: "{{ services[requested_recipe].env | dict2items }}"
   when:
-    - recipes[requested_recipe].env is defined
+    - services[requested_recipe].env is defined
   no_log: true

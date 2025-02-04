@@ -153,4 +153,4 @@ external_services:
     app_name: proxmox
     app_icon: proxmox.png
     domain: proxmox.{{ dns_domain }}
-    dest: "https://192.168.10.11:8006"
+    dest: "https://192.168.1.3:8006"

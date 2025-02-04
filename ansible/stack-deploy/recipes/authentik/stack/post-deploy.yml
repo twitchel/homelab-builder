@@ -1,8 +1,8 @@
-- command: "cat {{ distributed_storage_root }}/stack/authentik/secrets/authentik_bootstrap_token"
+- command: "cat {{ storage.root_dir }}/stack/authentik/secrets/authentik_bootstrap_token"
   register: authentik_bootstrap_token
   become: true
 
-- set_fact: authentik_base_url="{{ recipes.authentik.api_base_url }}"
+- set_fact: authentik_base_url="{{ services.authentik.api_base_url }}"
 - set_fact: authentik_token="{{ authentik_bootstrap_token.stdout }}"
 
 - name: "{{ recipe }} --> Test whether the Authentik API is responding"
@@ -40,7 +40,7 @@
     body: |
       {
         "config": {
-          "authentik_host": "{{ recipes.authentik.domain }}"
+          "authentik_host": "{{ services.authentik.domain }}"
         }
       }
     status_code:
