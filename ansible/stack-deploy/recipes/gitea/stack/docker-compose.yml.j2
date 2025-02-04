@@ -16,7 +16,7 @@ services:
         - "traefik.swarm.network=cloud-public"
         # HTTP Routers
         - "traefik.http.routers.gitea-rtr.entrypoints=websecure"
-        - "traefik.http.routers.gitea-rtr.rule=Host(`gitea.$DOMAIN_NAME`)"
+        - "traefik.http.routers.gitea-rtr.rule=Host(`{{ services.gitea.domain }}`)"
         # HTTP Services
         - "traefik.http.routers.gitea-rtr.service=gitea-svc"
 {% if services.gitea.auth_enabled %}

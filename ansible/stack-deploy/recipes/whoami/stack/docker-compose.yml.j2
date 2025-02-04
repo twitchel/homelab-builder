@@ -12,7 +12,7 @@ services:
         - "traefik.swarm.network=cloud-public"
         # HTTP Routers
         - "traefik.http.routers.whoami-rtr.entrypoints=websecure"
-        - "traefik.http.routers.whoami-rtr.rule=Host(`whoami.$DOMAIN_NAME`)"
+        - "traefik.http.routers.whoami-rtr.rule=Host(`{{ services.whoami.domain }}`)"
         # HTTP Services
         - "traefik.http.routers.whoami-rtr.service=whoami-svc"
 {% if services.whoami.auth_enabled == true %}

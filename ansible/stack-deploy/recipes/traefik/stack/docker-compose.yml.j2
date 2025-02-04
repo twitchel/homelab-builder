@@ -37,7 +37,7 @@ services:
         - "traefik.swarm.network=cloud-public"
 
         # define traefik dashboard router and service
-        - "traefik.http.routers.traefik-rtr.rule=Host(`traefik.$DOMAIN_NAME`)"
+        - "traefik.http.routers.traefik-rtr.rule=Host(`{{ services.traefik.domain }}`)"
         - "traefik.http.routers.traefik-rtr.service=api@internal"
 {% if services.traefik.auth_enabled %}
         - "traefik.http.routers.traefik-rtr.middlewares=middlewares-authentik@file"

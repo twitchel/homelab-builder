@@ -119,7 +119,7 @@
           "name": "{{ auth_app_settings.app_name }} Provider",
           "authorization_flow": "{{ _result_provider_flow_auth.json.pk }}",
           "invalidation_flow": "{{ _result_provider_flow_invalidation.json.pk }}",
-          "external_host": "https://{{ auth_app_settings.domain }}",
+          "external_host": "https://{{ services[auth_recipe].domain }}",
           "mode": "forward_single",
           "access_token_validity": "hours=24",
           "refresh_token_validity": "days=30",

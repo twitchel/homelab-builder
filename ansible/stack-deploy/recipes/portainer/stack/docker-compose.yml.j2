@@ -31,7 +31,7 @@ services:
         - "traefik.swarm.network=cloud-public"
         # HTTP Routers
         - "traefik.http.routers.portainer-rtr.entrypoints=websecure"
-        - "traefik.http.routers.portainer-rtr.rule=Host(`portainer.$DOMAIN_NAME`)"
+        - "traefik.http.routers.portainer-rtr.rule=Host(`{{ services.portainer.domain }}`)"
         # HTTP Services
         - "traefik.http.routers.portainer-rtr.service=portainer-svc"
 {% if services.portainer.auth_enabled == true %}
