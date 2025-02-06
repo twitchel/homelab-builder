@@ -40,7 +40,7 @@
     body: |
       {
         "config": {
-          "authentik_host": "{{ services.authentik.domain }}"
+          "authentik_host": "https://{{ services.authentik.domain }}"
         }
       }
     status_code:
