@@ -1,0 +1,7 @@
+---
+- name: "Delete the terraform dir once destroyed: {{ terraform.dir }}"
+  delegate_to: localhost
+  run_once: true
+  ansible.builtin.file:
+    path: "{{ terraform.dir }}"
+    state: absent

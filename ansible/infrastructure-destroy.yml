@@ -1,21 +1,21 @@
 ---
-- hosts: proxmox_servers
-  gather_facts: no
-  become: no
+- name: Destroy cluster nodes
+  hosts: proxmox_servers
+  gather_facts: false
+  become: false
 
   tasks:
     - name: DESTROY TEMPLATE
-      pause:
+      ansible.builtin.pause:
         prompt: |
-          Please confirm you want to destroy provisioned Proxmox Templates! 
+          Please confirm you want to destroy provisioned Proxmox Templates!
           DATA LOSS MAY OCCUR.
           Press return to continue. Press Ctrl+c and then "a" to abort'
-    # Create proxmox base templates
-    - { import_role: { name: infrastructure/infrastructure-destroy }, tags: [ proxmox-destroy ], become: no }
 
-    - name: "Delete the terraform dir once destroyed: {{ terraform.dir }}"
-      delegate_to: localhost
-      run_once: true
-      file:
-        path: "{{ terraform.dir }}"
-        state: absent
+    - name: Destroy cluster node VM's
+      ansible.builtin.import_role: { name: destroy/remove-nodes } # noqa role-name[path]
+      become: false
+
+    - name: Cleanup Terraform files
+      ansible.builtin.import_role: { name: destroy/tofu-cleanup } # noqa role-name[path]
+      become: false
