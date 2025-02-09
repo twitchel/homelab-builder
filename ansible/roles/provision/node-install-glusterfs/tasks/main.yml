@@ -1,29 +1,36 @@
+---
 - name: Ensure Gluster brick and mount directories exist.
-  file: "path={{ item }} state=directory mode=0775"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0775"
   with_items:
     - "{{ storage.glusterfs.brick_dir }}"
     - "{{ storage.root_dir }}"
 
 - name: "Create and mount partition on data drive"
   block:
-    - parted:
+    - name: Create partition on /dev/sdb
+      ansible.builtin.parted:
         device: /dev/sdb
         number: 1
-        flags: [ lvm ]
+        flags: [lvm]
         state: present
 
-    - filesystem:
+    - name: Create filesystem
+      ansible.builtin.filesystem:
         fstype: ext4
         dev: /dev/sdb1
 
-    - mount:
+    - name: Mount filesystem
+      ansible.builtin.mount:
         fstype: ext4
         src: /dev/sdb1
         path: "{{ storage.glusterfs.brick_dir }}"
         state: mounted
 
-- name: install gluster packages (try to get apt lock for up to 10 min)
-  apt:
+- name: Install gluster packages (try to get apt lock for up to 10 min)
+  ansible.builtin.apt:
     name: "{{ packages }}"
   vars:
     packages:
@@ -32,7 +39,7 @@
   register: _result
   until: _result.failed == false
   retries: 30 # retry X times
-  delay: 5     # pause for X sec b/w each call
+  delay: 5 # pause for X sec b/w each call
 
 - name: Start service glusterd, if not started
   ansible.builtin.service:
@@ -42,17 +49,17 @@
   register: _result
   until: _result.failed == false
   retries: 30 # retry X times
-  delay: 5     # pause for X sec b/w each call
+  delay: 5 # pause for X sec b/w each call
 
 - name: Configure Gluster volume
-  gluster_volume:
+  gluster.gluster.gluster_volume:
     state: present
     name: "{{ storage.glusterfs.brick_name }}"
     brick: "{{ storage.glusterfs.brick_dir }}"
     replicas: "{{ play_hosts | length }}"
     cluster: "{{ play_hosts | join(',') }}"
     host: "{{ inventory_hostname }}"
-    force: yes
+    force: true
   run_once: true
 
 - name: Ensure Gluster volume is mounted.

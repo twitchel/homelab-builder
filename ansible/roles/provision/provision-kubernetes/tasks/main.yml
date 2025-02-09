@@ -1,3 +1,4 @@
+---
 - name: Kubernetes
   ansible.builtin.debug:
     var: hostvars

@@ -1,8 +1,7 @@
+---
 # Install Docker
-- {
-  include_role: { name: provision/node-install-docker },
-  tags: [ infrastructure, node, dependencies ],
-}
+- name: Install Docker
+  ansible.builtin.include_role: { name: provision/node-install-docker } # noqa role-name[path]
 
 - name: Log into DockerHub (to avoid ratelimits)
   docker_login:
@@ -12,22 +11,13 @@
     - docker_hub.username is defined
     - docker_hub.password is defined
 
-# Install CEPH for distributed storage
-- {
-  include_role: { name: provision/node-install-ceph },
-  tags: [ infrastructure, node, dependencies ],
+- name: Install CEPH for distributed storage
+  ansible.builtin.include_role: { name: provision/node-install-ceph } # noqa role-name[path]
   when: storage.engine == 'ceph'
-}
 
-# Install GlusterFS for distributed storage
-- {
-  include_role: { name: provision/node-install-glusterfs },
-  tags: [ infrastructure, node, dependencies ],
+- name: Install GlusterFS for distributed storage
+  ansible.builtin.include_role: { name: provision/node-install-glusterfs } # noqa role-name[path]
   when: storage.engine == 'glusterfs'
-}
 
-# Setup Keepalived for a shared virtual IP
-- {
-  include_role: { name: provision/node-install-keepalived },
-  tags: [ infrastructure, node, dependencies ],
-}
+- name: Setup Keepalived for a shared virtual IP
+  ansible.builtin.include_role: { name: provision/node-install-keepalived } # noqa role-name[path]

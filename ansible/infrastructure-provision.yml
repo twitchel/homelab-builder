@@ -1,35 +1,30 @@
 ---
-- hosts: cluster_nodes
-  gather_facts: yes
+- name: Provision cluster nodes
+  hosts: cluster_nodes
+  gather_facts: true
   remote_user: "{{ cluster_node.username }}"
-  become: yes
+  become: true
 
   tasks:
-    - name: add the hosts in the group to /etc/hosts
-      lineinfile:
+    - name: Add the hosts in the group to /etc/hosts
+      ansible.builtin.lineinfile:
         dest: /etc/hosts
         regexp: '.*{{ item }}$'
-        line: "{{ hostvars[item]['ansible_host'] }} {{item}}"
+        line: "{{ hostvars[item]['ansible_host'] }} {{ item }}"
         state: present
       with_items:
         - "{{ play_hosts }}"
 
-    - name: prevent cloud-init from overwriting /etc/hosts
-      lineinfile:
+    - name: Prevent cloud-init from overwriting /etc/hosts
+      ansible.builtin.lineinfile:
         dest: /etc/cloud/cloud.cfg
         regex: "update_etc_hosts"
         state: absent
 
-    # Docker Provision
-    - {
-      include_role: { name: provision/provision-docker },
-      tags: [ infrastructure, node, dependencies, docker ],
+    - name: Docker Provision
+      ansible.builtin.include_role: { name: provision/provision-docker } # noqa role-name[path]
       when: runtime.type == 'docker'
-    }
 
-    # Kubernetes Provision
-    - {
-      include_role: { name: provision/provision-kubernetes },
-      tags: [ infrastructure, node, dependencies, kubernetes ],
+    - name: Kubernetes Provision
+      ansible.builtin.include_role: { name: provision/provision-kubernetes }  # noqa role-name[path]
       when: runtime.type == 'kubernetes'
-    }
