@@ -3,12 +3,14 @@
   block:
     - name: Create terraform plan for vms
       run_once: true
-      template:
+      ansible.builtin.template:
         src: vars_node.tf.j2
         dest: "{{ terraform.dir }}/vars_node.tf"
+        mode: "0600"
 
     - name: Create terraform plan for vms
-      template:
+      ansible.builtin.template:
         src: resource_node.tf.j2
         dest: "{{ terraform.dir }}/resource_node_{{ inventory_hostname_short }}.tf"
-        force: no
+        force: false
+        mode: "0600"
