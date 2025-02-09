@@ -1,3 +1,4 @@
+---
 - name: Provision Terraform config
   delegate_to: localhost
   block:

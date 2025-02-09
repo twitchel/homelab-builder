@@ -9,7 +9,7 @@
     - name: Add the hosts in the group to /etc/hosts
       ansible.builtin.lineinfile:
         dest: /etc/hosts
-        regexp: '.*{{ item }}$'
+        regexp: ".*{{ item }}$"
         line: "{{ hostvars[item]['ansible_host'] }} {{ item }}"
         state: present
       with_items:
@@ -26,5 +26,5 @@
       when: runtime.type == 'docker'
 
     - name: Kubernetes Provision
-      ansible.builtin.include_role: { name: provision/provision-kubernetes }  # noqa role-name[path]
+      ansible.builtin.include_role: { name: provision/provision-kubernetes } # noqa role-name[path]
       when: runtime.type == 'kubernetes'

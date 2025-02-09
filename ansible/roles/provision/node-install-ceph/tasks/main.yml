@@ -38,7 +38,6 @@
   delegate_to: "{{ play_hosts[0] }}"
   when: not _ceph_configured.stat.exists
   block:
-
     - name: Bootstrap ceph cluster on first host # noqa no-changed-when
       ansible.builtin.command: "microceph cluster bootstrap"
 

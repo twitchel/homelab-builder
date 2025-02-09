@@ -1,3 +1,4 @@
+---
 - name: Provision Proxmox VM Cloud Images
   delegate_to: localhost
   block:

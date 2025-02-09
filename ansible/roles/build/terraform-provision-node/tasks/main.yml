@@ -1,3 +1,4 @@
+---
 - name: Bootstrap VM's using terraform
   delegate_to: localhost
   block:
