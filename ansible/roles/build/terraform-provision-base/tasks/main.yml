@@ -7,7 +7,7 @@
       ansible.builtin.file:
         name: "{{ terraform.dir }}"
         state: directory
-        mode: "0600"
+        mode: "0755"
 
     - name: Create terraform main.tf file
       when: "inventory_hostname in groups['proxmox_servers']"
