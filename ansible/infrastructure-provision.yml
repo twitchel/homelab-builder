@@ -22,9 +22,11 @@
         state: absent
 
     - name: Docker Provision
-      ansible.builtin.include_role: { name: provision/provision-docker } # noqa role-name[path]
+      ansible.builtin.include_role:
+        name: provision/provision-docker # noqa role-name[path]
       when: runtime.type == 'docker'
 
     - name: Kubernetes Provision
-      ansible.builtin.include_role: { name: provision/provision-kubernetes } # noqa role-name[path]
+      ansible.builtin.include_role:
+        name: provision/provision-kubernetes # noqa role-name[path]
       when: runtime.type == 'kubernetes'
