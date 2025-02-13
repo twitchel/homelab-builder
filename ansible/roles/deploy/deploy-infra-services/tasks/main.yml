@@ -14,7 +14,7 @@
 # Setup baseline networking
 - name: Create swarm networks
   block:
-    - name: Create cloud-public network
+    - name: Create cloud-public network # noqa syntax-check[unknown-module]
       ansible.builtin.docker_network:
         name: cloud-public
         scope: swarm
@@ -36,3 +36,7 @@
 - name: Deploy cloudflared
   ansible.builtin.include_tasks:
     deploy-cloudflared.yml
+
+- name: Deploy authentik
+  ansible.builtin.include_tasks:
+    deploy-authentik.yml

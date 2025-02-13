@@ -8,7 +8,7 @@ networks:
 
 services:
   postgresql:
-    image: "docker.io/library/postgres:{{ services.authentik.version.postgres }}"
+    image: "docker.io/library/postgres:{{ infrastructure_services.authentik.version.postgres }}"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       start_period: 20s
@@ -25,7 +25,7 @@ services:
     networks:
       - authentik
   redis:
-    image: "docker.io/library/redis:{{ services.authentik.version.redis }}"
+    image: "docker.io/library/redis:{{ infrastructure_services.authentik.version.redis }}"
     command: --save 60 1 --loglevel warning
     deploy:
       mode: replicated
@@ -41,7 +41,7 @@ services:
     networks:
       - authentik
   server:
-    image: "ghcr.io/goauthentik/server:{{ services.authentik.version.authentik }}"
+    image: "ghcr.io/goauthentik/server:{{ infrastructure_services.authentik.version.authentik }}"
     command: server
     volumes:
       - {{ storage.root_dir }}/appdata/authentik/media:/media
@@ -58,10 +58,10 @@ services:
         - "traefik.swarm.network=cloud-public"
         # HTTP Routers
         - "traefik.http.routers.authentik-rtr.entrypoints=websecure"
-        - "traefik.http.routers.authentik-rtr.rule=Host(`{{ services.authentik.domain }}`)"
+        - "traefik.http.routers.authentik-rtr.rule=Host(`{{ infrastructure_services.authentik.domain }}`)"
         # HTTP Services
         - "traefik.http.routers.authentik-rtr.service=authentik-svc"
-        - "traefik.http.services.authentik-svc.loadbalancer.server.port=9000"
+        - "traefik.http.infrastructure_services.authentik-svc.loadbalancer.server.port=9000"
 
         ## Individual Application forwardAuth regex (catch any subdomain using individual application forwardAuth)
         - "traefik.http.routers.authentik-output-rtr.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.$$DOMAIN_NAME`) && PathPrefix(`/outpost.goauthentik.io/`)"
@@ -69,7 +69,7 @@ services:
       - cloud-public
       - authentik
   worker:
-    image: "ghcr.io/goauthentik/server:{{ services.authentik.version.authentik }}"
+    image: "ghcr.io/goauthentik/server:{{ infrastructure_services.authentik.version.authentik }}"
     command: worker
     env_file: {{ storage.root_dir }}/stack/authentik/.env
     # `user: root` and the docker socket volume are optional.

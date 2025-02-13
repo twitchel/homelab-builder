@@ -20,8 +20,6 @@
         dest: "{{ storage.root_dir }}/stack/traefik/docker-compose.yml"
         mode: "0600"
       changed_when: true
-      vars:
-        foo: "bar"
 
     - name: "Copy env file"
       ansible.builtin.copy:
