@@ -26,7 +26,7 @@
     - name: "Copy env file"
       ansible.builtin.copy:
         force: true
-        src: files/cloudflared/stack/.env
+        src: files/cloudflared/stack/service.env
         dest: "{{ storage.root_dir }}/stack/cloudflared/.env"
         mode: "0600"
 
