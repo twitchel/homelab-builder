@@ -40,3 +40,11 @@
 - name: Deploy authentik
   ansible.builtin.include_tasks:
     deploy-authentik.yml
+
+- name: Add auth to traefik dashboard
+  ansible.builtin.import_role:
+    name: deploy/authentik-add-service # noqa role-name[path]
+  vars:
+    domain: "{{ infrastructure_services.traefik.domain }}"
+    auth_enabled: "{{ infrastructure_services.traefik.auth_enabled }}"
+    auth_app_settings: "{{ infrastructure_services.traefik.auth_app_settings }}"

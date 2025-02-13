@@ -1,0 +1,224 @@
+---
+- name: Fetch authentik API bootstrap token
+  ansible.builtin.command: cat {{ storage.root_dir }}/stack/authentik/secrets/authentik_bootstrap_token
+  register: authentik_bootstrap_token
+  changed_when: true
+  become: true
+
+# - name: Add application for service in Authentik
+#   ansible.builtin.include_tasks: application.yml
+#   vars:
+#     authentik_base_url: "http://127.0.0.1:9000/api/v3"
+#     authentik_token: "{{ authentik_bootstrap_token.stdout }}"
+#   register: app_application
+
+- name: Get App from Authentik
+  ansible.builtin.uri:
+    url: "{{ authentik_base_url }}/core/applications/{{ auth_app_settings.app_slug }}/"
+    method: GET
+    status_code:
+      - 200
+      - 404
+    headers:
+      Accept: application/json
+      Authorization: 'Bearer {{ authentik_token }}'
+    validate_certs: false
+  register: _result_application_get
+
+- name: Create App in Authentik
+  when: _result_application_get.status == 404
+  ansible.builtin.uri:
+    url: "{{ authentik_base_url }}/core/applications/"
+    method: POST
+    body_format: json
+    body: |
+      {
+        "name": "{{ auth_app_settings.app_name }}",
+        "slug": "{{ auth_app_settings.app_slug }}",
+      }
+    status_code:
+      - 201
+    headers:
+      Accept: application/json
+      Authorization: 'Bearer {{ authentik_token }}'
+    validate_certs: false
+  register: _result_application_post
+
+- name: Set auth_app fact
+  ansible.builtin.set_fact:
+    auth_app: "{{ _result_application_get if (_result_application_get.status == 200) else _result_application_post }}"
+
+- name: Set auth icon filename
+  ansible.builtin.set_fact:
+    auth_icon_filename: "{{ auth_app_settings.app_icon_source | basename }}"
+
+- name: "Ensure service icon dir exists"
+  ansible.builtin.file:
+    path: "{{ storage.root_dir }}/appdata/authentik/media/public/icons/{{ auth_app_settings.app_slug }}"
+    state: directory
+    mode: "0755"
+
+- name: Download app icon for local caching
+  ansible.builtin.get_url:
+    url: "{{ auth_app_settings.app_icon_source }}"
+    dest: "{{ storage.root_dir }}/appdata/authentik/media/public/icons/{{ auth_app_settings.app_slug }}/{{ auth_icon_filename }}"
+    mode: "0600"
+
+- name: Set app icon in Authentik
+  ansible.builtin.uri:
+    url: "{{ authentik_base_url }}/core/applications/{{ auth_app_settings.app_slug }}/set_icon_url/"
+    method: POST
+    body_format: json
+    body: |
+      {
+        "url": "https://{{ infrastructure_services.authentik.domain }}/media/public/icons/{{ auth_app_settings.app_slug }}/{{ auth_icon_filename }}"
+      }
+    status_code:
+      - 200
+    headers:
+      Accept: application/json
+      Authorization: 'Bearer {{ authentik_token }}'
+    validate_certs: false
+  register: _result_application_get
+
+- name: "Create Provider in Authentik"
+  when: auth_app.json.provider == None
+  block:
+    # default-provider-authorization-explicit-consent
+    - name: Get Provider Auth Flow
+      ansible.builtin.uri:
+        url: "{{ authentik_base_url }}/flows/instances/default-provider-authorization-explicit-consent/"
+        method: GET
+        status_code:
+          - 200
+        headers:
+          Accept: application/json
+          Authorization: "Bearer {{ authentik_token }}"
+        validate_certs: false
+      register: _result_provider_flow_auth
+
+    # default-provider-invalidation-flow
+    - name: Get Provider Invalidation Flow
+      ansible.builtin.uri:
+        url: "{{ authentik_base_url }}/flows/instances/default-provider-invalidation-flow/"
+        method: GET
+        status_code:
+          - 200
+        headers:
+          Accept: application/json
+          Authorization: "Bearer {{ authentik_token }}"
+        validate_certs: false
+      register: _result_provider_flow_invalidation
+
+    - name: Create Provider in Authentik
+      ansible.builtin.uri:
+        url: "{{ authentik_base_url }}/providers/proxy/"
+        method: POST
+        body_format: json
+        body: |
+          {
+            "name": "{{ auth_app_settings.app_name }} Provider",
+            "authorization_flow": "{{ _result_provider_flow_auth.json.pk }}",
+            "invalidation_flow": "{{ _result_provider_flow_invalidation.json.pk }}",
+            "external_host": "https://{{ domain }}",
+            "mode": "forward_single",
+            "access_token_validity": "hours=24",
+            "refresh_token_validity": "days=30",
+          }
+        status_code:
+          - 201
+        headers:
+          Accept: application/json
+          Authorization: "Bearer {{ authentik_token }}"
+        validate_certs: false
+      register: _result_provider_create
+
+    - name: Associate Provider to App in Authentik
+      ansible.builtin.uri:
+        url: "{{ authentik_base_url }}/core/applications/{{ auth_app_settings.app_slug }}/"
+        method: PATCH
+        body_format: json
+        body: |
+          {
+            "provider": {{ _result_provider_create.json.pk }}
+          }
+        status_code:
+          - 200
+        headers:
+          Accept: application/json
+          Authorization: "Bearer {{ authentik_token }}"
+        validate_certs: false
+      register: _result_application_post
+
+- name: Get App from Authentik
+  ansible.builtin.uri:
+    url: "{{ authentik_base_url }}/core/applications/{{ auth_app_settings.app_slug }}/"
+    method: GET
+    status_code:
+      - 200
+      - 404
+    headers:
+      Accept: application/json
+      Authorization: "Bearer {{ authentik_token }}"
+    validate_certs: false
+  register: _result_application_get
+
+- name: Set auth_app fact
+  ansible.builtin.set_fact:
+    auth_app: "{{ _result_application_get }}"
+
+- name: Get Outpost from Authentik
+  ansible.builtin.uri:
+    url: "{{ authentik_base_url }}/outposts/instances/?providers_by_pk={{ auth_app.json.provider }}"
+    method: GET
+    status_code:
+      - 200
+    headers:
+      Accept: application/json
+      Authorization: "Bearer {{ authentik_token }}"
+    validate_certs: false
+  register: _result_outposts_get
+
+- name: Get outpost count
+  ansible.builtin.set_fact:
+    outpost_count: "{{ _result_outposts_get.json.pagination.count }}"
+
+- name: Add provider to outpost
+  when: outpost_count == "0"
+  block:
+    - name: Get Default Outpost from Authentik
+      ansible.builtin.uri:
+        url: "{{ authentik_base_url }}/outposts/instances/?name__iexact=authentik%20Embedded%20Outpost"
+        method: GET
+        status_code:
+          - 200
+        headers:
+          Accept: application/json
+          Authorization: "Bearer {{ authentik_token }}"
+        validate_certs: false
+      register: _result_outposts_get
+
+    - name: Set docker outpost fact
+      ansible.builtin.set_fact:
+        docker_outpost: "{{ _result_outposts_get.json.results[0] }}"
+
+    - name: Set outpost providers fact
+      ansible.builtin.set_fact:
+        outpost_providers: "{{ docker_outpost.providers + [auth_app.json.provider] }}"
+
+    - name: Update outpost with provider IDs
+      ansible.builtin.uri:
+        url: "{{ authentik_base_url }}/outposts/instances/{{ docker_outpost.pk }}/"
+        method: PATCH
+        body_format: json
+        body: |
+          {
+            "providers": [{{ outpost_providers | join(', ') }}]
+          }
+        status_code:
+          - 200
+        headers:
+          Accept: application/json
+          Authorization: "Bearer {{ authentik_token }}"
+        validate_certs: false
+      register: _result_provider_create
