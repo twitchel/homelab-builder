@@ -1,0 +1,34 @@
+---
+- name: Ensure root_dir /stack dir exists
+  ansible.builtin.file:
+    path: "{{ storage.root_dir }}/stack"
+    state: directory
+    mode: "0755"
+
+- name: Ensure root_dir /appdata dir exists
+  ansible.builtin.file:
+    path: "{{ storage.root_dir }}/appdata"
+    state: directory
+    mode: "0755"
+
+# Setup baseline networking
+- name: Create swarm networks
+  block:
+    - name: Create cloud-public network
+      ansible.builtin.docker_network:
+        name: cloud-public
+        scope: swarm
+        driver: overlay
+        attachable: true
+
+- name: Log into DockerHub (to avoid ratelimits)
+  ansible.builtin.docker_login:
+    username: "{{ docker_hub.username }}"
+    password: "{{ docker_hub.password }}"
+  when:
+    - docker_hub.username is defined
+    - docker_hub.password is defined
+
+- name: Deploy traefik
+  ansible.builtin.include_tasks:
+    deploy-traefik.yml

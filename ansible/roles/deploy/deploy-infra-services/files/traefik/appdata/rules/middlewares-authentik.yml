@@ -1,3 +1,4 @@
+---
 http:
   middlewares:
     # https://github.com/goauthentik/authentik/issues/2366

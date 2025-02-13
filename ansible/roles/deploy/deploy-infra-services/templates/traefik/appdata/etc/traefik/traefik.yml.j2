@@ -33,7 +33,7 @@ entryPoints:
   websecure:
     address: ":443"
     forwardedHeaders:
-      trustedIps: "{{ services.traefik.cloudflareIps }},{{ services.traefik.localIps }}"
+      trustedIps: "{{ infrastructure_services.traefik.cloudflareIps }},{{ infrastructure_services.traefik.localIps }}"
     http:
       tls:
         certResolver: "cloudflare"

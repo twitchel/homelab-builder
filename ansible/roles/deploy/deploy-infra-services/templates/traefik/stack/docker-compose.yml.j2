@@ -3,10 +3,9 @@ version: "3.8"
 networks:
   cloud-public:
     external: true
-
 services:
   traefik:
-    image: "traefik:{{ services.traefik.version }}"
+    image: "traefik:{{ infrastructure_services.traefik.version }}"
     env_file: "{{ storage.root_dir }}/stack/traefik/.env"
     ports:
       # We expose the standard 80 and 443 ports via bridged mode so that local DNS can be setup (can connect to the
@@ -37,11 +36,11 @@ services:
         - "traefik.swarm.network=cloud-public"
 
         # define traefik dashboard router and service
-        - "traefik.http.routers.traefik-rtr.rule=Host(`{{ services.traefik.domain }}`)"
+        - "traefik.http.routers.traefik-rtr.rule=Host(`{{ infrastructure_services.traefik.domain }}`)"
         - "traefik.http.routers.traefik-rtr.service=api@internal"
-{% if services.traefik.auth_enabled %}
-        - "traefik.http.routers.traefik-rtr.middlewares=middlewares-authentik@file"
-{% endif %}
+# {% if infrastructure_services.traefik.auth_enabled %}
+#         - "traefik.http.routers.traefik-rtr.middlewares=middlewares-authentik@file"
+# {% endif %}
         - "traefik.http.routers.traefik-rtr.entrypoints=websecure"
         - "traefik.http.services.traefik-svc.loadbalancer.server.port=9999"
       placement:
