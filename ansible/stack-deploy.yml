@@ -14,10 +14,6 @@
         name: deploy/deploy-infra-services # noqa role-name[path]
 
     ## Deploy Supporting Stacks
-
-    # Cloudflare tunnel
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: cloudflared } }
-
     # Authentik for auth
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: authentik } }
 

@@ -6,7 +6,7 @@ networks:
 
 services:
   cloudflared-tunnel:
-    image: "cloudflare/cloudflared:{{ services.cloudflared.version }}"
+    image: "cloudflare/cloudflared:{{ infrastructure_services.cloudflared.version }}"
     command: tunnel run
     env_file: {{ storage.root_dir }}/stack/cloudflared/.env
     deploy:

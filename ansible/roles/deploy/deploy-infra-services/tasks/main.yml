@@ -32,3 +32,7 @@
 - name: Deploy traefik
   ansible.builtin.include_tasks:
     deploy-traefik.yml
+
+- name: Deploy cloudflared
+  ansible.builtin.include_tasks:
+    deploy-cloudflared.yml
