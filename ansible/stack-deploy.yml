@@ -1,34 +1,19 @@
 ---
-- hosts: cluster_nodes[0]
-  gather_facts: yes
-  become: yes
+- name: Deploy stack
+  hosts: cluster_nodes[0]
+  gather_facts: true
+  become: true
   remote_user: "{{ cluster_node.username }}"
 
   environment:
     DOMAIN_NAME: "{{ dns_domain }}"
 
   tasks:
-    # Setup baseline networking
-    - name: Create swarm networks
-      block:
-        - name: Create cloud-public network
-          docker_network:
-            name: cloud-public
-            scope: swarm
-            driver: overlay
-            attachable: yes
-
-    - name: Log into DockerHub (to avoid ratelimits)
-      docker_login:
-        username: "{{ docker_hub.username }}"
-        password: "{{ docker_hub.password}}"
-      when:
-        - docker_hub.username is defined
-        - docker_hub.password is defined
+    - name: Deploy infra related services
+      ansible.builtin.import_role:
+        name: deploy/deploy-infra-services # noqa role-name[path]
 
     ## Deploy Supporting Stacks
-    # Traefik Router
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: traefik } }
 
     # Cloudflare tunnel
     - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: cloudflared } }
