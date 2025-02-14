@@ -26,7 +26,7 @@
 - name: Process env template file
   ansible.builtin.template:
     force: true
-    src: "templates/stack/{{ service_name }}//.env.j2"
+    src: "templates/stack/{{ service_name }}/.env.j2"
     dest: "{{ storage.root_dir }}/stack/{{ service_name }}/.env"
     mode: "0600"
 
