@@ -37,9 +37,9 @@
     line: "{{ setenv.key }}={{ setenv.value }}"
   loop_control:
     loop_var: setenv
-  with_items: "{{ common_env | dict2items }}"
+  with_items: "{{ common_service_env | dict2items }}"
   when:
-    - common_env is defined
+    - common_service_env is defined
 
 - name: Set env vars for this service
   ansible.builtin.lineinfile:
