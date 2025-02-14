@@ -20,20 +20,3 @@
     - name: Deploy external services
       ansible.builtin.import_role:
         name: deploy/deploy-external-services # noqa role-name[path]
-
-    ## Deploy Supporting Stacks
-
-    # Portainer for container management
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: portainer } }
-
-    # Debug container
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: whoami } }
-
-    ## Service Recipes
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: actual_budget } }
-
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: gitea } }
-
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: homepage } }
-
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: overseerr } }
