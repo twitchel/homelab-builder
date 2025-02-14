@@ -5,12 +5,10 @@
   changed_when: true
   become: true
 
-# - name: Add application for service in Authentik
-#   ansible.builtin.include_tasks: application.yml
-#   vars:
-#     authentik_base_url: "http://127.0.0.1:9000/api/v3"
-#     authentik_token: "{{ authentik_bootstrap_token.stdout }}"
-#   register: app_application
+- name: Set authentik API facts
+  ansible.builtin.set_fact:
+    authentik_base_url: "{{ infrastructure_services.authentik.api_base_url }}"
+    authentik_token: "{{ authentik_bootstrap_token.stdout }}"
 
 - name: Get App from Authentik
   ansible.builtin.uri:
