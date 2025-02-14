@@ -242,10 +242,6 @@
         validate_certs: false
       register: _result_outposts_get
 
-    - name: Debug docker outpost
-      ansible.builtin.debug:
-        var: _result_outposts_get.json
-
     - name: Set Docker Outpost details
       ansible.builtin.set_fact:
         docker_outpost: "{{ _result_outposts_get.json.results[0] }}"
