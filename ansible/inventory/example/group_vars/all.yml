@@ -1,8 +1,13 @@
 ---
 env: "{{ lookup('env', 'ENVIRONMENT') }}"
 dns_domain: "example.com"
+entrypoint_ip: 192.168.10.210
 terraform:
   dir: "~/.terraform/homelab-builder-{{ env }}/"
+
+admin_user:
+  name: 
+  email: 
 
 proxmox:
   host_username: root@pam
@@ -28,6 +33,8 @@ docker_hub:
 runtime:
   type: docker
   docker:
+    keepalived:
+      virtual_ip: "{{ entrypoint_ip }}"
   kubernetes:
     version: v1.30.2+k3s2
 
@@ -47,9 +54,9 @@ common_service_env:
 
 infrastructure_services:
   authentik:
-    domain: "https://authentik.{{ dns_domain }}"
+    domain: "authentik.{{ dns_domain }}"
     enabled: true
-    api_base_url: "https://authentik.{{ dns_domain }}/api/v3"
+    api_base_url: "http://127.0.0.1:9000/api/v3"
     env:
       AUTHENTIK_BOOTSTRAP_EMAIL:
       AUTHENTIK_BOOTSTRAP_PASSWORD:
