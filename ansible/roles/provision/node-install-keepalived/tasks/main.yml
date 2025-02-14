@@ -18,7 +18,7 @@
 - name: Create keepalived containers
   ansible.builtin.docker_container:
     name: "keepalived"
-    image: "osixia/keepalived:{{ services.keepalived.version }}"
+    image: "osixia/keepalived:{{ infrastructure_services.keepalived.version }}"
     capabilities: "NET_ADMIN"
     network_mode: "host"
     state: started

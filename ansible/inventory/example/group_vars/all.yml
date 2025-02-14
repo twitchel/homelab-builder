@@ -25,11 +25,9 @@ cluster_node:
 docker_hub:
   username:
   password:
-
 runtime:
   type: docker
   docker:
-
   kubernetes:
     version: v1.30.2+k3s2
 
@@ -47,16 +45,7 @@ storage:
 common_service_env:
   DOMAIN_NAME: "{{ dns_domain }}"
 
-services:
-  actual_budget:
-    domain: actual-budget.{{ dns_domain }}
-    enabled: true
-    auth_enabled: true
-    auth_app_settings:
-      app_name: Actual Budget
-      app_slug: actual-budget
-      app_icon: actual-budget.png
-    version: 25.1.0
+infrastructure_services:
   authentik:
     domain: "https://authentik.{{ dns_domain }}"
     enabled: true
@@ -74,6 +63,34 @@ services:
     env:
       TUNNEL_TOKEN:
     version: latest
+  keepalived:
+    enabled: true
+    version: 2.0.20
+  traefik:
+    domain: traefik.{{ dns_domain }}
+    enabled: true
+    auth_enabled: true
+    auth_app_settings:
+      app_name: Traefik Dashboard
+      app_slug: traefik
+      app_icon_source: traefik.png
+    env:
+      CF_DNS_API_TOKEN: ""
+      DOMAIN_NAME: "{{ dns_domain }}"
+    localIps: "127.0.0.1/32,10.0.0.0/8,192.168.0.0/16,172.16.0.0/12"
+    cloudflareIps: "173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22"
+    version: v3.2
+
+services:
+  actual_budget:
+    domain: actual-budget.{{ dns_domain }}
+    enabled: true
+    auth_enabled: true
+    auth_app_settings:
+      app_name: Actual Budget
+      app_slug: actual-budget
+      app_icon_source: actual-budget.png
+    version: 25.1.0
   gitea:
     domain: gitea.{{ dns_domain }}
     enabled: true
@@ -81,7 +98,7 @@ services:
     auth_app_settings:
       app_name: Gitea
       app_slug: gitea
-      app_icon: gitea.png
+      app_icon_source: gitea.png
     env:
       DISABLE_REGISTRATION: true
     version:
@@ -94,11 +111,8 @@ services:
     auth_app_settings:
       app_name: Homepage
       app_slug: homepage
-      app_icon: homepage.png
+      app_icon_source: homepage.png
     version: latest
-  keepalived:
-    enabled: true
-    version: 2.0.20
   overseerr:
     domain: overseerr.{{ dns_domain }}
     enabled: true
@@ -106,7 +120,7 @@ services:
     auth_app_settings:
       app_name: Overseerr
       app_slug: overseerr
-      app_icon: overseerr.png
+      app_icon_source: overseerr.png
     version: latest
   portainer:
     domain: portainer.{{ dns_domain }}
@@ -115,24 +129,10 @@ services:
     auth_app_settings:
       app_name: Portainer
       app_slug: portainer
-      app_icon: portainer.png
+      app_icon_source: portainer.png
     version:
       agent: 2.21.5
       portainer: 2.21.5
-  traefik:
-    domain: traefik.{{ dns_domain }}
-    enabled: true
-    auth_enabled: true
-    auth_app_settings:
-      app_name: Traefik Dashboard
-      app_slug: traefik
-      app_icon: traefik.png
-    env:
-      CF_DNS_API_TOKEN: ""
-      DOMAIN_NAME: "{{ dns_domain }}"
-    localIps: "127.0.0.1/32,10.0.0.0/8,192.168.0.0/16,172.16.0.0/12"
-    cloudflareIps: "173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22"
-    version: v3.2
   whoami:
     domain: whoami.{{ dns_domain }}
     enabled: true
@@ -140,17 +140,17 @@ services:
     auth_app_settings:
       app_name: WhoAmI Debugger
       app_slug: whoami
-      app_icon: traefik.png
+      app_icon_source: traefik.png
     version: v1.10
 
 external_services:
   unraid:
     app_name: unraid
-    app_icon: unraid.png
+    app_icon_source: unraid.png
     domain: unraid.{{ dns_domain }}
     dest: "https://192.168.1.2"
   proxmox:
     app_name: proxmox
-    app_icon: proxmox.png
+    app_icon_source: proxmox.png
     domain: proxmox.{{ dns_domain }}
     dest: "https://192.168.1.3:8006"
