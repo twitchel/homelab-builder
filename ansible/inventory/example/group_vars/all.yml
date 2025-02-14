@@ -80,7 +80,7 @@ infrastructure_services:
     auth_app_settings:
       app_name: Traefik Dashboard
       app_slug: traefik
-      app_icon_source: traefik.png
+      app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/traefik.png
     env:
       CF_DNS_API_TOKEN: ""
       DOMAIN_NAME: "{{ dns_domain }}"
@@ -96,7 +96,7 @@ services:
     auth_app_settings:
       app_name: Actual Budget
       app_slug: actual-budget
-      app_icon_source: actual-budget.png
+      app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/actual-budget.png
     version: 25.1.0
   gitea:
     domain: gitea.{{ dns_domain }}
@@ -105,7 +105,7 @@ services:
     auth_app_settings:
       app_name: Gitea
       app_slug: gitea
-      app_icon_source: gitea.png
+      app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/gitea.png
     env:
       DISABLE_REGISTRATION: true
     version:
@@ -118,7 +118,7 @@ services:
     auth_app_settings:
       app_name: Homepage
       app_slug: homepage
-      app_icon_source: homepage.png
+      app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/homepage.png
     version: latest
   overseerr:
     domain: overseerr.{{ dns_domain }}
@@ -127,7 +127,7 @@ services:
     auth_app_settings:
       app_name: Overseerr
       app_slug: overseerr
-      app_icon_source: overseerr.png
+      app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/overseerr.png
     version: latest
   portainer:
     domain: portainer.{{ dns_domain }}
@@ -136,7 +136,7 @@ services:
     auth_app_settings:
       app_name: Portainer
       app_slug: portainer
-      app_icon_source: portainer.png
+      app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/portainer.png
     version:
       agent: 2.21.5
       portainer: 2.21.5
@@ -147,7 +147,7 @@ services:
     auth_app_settings:
       app_name: WhoAmI Debugger
       app_slug: whoami
-      app_icon_source: traefik.png
+      app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/traefik.png
     version: v1.10
 
 external_services:
