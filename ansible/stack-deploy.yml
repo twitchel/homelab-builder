@@ -17,6 +17,10 @@
       ansible.builtin.import_role:
         name: deploy/deploy-homelab-services # noqa role-name[path]
 
+    - name: Deploy external services
+      ansible.builtin.import_role:
+        name: deploy/deploy-external-services # noqa role-name[path]
+
     ## Deploy Supporting Stacks
 
     # Portainer for container management

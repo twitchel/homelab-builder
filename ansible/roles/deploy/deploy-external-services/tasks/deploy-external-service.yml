@@ -1,0 +1,25 @@
+---
+- name: Set external_service_name and external_service_config
+  ansible.builtin.set_fact:
+    external_service_name: "{{ item.key }}"
+    external_service_config: "{{ item.value }}"
+
+- name: Remove external service from traefik
+  ansible.builtin.file:
+    state: absent
+    dest: "{{ storage.root_dir }}/appdata/traefik/rules/{{ external_service_name }}.yml"
+
+- name: Add external service to traefik
+  ansible.builtin.template:
+    src: templates/external-site-config.yml.j2
+    dest: "{{ storage.root_dir }}/appdata/traefik/rules/{{ external_service_name }}.yml"
+    mode: "0600"
+  when: external_service_config.enabled
+
+- name: Add app to authentik for Authorization
+  ansible.builtin.import_role:
+    name: deploy/authentik-add-service # noqa role-name[path]
+  vars:
+    domain: "{{ external_service_config.domain }}"
+    auth_enabled: "{{ external_service_config.auth_enabled }}"
+    auth_app_settings: "{{ external_service_config.auth_app_settings }}"

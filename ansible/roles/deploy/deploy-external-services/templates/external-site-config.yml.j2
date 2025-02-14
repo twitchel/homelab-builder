@@ -1,0 +1,15 @@
+http:
+  routers:
+    {{ external_service_name }}-rtr:
+      rule: "Host(`{{ external_service_config.domain }}`)"
+      entryPoints: websecure
+      service: {{ external_service_name }}-svc
+{% if external_service_config.auth_enabled == true %}
+      middlewares:
+        - middlewares-authentik@file
+{% endif %}
+  services:
+    {{ external_service_name }}-svc:
+      loadBalancer:
+        servers:
+          - url: "{{ external_service_config.dest }}"
