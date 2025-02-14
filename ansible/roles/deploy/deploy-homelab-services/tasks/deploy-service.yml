@@ -30,6 +30,29 @@
     dest: "{{ storage.root_dir }}/stack/{{ service_name }}/.env"
     mode: "0600"
 
+- name: Set global env vars for this service
+  ansible.builtin.lineinfile:
+    path: "{{ storage.root_dir }}/stack/{{ service_name }}/.env"
+    regexp: "^{{ setenv.key }}="
+    line: "{{ setenv.key }}={{ setenv.value }}"
+  loop_control:
+    loop_var: setenv
+  with_items: "{{ common_env | dict2items }}"
+  when:
+    - common_env is defined
+
+- name: Set env vars for this service
+  ansible.builtin.lineinfile:
+    path: "{{ storage.root_dir }}/stack/{{ service_name }}/.env"
+    regexp: "^{{ setenv.key }}="
+    line: "{{ setenv.key }}={{ setenv.value }}"
+  loop_control:
+    loop_var: setenv
+  with_items: "{{ service_config.env | dict2items }}"
+  when:
+    - service_config.env is defined
+  no_log: true
+
 - name: Copy appdata
   ansible.builtin.copy:
     force: false
