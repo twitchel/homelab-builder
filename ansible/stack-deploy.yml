@@ -1,56 +1,22 @@
 ---
-- hosts: swarm_nodes[0]
-  gather_facts: yes
-  become: yes
-  remote_user: "{{ vm_username }}"
+- name: Deploy stack
+  hosts: cluster_nodes[0]
+  gather_facts: true
+  become: true
+  remote_user: "{{ cluster_node.username }}"
 
   environment:
     DOMAIN_NAME: "{{ dns_domain }}"
 
   tasks:
-    # Combine recipe fact with defaults fact. output fact: recipes
-    - name: Combine configuration
-      include_tasks: common/tasks/combine-config.yml
+    - name: Deploy infra related services
+      ansible.builtin.import_role:
+        name: deploy/deploy-infra-services # noqa role-name[path]
 
-    # Setup baseline networking
-    - name: Create swarm networks
-      block:
-        - name: Create cloud-public network
-          docker_network:
-            name: cloud-public
-            scope: swarm
-            driver: overlay
-            attachable: yes
+    - name: Deploy homelab services
+      ansible.builtin.import_role:
+        name: deploy/deploy-homelab-services # noqa role-name[path]
 
-    - name: Log into DockerHub (to avoid ratelimits)
-      docker_login:
-        username: "{{ docker_hub_username }}"
-        password: "{{ docker_hub_password}}"
-      when:
-        - docker_hub_username is defined
-        - docker_hub_password is defined
-
-    ## Deploy Supporting Stacks
-    # Traefik Router
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: traefik } }
-
-    # Cloudflare tunnel
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: cloudflared } }
-
-    # Authentik for auth
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: authentik } }
-
-    # Portainer for container management
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: portainer } }
-
-    # Debug container
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: whoami } }
-
-    ## Service Recipes
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: actual_budget } }
-
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: gitea } }
-
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: homepage } }
-
-    - { import_role: { name: stack-deploy }, tags: [ stack ], vars: { recipe: overseerr } }
+    - name: Deploy external services
+      ansible.builtin.import_role:
+        name: deploy/deploy-external-services # noqa role-name[path]

@@ -1,33 +1,48 @@
 ---
-- hosts: proxmox_servers
-  gather_facts: no
-  become: no
+- name: Set up base for proxmox orchestration
+  hosts: proxmox_servers
+  gather_facts: false
+  become: false
 
   tasks:
-    - name: Combine configuration
-      include_tasks: common/tasks/combine-config.yml
+    - name: Provision terraform base
+      ansible.builtin.import_role:
+        name: build/terraform-provision-base # noqa role-name[path]
+      become: false
 
-    # Provision terraform base
-    - { import_role: { name: infrastructure/terraform-provision-base }, tags: [ infrastructure, proxmox ], become: no }
+    - name: Provision base cloud images
+      ansible.builtin.import_role:
+        name: build/terraform-provision-cloud-image # noqa role-name[path]
+      become: false
 
-    # Provision base cloud images
-    - { import_role: { name: infrastructure/terraform-provision-cloud-image }, tags: [ infrastructure, proxmox ], become: no }
-
-- hosts: swarm_nodes
-  gather_facts: no
-  become: no
+- name: Set up cluster host terraform files
+  hosts: cluster_nodes
+  strategy: linear
+  gather_facts: false
+  become: false
 
   tasks:
-    - block:
-        - name: "Check build hosts"
-          debug:
-            msg: "No proxmox hosts defined, ending job"
-        - meta: end_play
+    - name: Verify we have proxmox hosts defined before running this job # noqa run-once[task]
       when: (groups.proxmox_servers | length) < 1
       run_once: true
+      block:
+        - name: "Check build hosts"
+          ansible.builtin.debug:
+            msg: "No proxmox hosts defined, ending job"
+        - name: "End job"
+          ansible.builtin.meta: end_play
 
-    # Provision terraform node config
-    - { import_role: { name: infrastructure/terraform-provision-node }, tags: [ infrastructure, proxmox ], become: no }
+    - name: Provision terraform node config
+      ansible.builtin.import_role:
+        name: build/terraform-provision-node # noqa role-name[path]
+      become: false
 
-    # Run Terraform
-    - { import_role: { name: infrastructure/terraform-run }, tags: [ infrastructure, proxmox ], become: no }
+- name: Create cluster
+  hosts: localhost
+  gather_facts: false
+  become: false
+  tasks:
+    - name: Run Terraform
+      ansible.builtin.import_role:
+        name: build/terraform-run # noqa role-name[path]
+      become: false

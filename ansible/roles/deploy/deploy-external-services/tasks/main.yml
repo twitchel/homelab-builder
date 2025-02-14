@@ -1,0 +1,7 @@
+---
+- name: Deploy external services
+  with_items: "{{ external_services | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  ansible.builtin.include_tasks:
+    deploy-external-service.yml

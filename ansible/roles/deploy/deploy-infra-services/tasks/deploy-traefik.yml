@@ -1,0 +1,117 @@
+---
+- name: Run the recipe-generator
+  block:
+    - name: "Create traefik stack dir"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/stack/traefik"
+        state: directory
+        mode: "0755"
+
+    - name: "Create traefik appdata dir"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/traefik"
+        state: directory
+        mode: "0755"
+
+    - name: "Copy docker-compose template file"
+      ansible.builtin.template:
+        force: true
+        src: templates/traefik/stack/docker-compose.yml.j2
+        dest: "{{ storage.root_dir }}/stack/traefik/docker-compose.yml"
+        mode: "0600"
+      changed_when: true
+
+    - name: "Copy env file"
+      ansible.builtin.copy:
+        force: true
+        src: files/traefik/stack/service.env
+        dest: "{{ storage.root_dir }}/stack/traefik/.env"
+        mode: "0600"
+
+    - name: "Set traefik global env vars"
+      ansible.builtin.lineinfile:
+        path: "{{ storage.root_dir }}/stack/traefik/.env"
+        regexp: "^{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+      with_items: "{{ common_env | dict2items }}"
+      when:
+        - common_env is defined
+
+    - name: "Set traefik specific env vars"
+      ansible.builtin.lineinfile:
+        path: "{{ storage.root_dir }}/stack/traefik/.env"
+        regexp: "^{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+      with_items: "{{ infrastructure_services.traefik.env | dict2items }}"
+      when:
+        - infrastructure_services.traefik.env is defined
+
+- name: Bootstrap traefik configs
+  block:
+    - name: "Ensure appdata/traefik/etc/traefik exists"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/traefik/etc/traefik"
+        state: directory
+        mode: "0755"
+
+    - name: "Ensure appdata/traefik/logs exists"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/traefik/logs"
+        state: directory
+        mode: "0755"
+
+    - name: "Ensure appdata/traefik/data exists"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/traefik/data"
+        state: directory
+        mode: "0755"
+
+    - name: "Ensure appdata/traefik/rules exists"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/traefik/rules"
+        state: directory
+        mode: "0755"
+
+    - name: "Copy rules"
+      ansible.builtin.copy:
+        force: true
+        src: files/traefik/appdata/rules
+        dest: "{{ storage.root_dir }}/appdata/traefik"
+        mode: "0600"
+
+    - name: "Ensure appdata/traefik/acme.json exists"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/traefik/acme.json"
+        state: touch
+        mode: "600"
+
+    - name: Copy traefik.yml.j2 file
+      ansible.builtin.template:
+        src: templates/traefik/appdata/etc/traefik/traefik.yml.j2
+        dest: "{{ storage.root_dir }}/appdata/traefik/etc/traefik/traefik.yml"
+        mode: "0600"
+
+- name: Deploy traefik stack and verify stack running
+  when: infrastructure_services.traefik.enabled
+  block:
+    - name: "Deploy recipe stack"
+      ansible.builtin.docker_stack:
+        state: present
+        name: "traefik"
+        compose: "{{ storage.root_dir }}/stack/traefik/docker-compose.yml"
+        with_registry_auth: true
+      register: _result
+      until: _result.failed == false
+      retries: 20 # retry X times
+      delay: 30 # pause for X sec b/w each call
+
+    - name: "Test whether the stack is running as desired"
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: set -o pipefail && docker stack ps traefik --filter "desired-state=running"  --format "{{ '{{' }} .CurrentState {{ '}}' }}" | grep -v Running
+      register: _result
+      until: _result.rc == 1
+      failed_when: _result.rc != 1
+      retries: 120 # retry X times
+      delay: 5 # pause for X sec b/w each call
+      changed_when: true

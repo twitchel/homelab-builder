@@ -1,0 +1,89 @@
+global:
+  checkNewVersion: true
+
+# Enable the Dashboard
+api:
+  dashboard: true
+  insecure: true
+
+# Write out Traefik logs
+log:
+  level: "INFO"
+  filePath: "/logs/traefik.log"
+  maxSize: 100 # In megabytes
+  compress: true # gzip compression when rotating
+
+accessLog:
+  filePath: "/logs/access.log"
+
+ping: true
+
+# Main entrypoints
+entryPoints:
+#  ssh: # TODO
+#    address: ":22"
+  web:
+    address: ":80"
+    # Redirect to HTTPS (why wouldn't you?)
+    http:
+      redirections:
+        entryPoint:
+          to: "websecure"
+          scheme: "https"
+  websecure:
+    address: ":443"
+    forwardedHeaders:
+      trustedIps: "{{ infrastructure_services.traefik.cloudflareIps }},{{ infrastructure_services.traefik.localIps }}"
+    http:
+      tls:
+        certResolver: "cloudflare"
+        domains:
+          - main: "{{ dns_domain }}"
+            sans:
+              - "*.{{ dns_domain }}"
+
+# Let's Encrypt
+certificatesResolvers:
+  cloudflare:
+    acme:
+      email: "{{ admin_user.email }}"
+      storage: "/acme.json"
+      # uncomment to use staging CA for testing
+      #caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      dnsChallenge:
+        provider: "cloudflare"
+        resolvers: "1.1.1.1:53,1.0.0.1:53"
+
+serversTransport:
+  insecureSkipVerify: true
+
+providers:
+  swarm:
+    endpoint: "unix:///var/run/docker.sock"
+    watch: true
+    exposedByDefault: false
+    network: "cloud-public"
+  file:
+    # Apps, LoadBalancers, TLS Options, Middlewares, Middleware Chains
+    directory: /rules
+    watch: true
+
+tls:
+  options:
+    tls-opts:
+      minVersion: VersionTLS12
+      cipherSuites:
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
+        - TLS_AES_128_GCM_SHA256
+        - TLS_AES_256_GCM_SHA384
+        - TLS_CHACHA20_POLY1305_SHA256
+        - TLS_FALLBACK_SCSV # Client is doing version fallback. See RFC 7507
+      curvePreferences:
+        - CurveP521
+        - CurveP384
+      sniStrict: true

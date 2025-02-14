@@ -1,0 +1,26 @@
+---
+- name: Provision Terraform config
+  delegate_to: localhost
+  block:
+    - name: Create temporary directory for terraform plan
+      run_once: true
+      ansible.builtin.file:
+        name: "{{ terraform.dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Create terraform main.tf file
+      when: "inventory_hostname in groups['proxmox_servers']"
+      run_once: true
+      ansible.builtin.template:
+        src: main.tf.j2
+        dest: "{{ terraform.dir }}/main.tf"
+        mode: "0600"
+
+    - name: Create terraform vars_common.tf file
+      when: "inventory_hostname in groups['proxmox_servers']"
+      run_once: true
+      ansible.builtin.template:
+        src: vars_common.tf.j2
+        dest: "{{ terraform.dir }}/vars_common.tf"
+        mode: "0600"

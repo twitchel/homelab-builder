@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  # Overseerr - Movie/TV Requests
+  overseerr:
+    image: "sctx/overseerr:{{ service_config.version }}"
+    volumes:
+      - {{ storage.root_dir }}/appdata/overseerr:/app/config
+    env_file: {{ storage.root_dir }}/stack/overseerr/.env
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.swarm.network=cloud-public"
+        # HTTP Routers
+        - "traefik.http.routers.overseerr-rtr.entrypoints=websecure"
+        - "traefik.http.routers.overseerr-rtr.rule=Host(`{{ service_config.domain }}`)"
+        # HTTP Services
+        - "traefik.http.routers.overseerr-rtr.service=overseerr-svc"
+{% if service_config.auth_enabled %}
+        - "traefik.http.routers.overseerr-rtr.middlewares=middlewares-authentik@file"
+{% endif %}
+        - "traefik.http.services.overseerr-svc.loadbalancer.server.port=5055"
+    networks:
+      - cloud-public
+
+networks:
+  cloud-public:
+    external: true

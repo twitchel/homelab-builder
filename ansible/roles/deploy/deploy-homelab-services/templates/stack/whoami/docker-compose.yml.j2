@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  # WhoAmI - For Testing and Troubleshooting
+  whoami:
+    image: "traefik/whoami:{{ service_config.version }}"
+    env_file: {{ storage.root_dir }}/stack/whoami/.env
+    deploy:
+      mode: global
+      labels:
+        - "traefik.enable=true"
+        - "traefik.swarm.network=cloud-public"
+        # HTTP Routers
+        - "traefik.http.routers.whoami-rtr.entrypoints=websecure"
+        - "traefik.http.routers.whoami-rtr.rule=Host(`{{ service_config.domain }}`)"
+        # HTTP Services
+        - "traefik.http.routers.whoami-rtr.service=whoami-svc"
+{% if service_config.auth_enabled == true %}
+        - "traefik.http.routers.whoami-rtr.middlewares=middlewares-authentik@file"
+{% endif %}
+        - "traefik.http.services.whoami-svc.loadbalancer.server.port=80"
+    networks:
+      - cloud-public
+
+networks:
+  cloud-public:
+    external: true

@@ -1,0 +1,7 @@
+data "proxmox_virtual_environment_vms" "homelab-builder-vms" {
+  tags      = ["homelab-builder", "{{ env }}"]
+}
+
+output "homelab-builder-vms" {
+  value = data.proxmox_virtual_environment_vms.homelab-builder-vms
+}

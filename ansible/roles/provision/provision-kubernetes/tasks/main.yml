@@ -1,0 +1,5 @@
+---
+- name: Kubernetes
+  ansible.builtin.debug:
+    var: hostvars
+    verbosity: 0

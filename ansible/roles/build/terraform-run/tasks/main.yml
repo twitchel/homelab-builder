@@ -1,0 +1,50 @@
+---
+- name: Run tofu (Terraform replacement)
+  delegate_to: localhost
+  run_once: true
+  block:
+    - name: Run tofu init
+      ansible.builtin.command: tofu init
+      args:
+        chdir: "{{ terraform.dir }}"
+      changed_when: true
+
+    - name: Run tofu plan
+      ansible.builtin.command: tofu plan
+      args:
+        chdir: "{{ terraform.dir }}"
+      register: _plan_output
+      changed_when: true
+
+    - name: Set plan_output
+      ansible.builtin.set_fact:
+        plan_output: "{{ _plan_output.stdout }}"
+
+    - name: Tofu Plan Output
+      ansible.builtin.debug:
+        var: plan_output
+        verbosity: 0
+      when: "'forces replacement' in plan_output"
+
+    - name: BREAKING CHANGE CHECK
+      delegate_to: localhost
+      ansible.builtin.pause:
+        prompt: |
+          Replacements required, this will require manual intervention to fix CEPH pool.
+          DATA LOSS MAY OCCUR.
+          Press return to continue. Press Ctrl+c and then "a" to abort'
+      when: "'forces replacement' in plan_output"
+
+    - name: Run tofu apply
+      ansible.builtin.command: tofu apply -auto-approve
+      args:
+        chdir: "{{ terraform.dir }}"
+      changed_when: true
+
+- name: Don't exit this play until the machines are reachable (they might still be booting up)
+  remote_user: "{{ cluster_node.username }}"
+  ansible.builtin.wait_for_connection:
+    delay: 5
+    timeout: 300
+  vars:
+    ansible_pipelining: false

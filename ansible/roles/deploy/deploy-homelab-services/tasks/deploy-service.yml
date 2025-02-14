@@ -1,0 +1,103 @@
+---
+- name: Set service_name and service_config
+  ansible.builtin.set_fact:
+    service_name: "{{ item.key }}"
+    service_config: "{{ item.value }}"
+
+- name: Ensure service stack dir exists
+  ansible.builtin.file:
+    path: "{{ storage.root_dir }}/stack/{{ service_name }}"
+    state: directory
+    mode: "0755"
+
+- name: Ensure service appdata dir exists
+  ansible.builtin.file:
+    path: "{{ storage.root_dir }}/appdata/{{ service_name }}"
+    state: directory
+    mode: "0755"
+
+- name: Process docker-compose template file
+  ansible.builtin.template:
+    force: true
+    src: "templates/stack/{{ service_name }}/docker-compose.yml.j2"
+    dest: "{{ storage.root_dir }}/stack/{{ service_name }}/docker-compose.yml"
+    mode: "0600"
+
+- name: Process env template file
+  ansible.builtin.template:
+    force: true
+    src: "templates/stack/{{ service_name }}/.env.j2"
+    dest: "{{ storage.root_dir }}/stack/{{ service_name }}/.env"
+    mode: "0600"
+
+- name: Set global env vars for this service
+  ansible.builtin.lineinfile:
+    path: "{{ storage.root_dir }}/stack/{{ service_name }}/.env"
+    regexp: "^{{ setenv.key }}="
+    line: "{{ setenv.key }}={{ setenv.value }}"
+  loop_control:
+    loop_var: setenv
+  with_items: "{{ common_service_env | dict2items }}"
+  when:
+    - common_service_env is defined
+
+- name: Set env vars for this service
+  ansible.builtin.lineinfile:
+    path: "{{ storage.root_dir }}/stack/{{ service_name }}/.env"
+    regexp: "^{{ setenv.key }}="
+    line: "{{ setenv.key }}={{ setenv.value }}"
+  loop_control:
+    loop_var: setenv
+  with_items: "{{ service_config.env | dict2items }}"
+  when:
+    - service_config.env is defined
+  no_log: true
+
+- name: Copy appdata
+  ansible.builtin.copy:
+    force: false
+    src: files/appdata/{{ service_name }}/
+    dest: "{{ storage.root_dir }}/appdata/{{ service_name }}"
+    mode: "0600"
+    directory_mode: "0755"
+  with_first_found:
+    - files:
+        - "files/appdata/{{ service_name }}/"
+      skip: true
+  loop_control:
+    loop_var: copy_appdata_task
+
+- name: Run service bootstrap tasks if taskfile exists
+  ansible.builtin.include_tasks: "service/{{ service_name }}/bootstrap.yml"
+  with_first_found:
+    - files:
+        - "service/{{ service_name }}/bootstrap.yml"
+      skip: true
+  loop_control:
+    loop_var: bootstrap_task
+
+- name: Deploy service
+  ansible.builtin.include_role:
+    name: deploy/deploy-service # noqa role-name[path]
+  vars:
+    service_enabled: "{{ service_config.enabled }}"
+
+- name: Deploy stack if enabled
+  when: service_config.enabled
+  block:
+    - name: Run service post-deploy tasks if taskfile exists
+      ansible.builtin.include_tasks: "service/{{ service_name }}/post-deploy.yml"
+      with_first_found:
+        - files:
+            - "service/{{ service_name }}/post-deploy.yml"
+          skip: true
+      loop_control:
+        loop_var: postdeploy_task
+
+    - name: Add app to authentik for Authorization
+      ansible.builtin.import_role:
+        name: deploy/authentik-add-service # noqa role-name[path]
+      vars:
+        domain: "{{ service_config.domain }}"
+        auth_enabled: "{{ service_config.auth_enabled }}"
+        auth_app_settings: "{{ service_config.auth_app_settings }}"

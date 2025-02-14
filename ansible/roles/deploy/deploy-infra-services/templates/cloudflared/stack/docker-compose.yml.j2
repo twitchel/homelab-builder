@@ -1,0 +1,15 @@
+version: "3.8"
+
+networks:
+  cloud-public:
+    external: true
+
+services:
+  cloudflared-tunnel:
+    image: "cloudflare/cloudflared:{{ infrastructure_services.cloudflared.version }}"
+    command: tunnel run
+    env_file: {{ storage.root_dir }}/stack/cloudflared/.env
+    deploy:
+      replicas: 1
+    networks:
+      - cloud-public

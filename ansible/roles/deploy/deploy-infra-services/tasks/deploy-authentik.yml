@@ -1,0 +1,265 @@
+---
+- name: Run the recipe-generator
+  block:
+    - name: "Create authentik stack dir"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/stack/authentik"
+        state: directory
+        mode: "0755"
+
+    - name: "Create authentik appdata dir"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/authentik"
+        state: directory
+        mode: "0755"
+
+    - name: "Copy docker-compose template file"
+      ansible.builtin.template:
+        force: true
+        src: templates/authentik/stack/docker-compose.yml.j2
+        dest: "{{ storage.root_dir }}/stack/authentik/docker-compose.yml"
+        mode: "0600"
+      changed_when: true
+
+    - name: "Copy env file"
+      ansible.builtin.copy:
+        force: true
+        src: files/authentik/stack/service.env
+        dest: "{{ storage.root_dir }}/stack/authentik/.env"
+        mode: "0600"
+
+    - name: "Set authentik global env vars"
+      ansible.builtin.lineinfile:
+        path: "{{ storage.root_dir }}/stack/authentik/.env"
+        regexp: "^{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+      with_items: "{{ common_env | dict2items }}"
+      when:
+        - common_env is defined
+
+    - name: "Set authentik specific env vars"
+      ansible.builtin.lineinfile:
+        path: "{{ storage.root_dir }}/stack/authentik/.env"
+        regexp: "^{{ item.key }}="
+        line: "{{ item.key }}={{ item.value }}"
+      with_items: "{{ infrastructure_services.authentik.env | dict2items }}"
+      when:
+        - infrastructure_services.authentik.env is defined
+
+- name: Bootstrap authentik configs
+  block:
+    - name: Create authentik network
+      docker_network:
+        name: authentik
+        scope: swarm
+        driver: overlay
+        attachable: true
+
+    - name: "Ensure directories exist"
+      block:
+        - name: "Ensure appdata/authentik/redis exists"
+          ansible.builtin.file:
+            path: "{{ storage.root_dir }}/appdata/authentik/redis"
+            state: directory
+            mode: "0755"
+
+        - name: "Ensure appdata/authentik/database exists"
+          ansible.builtin.file:
+            path: "{{ storage.root_dir }}/appdata/authentik/database"
+            state: directory
+            mode: "0755"
+
+        - name: "Ensure appdata/authentik/media exists"
+          ansible.builtin.file:
+            path: "{{ storage.root_dir }}/appdata/authentik/media"
+            state: directory
+            mode: "0755"
+
+        - name: "Ensure appdata/authentik/media/public/icons exists"
+          ansible.builtin.file:
+            path: "{{ storage.root_dir }}/appdata/authentik/media/public/icons"
+            state: directory
+            mode: "0755"
+
+        - name: "Ensure appdata/authentik/custom-templates exists"
+          ansible.builtin.file:
+            path: "{{ storage.root_dir }}/appdata/authentik/custom-templates"
+            state: directory
+            mode: "0755"
+
+        - name: "Ensure appdata/authentik/certs exists"
+          ansible.builtin.file:
+            path: "{{ storage.root_dir }}/appdata/authentik/certs"
+            state: directory
+            mode: "0755"
+
+        - name: "Ensure stack/authentik/secrets exists"
+          ansible.builtin.file:
+            path: "{{ storage.root_dir }}/stack/authentik/secrets"
+            state: directory
+            mode: "0755"
+
+    - name: "Write env secrets"
+      block:
+        - name: Generate authentik postgres password
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: set -o pipefail && openssl rand -base64 36 | tr -d '\n' > {{ storage.root_dir }}/stack/authentik/secrets/postgres_password
+          args:
+            creates: "{{ storage.root_dir }}/stack/authentik/secrets/postgres_password"
+          no_log: true
+
+        - name: Register authentik postgres password for use in env
+          ansible.builtin.command: cat {{ storage.root_dir }}/stack/authentik/secrets/postgres_password
+          register: authentik_postgres_password
+          become: true
+          changed_when: true
+          no_log: true
+
+        - name: Set POSTGRES_PASSWORD env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/authentik/.env"
+            regexp: "^POSTGRES_PASSWORD="
+            line: "POSTGRES_PASSWORD={{ authentik_postgres_password.stdout }}"
+          no_log: true
+
+        - name: Set AUTHENTIK_POSTGRESQL__PASSWORD env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/authentik/.env"
+            regexp: "^AUTHENTIK_POSTGRESQL__PASSWORD="
+            line: "AUTHENTIK_POSTGRESQL__PASSWORD={{ authentik_postgres_password.stdout }}"
+          no_log: true
+
+        - name: Generate authentik secret key
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: set -o pipefail && openssl rand -base64 60 | tr -d '\n' > {{ storage.root_dir }}/stack/authentik/secrets/authentik_secret_key
+          args:
+            creates: "{{ storage.root_dir }}/stack/authentik/secrets/authentik_secret_key"
+          no_log: true
+
+        - name: Register authentik secret key for use in env
+          ansible.builtin.command: cat {{ storage.root_dir }}/stack/authentik/secrets/authentik_secret_key
+          register: authentik_secret
+          become: true
+          changed_when: true
+          no_log: true
+
+        - name: Set AUTHENTIK_SECRET_KEY env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/authentik/.env"
+            regexp: "^AUTHENTIK_SECRET_KEY="
+            line: "AUTHENTIK_SECRET_KEY={{ authentik_secret.stdout }}"
+          no_log: true
+
+        - name: "Generate authentik API token"
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: set -o pipefail && openssl rand -base64 36 | tr -d '\n' > {{ storage.root_dir }}/stack/authentik/secrets/authentik_bootstrap_token
+          args:
+            creates: "{{ storage.root_dir }}/stack/authentik/secrets/authentik_bootstrap_token"
+          no_log: true
+
+        - name: Register authentik bootstrap token for use in env
+          ansible.builtin.command: cat {{ storage.root_dir }}/stack/authentik/secrets/authentik_bootstrap_token
+          register: authentik_bootstrap_token
+          changed_when: true
+          no_log: true
+
+        - name: Set AUTHENTIK_BOOTSTRAP_TOKEN env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/authentik/.env"
+            regexp: "^AUTHENTIK_BOOTSTRAP_TOKEN="
+            line: "AUTHENTIK_BOOTSTRAP_TOKEN={{ authentik_bootstrap_token.stdout }}"
+          no_log: true
+
+- name: Deploy authentik stack and verify stack running
+  when: infrastructure_services.authentik.enabled
+  block:
+    - name: "Deploy recipe stack"
+      ansible.builtin.docker_stack:
+        state: present
+        name: "authentik"
+        compose: "{{ storage.root_dir }}/stack/authentik/docker-compose.yml"
+        with_registry_auth: true
+      register: _result
+      until: _result.failed == false
+      retries: 20 # retry X times
+      delay: 30 # pause for X sec b/w each call
+
+    - name: "Test whether the stack is running as desired"
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: set -o pipefail && docker stack ps authentik --filter "desired-state=running"  --format "{{ '{{' }} .CurrentState {{ '}}' }}" | grep -v Running
+      register: _result
+      until: _result.rc == 1
+      failed_when: _result.rc != 1
+      retries: 120 # retry X times
+      delay: 5 # pause for X sec b/w each call
+      changed_when: true
+
+- name: Post-deploy authentik actions
+  block:
+    - name: Register authentik bootstrap token from secret
+      ansible.builtin.command: "cat {{ storage.root_dir }}/stack/authentik/secrets/authentik_bootstrap_token"
+      register: authentik_bootstrap_token
+      become: true
+      changed_when: true
+      no_log: true
+
+    - name: Set authentik base uri
+      ansible.builtin.set_fact:
+        authentik_base_url: "http://127.0.0.1:9000/api/v3"
+
+    - name: Register authentik_token for use in API calls
+      ansible.builtin.set_fact:
+        authentik_token: "{{ authentik_bootstrap_token.stdout }}"
+      changed_when: true
+      no_log: true
+
+    - name: Test whether the Authentik API is responding
+      ansible.builtin.uri:
+        url: "{{ authentik_base_url }}/core/applications/"
+        method: GET
+        headers:
+          Accept: application/json
+          Authorization: "Bearer {{ authentik_token }}"
+        validate_certs: false
+      register: _result
+      until: _result.status == 200
+      retries: 720 # 720 * 5 seconds = 1hour (60*60/5)
+      delay: 5 # Every 5 seconds
+
+    - name: Get Default Docker Outpost from Authentik
+      ansible.builtin.uri:
+        url: "{{ authentik_base_url }}/outposts/instances/?name__iexact=authentik%20Embedded%20Outpost"
+        method: GET
+        status_code:
+          - 200
+        headers:
+          Accept: application/json
+          Authorization: "Bearer {{ authentik_token }}"
+        validate_certs: false
+      register: _result_outposts_get
+
+    - name: Set Docker Outpost details
+      ansible.builtin.set_fact:
+        docker_outpost: "{{ _result_outposts_get.json.results[0] }}"
+
+    - name: Update outpost authentik host URL
+      ansible.builtin.uri:
+        url: "{{ authentik_base_url }}/outposts/instances/{{ docker_outpost.pk }}/"
+        method: PATCH
+        body_format: json
+        body: |
+          {
+            "config": {
+              "authentik_host": "https://{{ infrastructure_services.authentik.domain }}"
+            }
+          }
+        status_code:
+          - 200
+        headers:
+          Accept: application/json
+          Authorization: "Bearer {{ authentik_token }}"
+        validate_certs: false

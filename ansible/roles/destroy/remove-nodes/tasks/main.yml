@@ -1,0 +1,11 @@
+---
+- name: Destroy Proxmox templates
+  delegate_to: localhost
+  block:
+    - name: Run tofu DESTROY 💣
+      ansible.builtin.command: tofu destroy -auto-approve
+      args:
+        chdir: "{{ terraform.dir }}"
+      when: "inventory_hostname in groups['proxmox_servers']"
+      run_once: true
+      changed_when: true
