@@ -37,6 +37,12 @@
     dest: "{{ storage.root_dir }}/appdata/{{ service_name }}"
     mode: "0600"
     directory_mode: "0755"
+  with_first_found:
+    - files:
+        - "files/appdata/{{ service_name }}/"
+      skip: true
+  loop_control:
+    loop_var: copy_appdata_task
 
 - name: Run service bootstrap tasks if taskfile exists
   ansible.builtin.include_tasks: "service/{{ service_name }}/bootstrap.yml"
@@ -62,7 +68,7 @@
 - name: Deploy stack if enabled
   when: service_config.enabled
   block:
-    - name: Deploy service stack"
+    - name: Deploy service stack
       ansible.builtin.docker_stack:
         state: present
         name: "{{ service_name }}"
@@ -92,6 +98,8 @@
         - files:
             - "service/{{ service_name }}/post-deploy.yml"
           skip: true
+      loop_control:
+        loop_var: postdeploy_task
 
     - name: Add app to authentik for Authorization
       ansible.builtin.import_role:
