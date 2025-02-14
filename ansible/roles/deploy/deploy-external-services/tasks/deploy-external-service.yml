@@ -13,7 +13,7 @@
   ansible.builtin.template:
     src: templates/external-site-config.yml.j2
     dest: "{{ storage.root_dir }}/appdata/traefik/rules/{{ external_service_name }}.yml"
-    mode: "0600"
+    mode: "0664"
   when: external_service_config.enabled
 
 - name: Add app to authentik for Authorization

@@ -7,11 +7,11 @@
       ansible.builtin.template:
         src: vars_node.tf.j2
         dest: "{{ terraform.dir }}/vars_node.tf"
-        mode: "0600"
+        mode: "0664"
 
     - name: Create terraform plan for vms
       ansible.builtin.template:
         src: resource_node.tf.j2
         dest: "{{ terraform.dir }}/resource_node_{{ inventory_hostname_short }}.tf"
         force: false
-        mode: "0600"
+        mode: "0664"

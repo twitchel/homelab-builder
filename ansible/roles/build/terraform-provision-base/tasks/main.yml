@@ -7,7 +7,7 @@
       ansible.builtin.file:
         name: "{{ terraform.dir }}"
         state: directory
-        mode: "0755"
+        mode: "0775"
 
     - name: Create terraform main.tf file
       when: "inventory_hostname in groups['proxmox_servers']"
@@ -15,7 +15,7 @@
       ansible.builtin.template:
         src: main.tf.j2
         dest: "{{ terraform.dir }}/main.tf"
-        mode: "0600"
+        mode: "0664"
 
     - name: Create terraform vars_common.tf file
       when: "inventory_hostname in groups['proxmox_servers']"
@@ -23,4 +23,4 @@
       ansible.builtin.template:
         src: vars_common.tf.j2
         dest: "{{ terraform.dir }}/vars_common.tf"
-        mode: "0600"
+        mode: "0664"

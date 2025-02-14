@@ -3,13 +3,13 @@
   ansible.builtin.file:
     path: "{{ storage.root_dir }}"
     state: directory
-    mode: "0600"
+    mode: "0664"
 
 - name: Ensure /etc/ceph exists
   ansible.builtin.file:
     path: /etc/ceph
     state: directory
-    mode: "0600"
+    mode: "0664"
 
 - name: Install microceph
   snap:

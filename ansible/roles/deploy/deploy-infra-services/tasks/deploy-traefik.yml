@@ -5,20 +5,20 @@
       ansible.builtin.file:
         path: "{{ storage.root_dir }}/stack/traefik"
         state: directory
-        mode: "0755"
+        mode: "0775"
 
     - name: "Create traefik appdata dir"
       ansible.builtin.file:
         path: "{{ storage.root_dir }}/appdata/traefik"
         state: directory
-        mode: "0755"
+        mode: "0775"
 
     - name: "Copy docker-compose template file"
       ansible.builtin.template:
         force: true
         src: templates/traefik/stack/docker-compose.yml.j2
         dest: "{{ storage.root_dir }}/stack/traefik/docker-compose.yml"
-        mode: "0600"
+        mode: "0664"
       changed_when: true
 
     - name: "Copy env file"
@@ -26,7 +26,7 @@
         force: true
         src: files/traefik/stack/service.env
         dest: "{{ storage.root_dir }}/stack/traefik/.env"
-        mode: "0600"
+        mode: "0664"
 
     - name: "Set traefik global env vars"
       ansible.builtin.lineinfile:
@@ -52,32 +52,32 @@
       ansible.builtin.file:
         path: "{{ storage.root_dir }}/appdata/traefik/etc/traefik"
         state: directory
-        mode: "0755"
+        mode: "0775"
 
     - name: "Ensure appdata/traefik/logs exists"
       ansible.builtin.file:
         path: "{{ storage.root_dir }}/appdata/traefik/logs"
         state: directory
-        mode: "0755"
+        mode: "0775"
 
     - name: "Ensure appdata/traefik/data exists"
       ansible.builtin.file:
         path: "{{ storage.root_dir }}/appdata/traefik/data"
         state: directory
-        mode: "0755"
+        mode: "0775"
 
     - name: "Ensure appdata/traefik/rules exists"
       ansible.builtin.file:
         path: "{{ storage.root_dir }}/appdata/traefik/rules"
         state: directory
-        mode: "0755"
+        mode: "0775"
 
     - name: "Copy rules"
       ansible.builtin.copy:
         force: true
         src: files/traefik/appdata/rules
         dest: "{{ storage.root_dir }}/appdata/traefik"
-        mode: "0600"
+        mode: "0664"
 
     - name: "Ensure appdata/traefik/acme.json exists"
       ansible.builtin.file:
@@ -89,7 +89,7 @@
       ansible.builtin.template:
         src: templates/traefik/appdata/etc/traefik/traefik.yml.j2
         dest: "{{ storage.root_dir }}/appdata/traefik/etc/traefik/traefik.yml"
-        mode: "0600"
+        mode: "0664"
 
 - name: Deploy traefik stack and verify stack running
   when: infrastructure_services.traefik.enabled

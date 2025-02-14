@@ -5,20 +5,20 @@
       ansible.builtin.file:
         path: "{{ storage.root_dir }}/stack/cloudflared"
         state: directory
-        mode: "0755"
+        mode: "0775"
 
     - name: "Create cloudflared appdata dir"
       ansible.builtin.file:
         path: "{{ storage.root_dir }}/appdata/cloudflared"
         state: directory
-        mode: "0755"
+        mode: "0775"
 
     - name: "Copy docker-compose template file"
       ansible.builtin.template:
         force: true
         src: templates/cloudflared/stack/docker-compose.yml.j2
         dest: "{{ storage.root_dir }}/stack/cloudflared/docker-compose.yml"
-        mode: "0600"
+        mode: "0664"
       changed_when: true
 
     - name: "Copy env file"
@@ -26,7 +26,7 @@
         force: true
         src: files/cloudflared/stack/service.env
         dest: "{{ storage.root_dir }}/stack/cloudflared/.env"
-        mode: "0600"
+        mode: "0664"
 
     - name: "Set cloudflared global env vars"
       ansible.builtin.lineinfile:

@@ -8,27 +8,27 @@
   ansible.builtin.file:
     path: "{{ storage.root_dir }}/stack/{{ service_name }}"
     state: directory
-    mode: "0755"
+    mode: "0775"
 
 - name: Ensure service appdata dir exists
   ansible.builtin.file:
     path: "{{ storage.root_dir }}/appdata/{{ service_name }}"
     state: directory
-    mode: "0755"
+    mode: "0775"
 
 - name: Process docker-compose template file
   ansible.builtin.template:
     force: true
     src: "templates/stack/{{ service_name }}/docker-compose.yml.j2"
     dest: "{{ storage.root_dir }}/stack/{{ service_name }}/docker-compose.yml"
-    mode: "0600"
+    mode: "0664"
 
 - name: Process env template file
   ansible.builtin.template:
     force: true
     src: "templates/stack/{{ service_name }}/.env.j2"
     dest: "{{ storage.root_dir }}/stack/{{ service_name }}/.env"
-    mode: "0600"
+    mode: "0664"
 
 - name: Set global env vars for this service
   ansible.builtin.lineinfile:
@@ -58,8 +58,8 @@
     force: false
     src: files/appdata/{{ service_name }}/
     dest: "{{ storage.root_dir }}/appdata/{{ service_name }}"
-    mode: "0600"
-    directory_mode: "0755"
+    mode: "0664"
+    directory_mode: "0775"
   with_first_found:
     - files:
         - "files/appdata/{{ service_name }}/"

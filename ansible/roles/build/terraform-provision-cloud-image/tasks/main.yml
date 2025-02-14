@@ -8,4 +8,4 @@
         src: resource_ubuntu_cloud_image.tf.j2
         dest: "{{ terraform.dir }}/resource_ubuntu_cloud_image_{{ inventory_hostname_short }}.tf"
         force: false
-        mode: "0600"
+        mode: "0664"

@@ -54,13 +54,13 @@
   ansible.builtin.file:
     path: "{{ storage.root_dir }}/appdata/authentik/media/public/icons/{{ auth_app_settings.app_slug }}"
     state: directory
-    mode: "0755"
+    mode: "0775"
 
 - name: Download app icon for local caching
   ansible.builtin.get_url:
     url: "{{ auth_app_settings.app_icon_source }}"
     dest: "{{ storage.root_dir }}/appdata/authentik/media/public/icons/{{ auth_app_settings.app_slug }}/{{ auth_icon_filename }}"
-    mode: "0600"
+    mode: "0664"
 
 - name: Set app icon in Authentik
   ansible.builtin.uri:
