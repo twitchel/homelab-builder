@@ -1,0 +1,58 @@
+---
+- name: Create gitea network
+  ansible.builtin.docker_network:
+    name: gitea
+    scope: swarm
+    driver: overlay
+    attachable: true
+
+- name: "Ensure gitea directories exist"
+  block:
+    - name: Ensure appdata/gitea/server-data exists
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/gitea/server-data"
+        state: directory
+        mode: "0700"
+
+    - name: Ensure appdata/gitea/postgresql-data exists
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/gitea/postgresql-data"
+        state: directory
+        mode: "0700"
+
+    - name: Ensure stack/gitea/secrets exists
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/stack/gitea/secrets"
+        state: directory
+        mode: "0700"
+
+- name: Write env secrets
+  block:
+    - name: Generate gitea postgres password
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: set -o pipefail && openssl rand -base64 36 | tr -d '\n' > {{ storage.root_dir }}/stack/gitea/secrets/postgres_password
+      args:
+        creates: "{{ storage.root_dir }}/stack/gitea/secrets/postgres_password"
+      no_log: true
+
+    - name: Register postgresql password for usage
+      ansible.builtin.command: cat {{ storage.root_dir }}/stack/gitea/secrets/postgres_password
+      register: gitea_postgres_password
+      become: true
+      changed_when: true
+      no_log: true
+
+    - name: Set POSTGRES_PASSWORD env
+      ansible.builtin.lineinfile:
+        path: "{{ storage.root_dir }}/stack/gitea/.env"
+        regexp: "^POSTGRES_PASSWORD="
+        line: "POSTGRES_PASSWORD={{ gitea_postgres_password.stdout }}"
+      no_log: true
+
+    - name: Set GITEA__database__PASSWD env
+      ansible.builtin.lineinfile:
+        path: "{{ storage.root_dir }}/stack/gitea/.env"
+        regexp: "^GITEA__database__PASSWD="
+        line: "GITEA__database__PASSWD={{ gitea_postgres_password.stdout }}"
+      no_log: true

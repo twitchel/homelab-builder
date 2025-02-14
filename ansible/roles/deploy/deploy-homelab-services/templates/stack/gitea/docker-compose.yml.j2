@@ -3,7 +3,7 @@ version: "3.8"
 services:
   # Gitea - Self hosted git project hosting
   server:
-    image: "docker.io/gitea/gitea:{{ services.gitea.version.gitea }}"
+    image: "docker.io/gitea/gitea:{{ service_config.version.gitea }}"
     volumes:
       - {{ storage.root_dir }}/appdata/gitea/server-data:/data
       - /etc/timezone:/etc/timezone:ro
@@ -16,7 +16,7 @@ services:
         - "traefik.swarm.network=cloud-public"
         # HTTP Routers
         - "traefik.http.routers.gitea-rtr.entrypoints=websecure"
-        - "traefik.http.routers.gitea-rtr.rule=Host(`{{ services.gitea.domain }}`)"
+        - "traefik.http.routers.gitea-rtr.rule=Host(`{{ service_config.domain }}`)"
         # HTTP Services
         - "traefik.http.routers.gitea-rtr.service=gitea-svc"
 {% if services.gitea.auth_enabled %}
@@ -32,7 +32,7 @@ services:
       - gitea
 
   db:
-    image: "docker.io/library/postgres:{{ services.gitea.version.postgres }}"
+    image: "docker.io/library/postgres:{{ service_config.version.postgres }}"
     env_file: {{ storage.root_dir }}/stack/gitea/.env
     networks:
       - gitea
