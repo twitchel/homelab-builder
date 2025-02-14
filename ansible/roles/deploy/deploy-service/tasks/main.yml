@@ -1,0 +1,39 @@
+---
+- name: Remove service stack
+  ansible.builtin.docker_stack:
+    state: absent
+    name: "{{ service_name }}"
+    compose: "{{ storage.root_dir }}/stack/{{ service_name }}/docker-compose.yml"
+    with_registry_auth: true
+  when: not service_enabled
+  register: _result
+  until: _result.failed == false
+  retries: 20 # retry X times
+  delay: 30 # pause for X sec b/w each call
+
+- name: Deploy stack if enabled
+  when: service_enabled
+  block:
+    - name: Deploy service stack
+      ansible.builtin.docker_stack:
+        state: present
+        name: "{{ service_name }}"
+        compose: "{{ storage.root_dir }}/stack/{{ service_name }}/docker-compose.yml"
+        with_registry_auth: true
+      register: _result
+      until: _result.failed == false
+      retries: 20 # retry X times
+      delay: 30 # pause for X sec b/w each call
+
+    - name: Test whether the service stack is running as desired
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: >
+          set -o pipefail &&
+          docker stack ps {{ service_name }} --filter "desired-state=running"  --format "{{ '{{' }} .CurrentState {{ '}}' }}" | grep -v Running
+      register: _result
+      until: _result.rc == 1
+      failed_when: _result.rc != 1
+      retries: 120 # retry X times
+      delay: 5 # pause for X sec b/w each call
+      changed_when: true

@@ -1,0 +1,15 @@
+---
+- name: Service redeploy
+  hosts: cluster_nodes[0]
+  gather_facts: true
+  become: true
+  remote_user: "{{ cluster_node.username }}"
+
+  tasks:
+    - name: Get facts for service
+      ansible.builtin.set_fact:
+        service_enabled: "{{ services[service_name].enabled }}"
+
+    - name: Deploy service
+      ansible.builtin.include_role:
+        name: deploy/deploy-service # noqa role-name[path]
