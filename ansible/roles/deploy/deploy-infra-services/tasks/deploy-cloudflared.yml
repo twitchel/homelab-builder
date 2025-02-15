@@ -22,9 +22,9 @@
       changed_when: true
 
     - name: "Copy env file"
-      ansible.builtin.copy:
+      ansible.builtin.template:
         force: true
-        src: files/cloudflared/stack/service.env
+        src: templates/cloudflared/stack/.env.j2
         dest: "{{ storage.root_dir }}/stack/cloudflared/.env"
         mode: "0664"
 
