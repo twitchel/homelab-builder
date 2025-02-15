@@ -31,7 +31,11 @@
 
 - name: Deploy traefik
   ansible.builtin.include_tasks:
-    deploy-traefik.yml
+    deploy-infrastructure-service.yml
+  vars:
+    item:
+      key: traefik
+      value: "{{ infrastructure_services.traefik }}"
 
 - name: Deploy cloudflared
   ansible.builtin.include_tasks:

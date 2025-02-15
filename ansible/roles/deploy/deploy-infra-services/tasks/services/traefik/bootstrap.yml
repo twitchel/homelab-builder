@@ -1,0 +1,45 @@
+---
+- name: Bootstrap traefik configs
+  block:
+    - name: "Ensure appdata/traefik/etc/traefik exists"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/traefik/etc/traefik"
+        state: directory
+        mode: "0775"
+
+    - name: "Ensure appdata/traefik/logs exists"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/traefik/logs"
+        state: directory
+        mode: "0775"
+
+    - name: "Ensure appdata/traefik/data exists"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/traefik/data"
+        state: directory
+        mode: "0775"
+
+    - name: "Ensure appdata/traefik/rules exists"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/traefik/rules"
+        state: directory
+        mode: "0775"
+
+    - name: "Copy rules"
+      ansible.builtin.copy:
+        force: true
+        src: files/traefik/appdata/rules
+        dest: "{{ storage.root_dir }}/appdata/traefik"
+        mode: "0664"
+
+    - name: "Ensure appdata/traefik/acme.json exists"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/traefik/acme.json"
+        state: touch
+        mode: "600"
+
+    - name: Copy traefik.yml.j2 file
+      ansible.builtin.template:
+        src: templates/traefik/appdata/etc/traefik/traefik.yml.j2
+        dest: "{{ storage.root_dir }}/appdata/traefik/etc/traefik/traefik.yml"
+        mode: "0664"
