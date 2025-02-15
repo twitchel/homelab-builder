@@ -10,6 +10,6 @@
       ansible.builtin.set_fact:
         service_enabled: "{{ services[service_name].enabled }}"
 
-    - name: Deploy service
+    - name: Restart service
       ansible.builtin.include_role:
-        name: deploy/deploy-service # noqa role-name[path]
+        name: deploy/start-service # noqa role-name[path]
