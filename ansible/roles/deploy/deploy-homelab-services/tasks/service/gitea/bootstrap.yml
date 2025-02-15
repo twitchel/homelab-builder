@@ -12,19 +12,19 @@
       ansible.builtin.file:
         path: "{{ storage.root_dir }}/appdata/gitea/server-data"
         state: directory
-        mode: "0700"
+        mode: "0775"
 
     - name: Ensure appdata/gitea/postgresql-data exists
       ansible.builtin.file:
         path: "{{ storage.root_dir }}/appdata/gitea/postgresql-data"
         state: directory
-        mode: "0700"
+        mode: "0775"
 
     - name: Ensure stack/gitea/secrets exists
       ansible.builtin.file:
         path: "{{ storage.root_dir }}/stack/gitea/secrets"
         state: directory
-        mode: "0700"
+        mode: "0775"
 
 - name: Write env secrets
   block:
