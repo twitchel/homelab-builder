@@ -26,6 +26,8 @@ entryPoints:
     address: ":80"
     # Redirect to HTTPS (why wouldn't you?)
     http:
+      middlewares:
+        - crowdsec-bouncer@file
       redirections:
         entryPoint:
           to: "websecure"
@@ -35,6 +37,8 @@ entryPoints:
     forwardedHeaders:
       trustedIps: "{{ infrastructure_services.traefik.cloudflareIps }},{{ infrastructure_services.traefik.localIps }}"
     http:
+      middlewares:
+        - crowdsec-bouncer@file
       tls:
         certResolver: "cloudflare"
         domains:

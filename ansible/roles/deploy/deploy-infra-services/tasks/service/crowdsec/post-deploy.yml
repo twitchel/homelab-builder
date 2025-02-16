@@ -1,0 +1,63 @@
+---
+- name: Generate and store API key for bouncer
+  block:
+    - name: Determine host that crowdsec is currently running
+      ansible.builtin.command:
+        cmd: docker service ps crowdsec_crowdsec --filter "desired-state=Running" --format "{{ '{{' }} .Node {{ '}}' }}"
+      register: _crowdsec_host
+      until: _crowdsec_host.stdout != ""
+      failed_when: _crowdsec_host.stdout == ""
+      retries: 120 # retry X times
+      delay: 5 # pause for X sec b/w each call
+      changed_when: true
+
+    - name: Debug _crowdsec_host
+      ansible.builtin.debug:
+        var: _crowdsec_host.stdout
+
+    - name: Get container ID for crowdsec on node
+      ansible.builtin.command:
+        cmd: docker ps --filter "name=crowdsec_crowdsec*" --format "{{ '{{' }} .ID {{ '}}' }}"
+      register: _crowdsec_container_id
+      delegate_to: "{{ _crowdsec_host.stdout }}"
+      until: _crowdsec_container_id.stdout != ""
+      failed_when: _crowdsec_container_id.stdout == ""
+      retries: 120 # retry X times
+      delay: 5 # pause for X sec b/w each call
+      changed_when: true
+
+    - name: Debug _crowdsec_host
+      ansible.builtin.debug:
+        var: _crowdsec_container_id.stdout
+
+    - name: Generate new bouncer API key
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: >
+          set -o pipefail && docker exec {{ _crowdsec_container_id.stdout }} cscli bouncers add -o raw bouncer-traefik |
+            tr -d '\n' > {{ storage.root_dir }}/stack/crowdsec/secrets/bouncer_api_key
+      args:
+        creates: "{{ storage.root_dir }}/stack/crowdsec/secrets/bouncer_api_key"
+      delegate_to: "{{ _crowdsec_host.stdout }}"
+      changed_when: true
+
+    - name: Register bouncer_api_key for usage
+      ansible.builtin.command: cat {{ storage.root_dir }}/stack/crowdsec/secrets/bouncer_api_key
+      register: crowdsec_bouncer_api_key
+      become: true
+      changed_when: true
+      no_log: true
+
+    - name: Set bouncer_api_key env
+      ansible.builtin.lineinfile:
+        path: "{{ storage.root_dir }}/stack/crowdsec/.env"
+        regexp: "^CROWDSEC_BOUNCER_API_KEY="
+        line: "CROWDSEC_BOUNCER_API_KEY={{ crowdsec_bouncer_api_key.stdout }}"
+      no_log: true
+
+    - name: Restart crowdsec
+      ansible.builtin.include_role:
+        name: deploy/start-service # noqa role-name[path]
+      vars:
+        service_name: "crowdsec"
+        service_enabled: "{{ infrastructure_services[\"crowdsec\"].enabled }}"
