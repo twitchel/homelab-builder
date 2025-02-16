@@ -1,0 +1,22 @@
+---
+- name: Deploy stack
+  hosts: cluster_nodes[0]
+  gather_facts: true
+  become: true
+  remote_user: "{{ cluster_node.username }}"
+
+  environment:
+    DOMAIN_NAME: "{{ dns_domain }}"
+
+  tasks:
+    - name: Deploy infra related services
+      ansible.builtin.import_role:
+        name: deploy/deploy-infra-services # noqa role-name[path]
+
+    - name: Deploy homelab services
+      ansible.builtin.import_role:
+        name: deploy/deploy-homelab-services # noqa role-name[path]
+
+    - name: Deploy external services
+      ansible.builtin.import_role:
+        name: deploy/deploy-external-services # noqa role-name[path]
