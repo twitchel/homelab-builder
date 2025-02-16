@@ -28,7 +28,7 @@
     - name: "Copy rules"
       ansible.builtin.copy:
         force: true
-        src: files/traefik/appdata/rules
+        src: files/appdata/traefik/rules
         dest: "{{ storage.root_dir }}/appdata/traefik"
         mode: "0664"
 
