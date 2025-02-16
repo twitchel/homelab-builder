@@ -10,6 +10,12 @@
     state: directory
     mode: "0775"
 
+- name: Ensure service stack secrets dir exists
+  ansible.builtin.file:
+    path: "{{ storage.root_dir }}/stack/{{ service_name }}/secrets"
+    state: directory
+    mode: "0775"
+
 - name: Ensure service appdata dir exists
   ansible.builtin.file:
     path: "{{ storage.root_dir }}/appdata/{{ service_name }}"

@@ -20,12 +20,6 @@
         state: directory
         mode: "0775"
 
-    - name: Ensure stack/gitea/secrets exists
-      ansible.builtin.file:
-        path: "{{ storage.root_dir }}/stack/gitea/secrets"
-        state: directory
-        mode: "0775"
-
 - name: Write env secrets
   block:
     - name: Generate gitea postgres password
