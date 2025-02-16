@@ -40,6 +40,6 @@
 
     - name: Copy traefik.yml.j2 file
       ansible.builtin.template:
-        src: templates/traefik/appdata/etc/traefik/traefik.yml.j2
+        src: templates/appdata/traefik/etc/traefik/traefik.yml.j2
         dest: "{{ storage.root_dir }}/appdata/traefik/etc/traefik/traefik.yml"
         mode: "0664"
