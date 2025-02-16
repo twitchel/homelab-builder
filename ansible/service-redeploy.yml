@@ -8,7 +8,12 @@
   tasks:
     - name: Get facts for service
       ansible.builtin.set_fact:
-        service_enabled: "{{ services[service_name].enabled }}"
+        service_enabled: "{{ services[service_name].enabled | default(\"None\") }}"
+
+    - name: Get facts for infrastructure_service
+      ansible.builtin.set_fact:
+        service_enabled: "{{ infrastructure_services[service_name].enabled | default(false) }}"
+      when: service_enabled == "None"
 
     - name: Restart service
       ansible.builtin.include_role:
