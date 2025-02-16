@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  crowdsec:
+    image: "crowdsecurity/crowdsec:{{ service_config.version.crowdsec }}"
+    env_file: "{{ storage.root_dir }}/stack/crowdsec/.env"
+    volumes:
+      - {{ storage.root_dir }}/appdata/crowdsec/var/lib/crowdsec/data:/var/lib/crowdsec/data/
+      - {{ storage.root_dir }}/appdata/crowdsec/etc/crowdsec:/etc/crowdsec/
+      - {{ storage.root_dir }}/appdata/traefik/logs:/var/log/traefik/:ro
+    networks:
+      - cloud-public
+    deploy:
+      replicas: 1
+
+  bouncer-traefik:
+    image: "docker.io/fbonalair/traefik-crowdsec-bouncer:{{ service_config.version.bouncer }}"
+    env_file: "{{ storage.root_dir }}/stack/crowdsec/.env"
+    networks:
+      - cloud-public
+    deploy:
+      replicas: 1
+
+    
+networks:
+  cloud-public:
+    external: true
+    

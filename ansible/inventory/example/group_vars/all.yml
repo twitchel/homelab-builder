@@ -70,6 +70,11 @@ infrastructure_services:
     env:
       TUNNEL_TOKEN:
     version: latest
+  crowdsec:
+    enabled: true
+    version:
+      crowdsec: latest
+      bouncer: latest
   keepalived:
     enabled: true
     version: 2.0.20

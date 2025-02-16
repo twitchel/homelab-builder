@@ -1,0 +1,45 @@
+---
+- name: Bootstrap crowdsec configs
+  block:
+    - name: "Ensure appdata/crowdsec/etc/crowdsec"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/crowdsec/etc/crowdsec"
+        state: directory
+        mode: "0775"
+
+    - name: "Ensure crowdsec acquis.yml is up to date"
+      ansible.builtin.copy:
+        src: "files/appdata/crowdsec/etc/crowdsec/acquis.yaml"
+        dest: "{{ storage.root_dir }}/appdata/crowdsec/etc/crowdsec/acquis.yaml"
+        force: true
+        mode: "0664"
+
+    - name: "Ensure appdata/crowdsec/var/lib/crowdsec/data exists"
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/crowdsec/var/lib/crowdsec/data"
+        state: directory
+        mode: "0775"
+
+- name: Write env secrets
+  block:
+    - name: Generate crowdsec api token
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: set -o pipefail && openssl rand -base64 36 | tr -d '\n' > {{ storage.root_dir }}/stack/crowdsec/secrets/bouncer_api_key
+      args:
+        creates: "{{ storage.root_dir }}/stack/crowdsec/secrets/bouncer_api_key"
+      no_log: true
+
+    - name: Register postgresql password for usage
+      ansible.builtin.command: cat {{ storage.root_dir }}/stack/crowdsec/secrets/bouncer_api_key
+      register: crowdsec_bouncer_api_key
+      become: true
+      changed_when: true
+      no_log: true
+
+    - name: Set bouncer_api_key env
+      ansible.builtin.lineinfile:
+        path: "{{ storage.root_dir }}/stack/crowdsec/.env"
+        regexp: "^CROWDSEC_BOUNCER_API_KEY="
+        line: "CROWDSEC_BOUNCER_API_KEY={{ crowdsec_bouncer_api_key.stdout }}"
+      no_log: true
