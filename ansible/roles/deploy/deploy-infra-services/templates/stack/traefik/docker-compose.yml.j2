@@ -15,11 +15,9 @@ services:
       - target: 80
         published: 80
         protocol: tcp
-        mode: host
       - target: 443
         published: 443
         protocol: tcp
-        mode: host
       # Traefik dashboard port exposed separately so it can be inspected from the local network
       - target: 8080
         published: 8080
