@@ -12,6 +12,8 @@ services:
       - cloud-public
     deploy:
       replicas: 1
+      placement:
+        constraints: [ node.role == manager ]
 
   bouncer-traefik:
     image: "docker.io/fbonalair/traefik-crowdsec-bouncer:{{ service_config.version.bouncer }}"
@@ -20,6 +22,8 @@ services:
       - cloud-public
     deploy:
       replicas: 1
+      placement:
+        constraints: [ node.role == manager ]
 
 networks:
   cloud-public:

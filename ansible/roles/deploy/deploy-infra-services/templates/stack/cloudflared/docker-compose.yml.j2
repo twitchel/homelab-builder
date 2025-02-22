@@ -11,5 +11,7 @@ services:
     env_file: {{ storage.root_dir }}/stack/cloudflared/.env
     deploy:
       replicas: 1
+      placement:
+        constraints: [ node.role == manager ]
     networks:
       - cloud-public
