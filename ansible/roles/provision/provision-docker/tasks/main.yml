@@ -15,13 +15,19 @@
 - name: Install CEPH for distributed storage
   ansible.builtin.include_role:
     name: provision/node-install-ceph # noqa role-name[path]
-  when: storage.engine == 'ceph'
+  when:
+    - storage.engine == 'ceph'
+    - hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")
 
 - name: Install GlusterFS for distributed storage
   ansible.builtin.include_role:
     name: provision/node-install-glusterfs # noqa role-name[path]
-  when: storage.engine == 'glusterfs'
+  when:
+    - storage.engine == 'glusterfs'
+    - hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")
 
 - name: Setup Keepalived for a shared virtual IP
   ansible.builtin.include_role:
     name: provision/node-install-keepalived # noqa role-name[path]
+  when:
+    - hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")
