@@ -31,3 +31,16 @@
     name: provision/node-install-keepalived # noqa role-name[path]
   when:
     - hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")
+
+- name: Set dir permissions on root dir
+  ansible.builtin.file:
+    path: "{{ storage.root_dir }}"
+    state: directory
+    mode: "0777"
+    owner: "nobody"
+    group: "nogroup"
+    recurse: true
+
+- name: Setup NFS Server/Clients
+  ansible.builtin.include_role:
+    name: provision/node-install-nfs # noqa role-name[path]
