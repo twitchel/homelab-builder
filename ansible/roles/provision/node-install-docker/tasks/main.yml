@@ -55,7 +55,7 @@
     state: join
   when:
     - inventory_hostname != play_hosts[0]
-    - cluster_role == "master"
+    - hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")
 
 - name: Join the swarm on the remaining nodes as a worker
   docker_swarm:
@@ -65,4 +65,4 @@
     state: join
   when:
     - inventory_hostname != play_hosts[0]
-    - cluster_role == "worker"
+    - not hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")

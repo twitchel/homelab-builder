@@ -35,7 +35,7 @@
 
 - name: Configure Ceph on first host
   run_once: true
-  delegate_to: "{{ play_hosts[0] }}"
+  delegate_to: "{{ groups['cluster_nodes_master'][0] }}"
   when: not _ceph_configured.stat.exists
   block:
     - name: Bootstrap ceph cluster on first host # noqa no-changed-when
@@ -68,7 +68,7 @@
       ansible.builtin.command: "ln -s /var/snap/microceph/current/conf/ceph.conf /etc/ceph/ceph.conf"
 
 - name: Join the cluster from the other nodes
-  when: inventory_hostname != play_hosts[0]
+  when: inventory_hostname != groups['cluster_nodes_master'][0]
   block:
     - name: Have we already been bootstrapped?
       ansible.builtin.stat:
@@ -76,7 +76,7 @@
       register: _ceph_configured
 
     - name: Generate join token for {{ inventory_hostname }}
-      delegate_to: "{{ play_hosts[0] }}"
+      delegate_to: "{{ groups['cluster_nodes_master'][0] }}"
       ansible.builtin.command: "microceph cluster add {{ inventory_hostname }}"
       when: not _ceph_configured.stat.exists
       register: _join_token
@@ -103,7 +103,7 @@
       changed_when: true
 
 - name: Expand the cluster to the other hosts and setup file system
-  delegate_to: "{{ play_hosts[0] }}"
+  delegate_to: "{{ groups['cluster_nodes_master'][0] }}"
   run_once: true
   block:
     - name: Do we have an mds up yet? (try for 20 min)
@@ -128,7 +128,7 @@
 
 - name: Concatenate the names of all the hosts for the next 2 steps
   ansible.builtin.set_fact:
-    _ceph_mons: "{{ play_hosts | join(',') }}"
+    _ceph_mons: "{{ groups['cluster_nodes_master'] | join(',') }}"
 
 - name: Add cephfs mount to /etc/fstab, and mount it
   mount:

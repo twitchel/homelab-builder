@@ -14,7 +14,7 @@ resource "proxmox_virtual_environment_vm" "{{ inventory_hostname_short }}" {
   name            = "{{ inventory_hostname_short }}"
   node_name       = local.{{ inventory_hostname_short }}_node_name
   description     = "Managed by Terraform/Homelab Builder"
-  tags            = ["homelab-builder", "{{ env }}"]
+  tags            = ["homelab-builder", "{{ env }}", "{{ (hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")) | ternary("master", "worker") }}"]
   stop_on_destroy = true
 
   machine = "pc"
@@ -34,21 +34,23 @@ resource "proxmox_virtual_environment_vm" "{{ inventory_hostname_short }}" {
   }
 
   disk {
-    datastore_id = "{{ proxmox.disk_storage }}"
+    datastore_id = "{{ (hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")) | ternary(proxmox.disk_storage_master, proxmox.disk_storage_worker) }}"
     file_id      = proxmox_virtual_environment_download_file.ubuntu_cloud_image-{{ proxmox_node }}.id
     interface    = "scsi0"
     size         = var.node_disk0_size
   }
 
+{% if hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master") %}
   disk {
-    datastore_id = "{{ proxmox.disk_storage }}"
+    datastore_id = "{{ proxmox.disk_storage_master }}"
     size         = var.node_disk1_size
     file_format  = "raw"
     interface    = "scsi1"
   }
+{% endif %}
 
   initialization {
-    datastore_id = "{{ proxmox.disk_storage }}"
+    datastore_id = "{{ (hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")) | ternary(proxmox.disk_storage_master, proxmox.disk_storage_worker) }}"
     interface    = "ide2"
 
     user_account {
