@@ -1,6 +1,7 @@
 ---
 env: "{{ lookup('env', 'ENVIRONMENT') }}"
 dns_domain: "example.com"
+private_dns_domain: "internal.example.com"
 entrypoint_ip: 192.168.10.210
 terraform:
   dir: "~/.terraform/homelab-builder-{{ env }}/"
@@ -53,6 +54,7 @@ storage:
 
 common_service_env:
   DOMAIN_NAME: "{{ dns_domain }}"
+  PRIVATE_DOMAIN_NAME: "{{ private_dns_domain }}"
 
 infrastructure_services:
   authentik:
@@ -99,6 +101,7 @@ services:
   actual_budget:
     domain: actual-budget.{{ dns_domain }}
     enabled: true
+    public: true
     auth_enabled: true
     auth_app_settings:
       app_name: Actual Budget
@@ -108,6 +111,7 @@ services:
   gitea:
     domain: gitea.{{ dns_domain }}
     enabled: true
+    public: true
     auth_enabled: true
     auth_app_settings:
       app_name: Gitea
@@ -121,6 +125,7 @@ services:
   homepage:
     domain: "{{ dns_domain }}"
     enabled: true
+    public: true
     auth_enabled: true
     auth_app_settings:
       app_name: Homepage
@@ -130,6 +135,7 @@ services:
   overseerr:
     domain: overseerr.{{ dns_domain }}
     enabled: true
+    public: true
     auth_enabled: true
     auth_app_settings:
       app_name: Overseerr
@@ -139,6 +145,7 @@ services:
   portainer:
     domain: portainer.{{ dns_domain }}
     enabled: true
+    public: true
     auth_enabled: true
     auth_app_settings:
       app_name: Portainer
@@ -150,6 +157,7 @@ services:
   whoami:
     domain: whoami.{{ dns_domain }}
     enabled: true
+    public: true
     auth_enabled: true
     auth_app_settings:
       app_name: WhoAmI Debugger
