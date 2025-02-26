@@ -141,3 +141,37 @@
   until: _result.failed == false
   retries: 60 # retry X times
   delay: 5 # pause for X sec b/w each call
+  changed_when: true
+
+- name: Have we bootstrapped ceph dashboard?
+  ansible.builtin.shell: "microceph.ceph mgr module ls | grep dashboard | grep on"
+  register: _ceph_dashboard_configured
+  ignore_errors: true
+  changed_when: true
+
+- name: Enable ceph dashboard in microceph
+  # when: not _ceph_dashboard_configured.rc == 0
+  block:
+    - name: Disable SSL for microceph
+      ansible.builtin.command: "microceph.ceph config set mgr mgr/dashboard/ssl false"
+      changed_when: true
+    - name: Enable ceph dashboard
+      ansible.builtin.command: "microceph.ceph mgr module enable dashboard"
+      changed_when: true
+    - name: Ensure microceph password file exists
+      ansible.builtin.file:
+        path: "/var/snap/microceph/current/conf/password.txt"
+        state: touch
+        mode: "0664"
+    - name: Set password for main user
+      ansible.builtin.shell: echo -n "{{ storage.ceph.dashboard_password }}" > /var/snap/microceph/current/conf/password.txt
+      changed_when: true
+    - name: Create initial administrator account with password set
+      ansible.builtin.command: >-
+        microceph.ceph dashboard ac-user-create -i /var/snap/microceph/current/conf/password.txt
+        {{ storage.ceph.dashboard_username }} administrator
+      changed_when: true
+    - name: Remove password file
+      ansible.builtin.file:
+        state: absent
+        path: "/var/snap/microceph/current/conf/password.txt"
