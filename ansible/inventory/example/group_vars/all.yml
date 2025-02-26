@@ -159,12 +159,21 @@ services:
 
 external_services:
   unraid:
-    app_name: unraid
-    app_icon_source: unraid.png
     domain: unraid.{{ dns_domain }}
-    dest: "https://192.168.1.2"
+    enabled: true
+    public: true
+    auth_enabled: true
+    auth_app_settings:
+      app_name: Unraid
+      app_slug: unraid
+      app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/unraid.png
   proxmox:
-    app_name: proxmox
-    app_icon_source: proxmox.png
     domain: proxmox.{{ dns_domain }}
+    enabled: true
+    public: true
+    auth_enabled: true
+    auth_app_settings:
+      app_name: Proxmox
+      app_slug: proxmox
+      app_icon_source: proxmox.png
     dest: "https://192.168.1.3:8006"
