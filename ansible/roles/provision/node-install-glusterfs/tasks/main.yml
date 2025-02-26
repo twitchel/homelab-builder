@@ -56,8 +56,8 @@
     state: present
     name: "{{ storage.glusterfs.brick_name }}"
     brick: "{{ storage.glusterfs.brick_dir }}"
-    replicas: "{{ play_hosts | length }}"
-    cluster: "{{ play_hosts | join(',') }}"
+    replicas: "{{ groups['cluster_nodes_master'] | length }}"
+    cluster: "{{ groups['cluster_nodes_master'] | join(',') }}"
     host: "{{ inventory_hostname }}"
     force: true
   run_once: true

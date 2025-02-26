@@ -1,0 +1,41 @@
+---
+- name: Setup NFS server/clients
+  block:
+    - name: Install NFS Packages.
+      ansible.builtin.apt:
+        name:
+          - nfs-common
+          - nfs-kernel-server
+        state: present
+
+    - name: Ensure required entries are made to hosts file.
+      ansible.builtin.lineinfile:
+        path: /etc/exports
+        state: present
+        line: "{{ item }}"
+      with_items:
+        - '"{{ storage.root_dir }}" *(rw,sync,no_subtree_check,all_squash,anonuid=1000,anongid=1000,fsid=1,insecure)'
+      when:
+        - hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")
+
+    - name: Restart nfs-kernel-server.service
+      ansible.builtin.systemd:
+        daemon_reload: true
+        state: started
+        name: nfs-kernel-server.service
+
+    - name: Re-export the share
+      ansible.builtin.command: exportfs -rav
+      changed_when: true
+      when:
+        - hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")
+
+- name: Mount appdata as nfs share on worker nodes
+  ansible.posix.mount:
+    src: "{{ entrypoint_ip }}:{{ storage.root_dir }}"
+    path: "{{ storage.root_dir }}"
+    opts: rw,sync,hard
+    state: mounted
+    fstype: nfs
+  when:
+    - not hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")
