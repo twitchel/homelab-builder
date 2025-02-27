@@ -1,11 +1,4 @@
 ---
-- name: Create gitea network
-  ansible.builtin.docker_network:
-    name: gitea
-    scope: swarm
-    driver: overlay
-    attachable: true
-
 - name: "Ensure gitea directories exist"
   block:
     - name: Ensure appdata/gitea/server-data exists

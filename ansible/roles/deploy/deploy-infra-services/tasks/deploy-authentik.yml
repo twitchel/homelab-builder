@@ -48,13 +48,6 @@
 
 - name: Bootstrap authentik configs
   block:
-    - name: Create authentik network
-      docker_network:
-        name: authentik
-        scope: swarm
-        driver: overlay
-        attachable: true
-
     - name: "Ensure directories exist"
       block:
         - name: "Ensure appdata/authentik/redis exists"
