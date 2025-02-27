@@ -14,7 +14,12 @@ services:
         - "traefik.swarm.network=cloud-public"
         # HTTP Routers
         - "traefik.http.routers.overseerr-rtr.entrypoints=websecure"
+{% if service_config.public %}
         - "traefik.http.routers.overseerr-rtr.rule=Host(`{{ service_config.domain }}`)"
+{% else %}
+        # Private service, only accessible via VPN with DNS configured
+        - "traefik.http.routers.overseerr-rtr.rule=Host(`{{ service_config.domain }}`) && {{ private_service_rule }}"
+{% endif %}
         # HTTP Services
         - "traefik.http.routers.overseerr-rtr.service=overseerr-svc"
 {% if service_config.auth_enabled %}
