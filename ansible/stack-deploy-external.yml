@@ -9,14 +9,6 @@
     DOMAIN_NAME: "{{ dns_domain }}"
 
   tasks:
-    - name: Deploy infra related services
-      ansible.builtin.import_role:
-        name: deploy/deploy-infra-services # noqa role-name[path]
-
-    - name: Deploy homelab services
-      ansible.builtin.import_role:
-        name: deploy/deploy-homelab-services # noqa role-name[path]
-
     - name: Deploy external services
       ansible.builtin.import_role:
         name: deploy/deploy-external-services # noqa role-name[path]
