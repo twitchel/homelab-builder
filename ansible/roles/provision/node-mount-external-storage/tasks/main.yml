@@ -1,0 +1,6 @@
+---
+- name: Mount external NFS shares
+  loop_control:
+    loop_var: external_nfs
+  with_items: "{{ storage.external.nfs | dict2items }}"
+  ansible.builtin.include_tasks: "mount-nfs.yml"

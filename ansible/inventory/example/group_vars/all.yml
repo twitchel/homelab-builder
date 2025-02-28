@@ -52,6 +52,16 @@ storage:
     brick_name: gluster
     brick_dir: "/gluster-brick"
 
+  external:
+    nfs:
+      # media:
+      #   host: "192.168.1.2"
+      #   source_path: "/mnt/media"
+      # downloads:
+      #   host: "192.168.1.8"
+      #   source_path: "/mnt/downloads"
+
+
 common_service_env:
   DOMAIN_NAME: "{{ dns_domain }}"
   PRIVATE_DOMAIN_NAME: "{{ private_dns_domain }}"

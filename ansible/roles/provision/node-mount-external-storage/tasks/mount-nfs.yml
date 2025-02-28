@@ -1,0 +1,14 @@
+---
+- name: Ensure mount dir exists
+  ansible.builtin.file:
+    path: "/mnt/external/{{ external_nfs.key }}"
+    mode: "0775"
+    state: directory
+
+- name: Mount appdata as nfs share on worker nodes
+  ansible.posix.mount:
+    src: "{{ external_nfs.value.host }}:{{ external_nfs.value.source_path }}"
+    path: "/mnt/external/{{ external_nfs.key }}"
+    opts: rw,sync,hard
+    state: mounted
+    fstype: nfs
