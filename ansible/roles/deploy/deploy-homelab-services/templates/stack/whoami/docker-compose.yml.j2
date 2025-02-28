@@ -12,7 +12,12 @@ services:
         - "traefik.swarm.network=cloud-public"
         # HTTP Routers
         - "traefik.http.routers.whoami-rtr.entrypoints=websecure"
+{% if service_config.public %}
         - "traefik.http.routers.whoami-rtr.rule=Host(`{{ service_config.domain }}`)"
+{% else %}
+        # Private service, only accessible via VPN with DNS configured
+        - "traefik.http.routers.whoami-rtr.rule=Host(`{{ service_config.domain }}`) && {{ private_service_rule }}"
+{% endif %}
         # HTTP Services
         - "traefik.http.routers.whoami-rtr.service=whoami-svc"
 {% if service_config.auth_enabled == true %}

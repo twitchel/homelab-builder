@@ -1,7 +1,12 @@
 http:
   routers:
     {{ external_service_name }}-rtr:
+{% if external_service_config.public %}
       rule: "Host(`{{ external_service_config.domain }}`)"
+{% else %}
+      # Private service, only accessible via VPN with DNS configured
+      rule: "Host(`{{ external_service_config.domain }}`) && {{ private_service_rule }}"
+{% endif %}
       entryPoints: websecure
       service: {{ external_service_name }}-svc
 {% if external_service_config.auth_enabled == true %}

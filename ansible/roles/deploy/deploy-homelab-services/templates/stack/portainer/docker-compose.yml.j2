@@ -7,7 +7,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /var/lib/docker/volumes:/var/lib/docker/volumes
     networks:
-      - agent_network
+      - agent-network
     deploy:
       mode: global
       placement:
@@ -20,7 +20,7 @@ services:
       - {{ storage.root_dir }}/appdata/portainer:/data
     networks:
       - cloud-public
-      - agent_network
+      - agent-network
     deploy:
       mode: replicated
       replicas: 1
@@ -31,7 +31,12 @@ services:
         - "traefik.swarm.network=cloud-public"
         # HTTP Routers
         - "traefik.http.routers.portainer-rtr.entrypoints=websecure"
+{% if service_config.public %}
         - "traefik.http.routers.portainer-rtr.rule=Host(`{{ service_config.domain }}`)"
+{% else %}
+        # Private service, only accessible via VPN with DNS configured
+        - "traefik.http.routers.portainer-rtr.rule=Host(`{{ service_config.domain }}`) && {{ private_service_rule }}"
+{% endif %}
         # HTTP Services
         - "traefik.http.routers.portainer-rtr.service=portainer-svc"
 {% if service_config.auth_enabled == true %}
@@ -41,7 +46,7 @@ services:
 
 
 networks:
-  agent_network:
+  agent-network:
     driver: overlay
     attachable: true
   cloud-public:

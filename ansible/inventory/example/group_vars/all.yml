@@ -1,6 +1,7 @@
 ---
 env: "{{ lookup('env', 'ENVIRONMENT') }}"
 dns_domain: "example.com"
+private_service_rule: "!HeaderRegexp(`CF-Connecting-IP`, `.*`)"
 entrypoint_ip: 192.168.10.210
 terraform:
   dir: "~/.terraform/homelab-builder-{{ env }}/"
@@ -33,11 +34,11 @@ docker_hub:
   password:
 
 runtime:
-  type: docker
+  type: docker # Only 'docker' supported at the moment
   docker:
     keepalived:
       virtual_ip: "{{ entrypoint_ip }}"
-  kubernetes:
+  kubernetes: # Not implemented
     version: v1.30.2+k3s2
 
 storage:
@@ -51,8 +52,19 @@ storage:
     brick_name: gluster
     brick_dir: "/gluster-brick"
 
+  external:
+    nfs:
+      # media:
+      #   host: "192.168.1.2"
+      #   source_path: "/mnt/media"
+      # downloads:
+      #   host: "192.168.1.8"
+      #   source_path: "/mnt/downloads"
+
+
 common_service_env:
   DOMAIN_NAME: "{{ dns_domain }}"
+  PRIVATE_DOMAIN_NAME: "{{ private_dns_domain }}"
 
 infrastructure_services:
   authentik:
@@ -83,6 +95,7 @@ infrastructure_services:
   traefik:
     domain: traefik.{{ dns_domain }}
     enabled: true
+    public: true
     auth_enabled: true
     auth_app_settings:
       app_name: Traefik Dashboard
@@ -99,6 +112,7 @@ services:
   actual_budget:
     domain: actual-budget.{{ dns_domain }}
     enabled: true
+    public: true
     auth_enabled: true
     auth_app_settings:
       app_name: Actual Budget
@@ -108,6 +122,7 @@ services:
   gitea:
     domain: gitea.{{ dns_domain }}
     enabled: true
+    public: true
     auth_enabled: true
     auth_app_settings:
       app_name: Gitea
@@ -121,6 +136,7 @@ services:
   homepage:
     domain: "{{ dns_domain }}"
     enabled: true
+    public: true
     auth_enabled: true
     auth_app_settings:
       app_name: Homepage
@@ -130,6 +146,7 @@ services:
   overseerr:
     domain: overseerr.{{ dns_domain }}
     enabled: true
+    public: true
     auth_enabled: true
     auth_app_settings:
       app_name: Overseerr
@@ -139,6 +156,7 @@ services:
   portainer:
     domain: portainer.{{ dns_domain }}
     enabled: true
+    public: true
     auth_enabled: true
     auth_app_settings:
       app_name: Portainer
@@ -150,6 +168,7 @@ services:
   whoami:
     domain: whoami.{{ dns_domain }}
     enabled: true
+    public: true
     auth_enabled: true
     auth_app_settings:
       app_name: WhoAmI Debugger
@@ -159,12 +178,21 @@ services:
 
 external_services:
   unraid:
-    app_name: unraid
-    app_icon_source: unraid.png
     domain: unraid.{{ dns_domain }}
-    dest: "https://192.168.1.2"
+    enabled: true
+    public: true
+    auth_enabled: true
+    auth_app_settings:
+      app_name: Unraid
+      app_slug: unraid
+      app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/unraid.png
   proxmox:
-    app_name: proxmox
-    app_icon_source: proxmox.png
     domain: proxmox.{{ dns_domain }}
+    enabled: true
+    public: true
+    auth_enabled: true
+    auth_app_settings:
+      app_name: Proxmox
+      app_slug: proxmox
+      app_icon_source: proxmox.png
     dest: "https://192.168.1.3:8006"

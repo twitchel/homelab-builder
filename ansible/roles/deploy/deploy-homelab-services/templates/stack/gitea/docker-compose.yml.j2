@@ -16,10 +16,15 @@ services:
         - "traefik.swarm.network=cloud-public"
         # HTTP Routers
         - "traefik.http.routers.gitea-rtr.entrypoints=websecure"
+{% if service_config.public %}
         - "traefik.http.routers.gitea-rtr.rule=Host(`{{ service_config.domain }}`)"
+{% else %}
+        # Private service, only accessible via VPN with DNS configured
+        - "traefik.http.routers.gitea-rtr.rule=Host(`{{ service_config.domain }}`) && {{ private_service_rule }}"
+{% endif %}
         # HTTP Services
         - "traefik.http.routers.gitea-rtr.service=gitea-svc"
-{% if services.gitea.auth_enabled %}
+{% if service_config.auth_enabled %}
         - "traefik.http.routers.gitea-rtr.middlewares=middlewares-authentik@file"
 {% endif %}
         - "traefik.http.services.gitea-svc.loadbalancer.server.port=3000"
@@ -43,4 +48,5 @@ networks:
   cloud-public:
     external: true
   gitea:
-    external: true
+    driver: overlay
+    attachable: true

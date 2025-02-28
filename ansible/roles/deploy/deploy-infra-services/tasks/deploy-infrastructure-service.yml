@@ -4,6 +4,10 @@
     service_name: "{{ item.key }}"
     service_config: "{{ item.value }}"
 
+- name: Deploying Service
+  ansible.builtin.debug:
+    var: "{{ service_name }}"
+
 - name: Ensure service stack dir exists
   ansible.builtin.file:
     path: "{{ storage.root_dir }}/stack/{{ service_name }}"

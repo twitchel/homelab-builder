@@ -44,3 +44,7 @@
 - name: Setup NFS Server/Clients
   ansible.builtin.include_role:
     name: provision/node-install-nfs # noqa role-name[path]
+
+- name: Mount external shares
+  ansible.builtin.include_role:
+    name: provision/node-mount-external-storage # noqa role-name[path]
