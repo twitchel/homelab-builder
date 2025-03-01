@@ -18,3 +18,5 @@
     - name: Restart service
       ansible.builtin.include_role:
         name: deploy/start-service # noqa role-name[path]
+      vars:
+        service_reboot: true

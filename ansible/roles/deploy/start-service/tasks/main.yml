@@ -5,7 +5,7 @@
     name: "{{ service_name }}"
     compose: "{{ storage.root_dir }}/stack/{{ service_name }}/docker-compose.yml"
     with_registry_auth: true
-  when: not service_enabled
+  when: not service_enabled or service_reboot
   register: _result
   until: _result.failed == false
   retries: 20 # retry X times

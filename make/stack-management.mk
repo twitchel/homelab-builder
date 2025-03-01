@@ -18,7 +18,7 @@ deploy-external: log preflight-checks confirm ## This will deploy the external s
 	@echo "🥞 Deploying Homelab External Services Stack"
 	@ENVIRONMENT=$(ENVIRONMENT) ansible-playbook -i ansible/inventory/$(ENVIRONMENT)/hosts.yml ansible/stack-deploy-external.yml
 
-service-redeploy: log confirm
+service-redeploy: log confirm # This will restart a service
 	@echo "️🏠 Enter the name of the service you wish to redeploy: " && \
     	read service_redeploy && \
 		echo "🥞 Redeploying service: $${service_redeploy}" && \
