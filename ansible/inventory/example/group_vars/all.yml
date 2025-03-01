@@ -169,6 +169,16 @@ services:
     version:
       agent: 2.21.5
       portainer: 2.21.5
+  sabnzbd:
+    domain: sabnzbd.{{ dns_domain }}
+    enabled: true
+    public: true
+    auth_enabled: true
+    auth_app_settings:
+      app_name: SabNZBD
+      app_slug: sabnzbd
+      app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/sabnzbd.png
+    version: latest
   whoami:
     domain: whoami.{{ dns_domain }}
     enabled: true

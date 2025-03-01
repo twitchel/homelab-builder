@@ -1,0 +1,21 @@
+---
+- name: Ensure appdata/sabnzbd/sabnzbd.ini exists
+  ansible.builtin.file:
+    path: "{{ storage.root_dir }}/appdata/sabnzbd/sabnzbd.ini"
+    state: touch
+    mode: "664"
+    owner: "{{ storage.owner }}"
+    group: "{{ storage.group }}"
+- name: Ensure hostname is added to host_whitelist to allow sab to load
+  ansible.builtin.lineinfile:
+    dest: "{{ storage.root_dir }}/appdata/sabnzbd/sabnzbd.ini"
+    regexp: "^host_whitelist = "
+    line: "host_whitelist = {{ service_config.domain }}"
+    state: present
+- name: Restart service
+  ansible.builtin.include_role:
+    name: deploy/start-service # noqa role-name[path]
+  vars:
+    service_name: "sabnzbd"
+    service_enabled: "{{ service_config.enabled }}"
+    service_reboot: true
