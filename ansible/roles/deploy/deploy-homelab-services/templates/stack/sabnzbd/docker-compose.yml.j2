@@ -1,0 +1,35 @@
+version: "3.8"
+
+services:
+  # SabNZBD - Usenet Downloader
+  sabnzbd:
+    image: "ghcr.io/hotio/sabnzbd:{{ service_config.version }}"
+    volumes:
+      - {{ storage.root_dir }}/appdata/sabnzbd:/config
+      - {{ storage.media_dir }}:/data
+    env_file: {{ storage.root_dir }}/stack/sabnzbd/.env
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.swarm.network=cloud-public"
+        # HTTP Routers
+        - "traefik.http.routers.sabnzbd-rtr.entrypoints=websecure"
+{% if service_config.public %}
+        - "traefik.http.routers.sabnzbd-rtr.rule=Host(`{{ service_config.domain }}`)"
+{% else %}
+        # Private service, only accessible via VPN with DNS configured
+        - "traefik.http.routers.sabnzbd-rtr.rule=Host(`{{ service_config.domain }}`) && {{ private_service_rule }}"
+{% endif %}
+        # HTTP Services
+        - "traefik.http.routers.sabnzbd-rtr.service=sabnzbd-svc"
+{% if service_config.auth_enabled %}
+        - "traefik.http.routers.sabnzbd-rtr.middlewares=middlewares-authentik@file"
+{% endif %}
+        - "traefik.http.services.sabnzbd-svc.loadbalancer.server.port=8080"
+    networks:
+      - cloud-public
+
+networks:
+  cloud-public:
+    external: true
