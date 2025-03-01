@@ -1,7 +1,10 @@
+.ansible
 .idea
+.vscode
 .DS_Store
 
 # Don't allow committing of config related files
 .env
 config/
-ansible/group_vars/
+ansible/inventory/
+!ansible/inventory/example/*
