@@ -3,7 +3,10 @@
   ansible.builtin.file:
     path: "{{ storage.root_dir }}"
     state: directory
-    mode: "0664"
+    mode: "0775"
+    owner: "{{ storage.owner }}"
+    group: "{{ storage.group }}"
+    recurse: true
 
 - name: Ensure /etc/ceph exists
   ansible.builtin.file:

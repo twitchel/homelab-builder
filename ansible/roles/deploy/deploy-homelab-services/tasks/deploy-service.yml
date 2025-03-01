@@ -13,24 +13,36 @@
     path: "{{ storage.root_dir }}/stack/{{ service_name }}"
     state: directory
     mode: "0775"
+    owner: "{{ storage.owner }}"
+    group: "{{ storage.group }}"
+    recurse: true
 
 - name: Ensure service stack secrets dir exists
   ansible.builtin.file:
     path: "{{ storage.root_dir }}/stack/{{ service_name }}/secrets"
     state: directory
     mode: "0775"
+    owner: "{{ storage.owner }}"
+    group: "{{ storage.group }}"
+    recurse: true
 
 - name: Ensure service stack scripts dir exists
   ansible.builtin.file:
     path: "{{ storage.root_dir }}/stack/{{ service_name }}/scripts"
     state: directory
     mode: "0775"
+    owner: "{{ storage.owner }}"
+    group: "{{ storage.group }}"
+    recurse: true
 
 - name: Ensure service appdata dir exists
   ansible.builtin.file:
     path: "{{ storage.root_dir }}/appdata/{{ service_name }}"
     state: directory
     mode: "0775"
+    owner: "{{ storage.owner }}"
+    group: "{{ storage.group }}"
+    recurse: true
 
 - name: Process docker-compose template file
   ansible.builtin.template:
@@ -76,6 +88,8 @@
     dest: "{{ storage.root_dir }}/appdata/{{ service_name }}"
     mode: "0664"
     directory_mode: "0775"
+    owner: "{{ storage.owner }}"
+    group: "{{ storage.group }}"
   with_first_found:
     - files:
         - "files/appdata/{{ service_name }}/"

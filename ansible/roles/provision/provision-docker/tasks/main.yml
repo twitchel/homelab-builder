@@ -37,8 +37,8 @@
     path: "{{ storage.root_dir }}"
     state: directory
     mode: "0777"
-    owner: "nobody"
-    group: "nogroup"
+    owner: "{{ storage.owner }}"
+    group: "{{ storage.group }}"
     recurse: true
 
 - name: Setup NFS Server/Clients

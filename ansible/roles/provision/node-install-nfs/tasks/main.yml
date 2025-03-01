@@ -14,7 +14,7 @@
         state: present
         line: "{{ item }}"
       with_items:
-        - '"{{ storage.root_dir }}" *(rw,sync,no_subtree_check,all_squash,anonuid=1000,anongid=1000,fsid=1,insecure)'
+        - '"{{ storage.root_dir }}" *(rw,sync,no_subtree_check,all_squash,anonuid={{ storage.owner }},anongid={{ storage.group }},fsid=1,insecure)'
       when:
         - hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")
 

@@ -44,6 +44,8 @@ runtime:
 storage:
   engine: "ceph" # 'ceph' or 'glusterfs'
   root_dir: "/var/data"
+  owner: 1000
+  group: 1000
 
   ceph:
     dashboard_username: username
