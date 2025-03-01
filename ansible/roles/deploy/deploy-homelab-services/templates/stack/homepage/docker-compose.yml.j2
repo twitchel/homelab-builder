@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   # Homepage
-  overseerr:
+  homepage:
     image: "ghcr.io/gethomepage/homepage:{{ service_config.version }}"
     volumes:
       - {{ storage.root_dir }}/appdata/homepage:/app/config
