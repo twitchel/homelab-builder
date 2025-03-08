@@ -97,6 +97,7 @@
     name: deploy/start-service # noqa role-name[path]
   vars:
     service_enabled: "{{ service_config.enabled }}"
+    service_reboot: false
 
 - name: Post start tasks
   when: service_config.enabled
