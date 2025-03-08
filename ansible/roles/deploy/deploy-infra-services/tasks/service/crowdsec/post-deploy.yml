@@ -61,3 +61,4 @@
       vars:
         service_name: "crowdsec"
         service_enabled: "{{ infrastructure_services[\"crowdsec\"].enabled }}"
+        service_reboot: false
