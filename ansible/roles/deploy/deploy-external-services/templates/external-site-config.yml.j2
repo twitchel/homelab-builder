@@ -12,6 +12,9 @@ http:
 {% if external_service_config.auth_enabled == true %}
       middlewares:
         - middlewares-authentik@file
+      tls:
+        options:
+          - tls@file
 {% endif %}
   services:
     {{ external_service_name }}-svc:
