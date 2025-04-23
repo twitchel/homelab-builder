@@ -17,15 +17,29 @@ proxmox:
   iso_storage: local
   disk_storage_master: bigdata
   disk_storage_worker: local-lvm
+  disk_storage_boot_drive:
+  disk_storage_data:
 
 cluster_node:
-  cpu_cores: 1
+  cpu_cores: 2
   memory: 4096
   network_gateway: 192.168.1.1
   network_bridge: vmbr0
   ubuntu_version: noble
   disk0_size: 20
   disk1_size: 100 # master nodes only
+  username: ubuntu
+  public_key: /Users/my-user/.ssh/some-key.pub
+  private_key: /Users/my-user/.ssh/some-key
+
+storage_node:
+  cpu_cores: 1
+  memory: 2048
+  network_gateway: 192.168.1.1
+  network_bridge: vmbr0
+  ubuntu_version: noble
+  disk0_size: 20 # OS disk
+  disk1_size: 100 # data storage
   username: ubuntu
   public_key: /Users/my-user/.ssh/some-key.pub
   private_key: /Users/my-user/.ssh/some-key

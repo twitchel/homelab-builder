@@ -2,6 +2,10 @@ data "local_file" "ssh_public_key" {
   filename = "{{ cluster_node.public_key }}"
 }
 
+data "local_file" "storage_ssh_public_key" {
+  filename = "{{ storage_node.public_key }}"
+}
+
 variable "proxmox_endpoint" {
   type        = string
   description = "URL for the proxmox endpoint"
@@ -66,4 +70,52 @@ variable "node_network_gateway" {
   type        = string
   description = "Network gateway the nodes use to connect to the internet"
   default     = "{{ cluster_node.network_gateway }}"
+}
+
+variable "storage_node_cpu_cores" {
+  type        = number
+  description = "Number of CPU cores"
+  default     = {{ storage_node.cpu_cores }}
+}
+
+variable "storage_node_memory_mb" {
+  type        = number
+  description = "Node Memory in megabytes"
+  default     = {{ storage_node.memory }}
+}
+
+variable "storage_node_disk0_size" {
+  type        = number
+  description = "Node Disk 0 size in gigabytes"
+  default     = {{ storage_node.disk0_size }}
+}
+
+variable "storage_node_disk1_size" {
+  type        = number
+  description = "Node Disk 1 size in gigabytes"
+  default     = {{ storage_node.disk1_size }}
+}
+
+variable "storage_node_ubuntu_version" {
+  type        = string
+  description = "Node ubuntu version"
+  default     = "{{ storage_node.ubuntu_version }}"
+}
+
+variable "storage_node_ubuntu_cloudimage_url" {
+  type        = string
+  description = "Cloud Docker image download URL"
+  default     = "https://cloud-images.ubuntu.com/{{ storage_node.ubuntu_version }}/current/{{ storage_node.ubuntu_version }}-server-cloudimg-amd64.img"
+}
+
+variable "storage_node_ssh_user" {
+  type        = string
+  description = "Username to connect to each node"
+  default     = "{{ storage_node.username }}"
+}
+
+variable "storage_node_network_gateway" {
+  type        = string
+  description = "Network gateway the nodes use to connect to the internet"
+  default     = "{{ storage_node.network_gateway }}"
 }
