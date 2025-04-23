@@ -9,9 +9,18 @@
         dest: "{{ terraform.dir }}/vars_node.tf"
         mode: "0664"
 
-    - name: Create terraform plan for vms
+    - name: Create terraform plan for compute node vms
+      when: "not inventory_hostname in groups['storage_nodes']"
       ansible.builtin.template:
-        src: resource_node.tf.j2
-        dest: "{{ terraform.dir }}/resource_node_{{ inventory_hostname_short }}.tf"
+        src: resource_compute_node.tf.j2
+        dest: "{{ terraform.dir }}/resource_compute_node_{{ inventory_hostname_short }}.tf"
+        force: false
+        mode: "0664"
+
+    - name: Create terraform plan for storage node vms
+      when: "inventory_hostname in groups['storage_nodes']"
+      ansible.builtin.template:
+        src: resource_storage_node.tf.j2
+        dest: "{{ terraform.dir }}/resource_storage_node_{{ inventory_hostname_short }}.tf"
         force: false
         mode: "0664"
