@@ -34,14 +34,14 @@ resource "proxmox_virtual_environment_vm" "{{ inventory_hostname_short }}" {
   }
 
   disk {
-    datastore_id = "{{ (hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")) | ternary(proxmox.disk_storage_master, proxmox.disk_storage_worker) }}"
+    datastore_id = "{{ proxmox.disk_storage_boot_drive }}"
     file_id      = proxmox_virtual_environment_download_file.ubuntu_cloud_image-{{ proxmox_node }}.id
     interface    = "scsi0"
     size         = var.node_disk0_size
   }
 
   initialization {
-    datastore_id = "{{ (hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")) | ternary(proxmox.disk_storage_master, proxmox.disk_storage_worker) }}"
+    datastore_id = "{{ proxmox.disk_storage_boot_drive }}"
     interface    = "ide2"
 
     user_account {
