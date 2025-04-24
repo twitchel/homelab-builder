@@ -1,0 +1,34 @@
+---
+- name: "Ensure storage root_dir exists with correct permissions"
+  ansible.builtin.file:
+    path: "{{ storage.root_dir }}"
+    state: directory
+    mode: "0777"
+    owner: "{{ storage.owner }}"
+    group: "{{ storage.group }}"
+    recurse: true
+
+- name: Install NFS Packages.
+  ansible.builtin.apt:
+    name:
+      - nfs-common
+      - nfs-kernel-server
+    state: present
+
+- name: Ensure required entries are made to exports file.
+  ansible.builtin.lineinfile:
+    path: /etc/exports
+    state: present
+    line: "{{ item }}"
+  with_items:
+    - '"{{ storage.root_dir }}" *(rw,sync,no_subtree_check,all_squash,anonuid={{ storage.owner }},anongid={{ storage.group }},fsid=1,insecure)'
+
+- name: Restart nfs-kernel-server.service
+  ansible.builtin.systemd:
+    daemon_reload: true
+    state: started
+    name: nfs-kernel-server.service
+
+- name: Re-export the share
+  ansible.builtin.command: exportfs -rav
+  changed_when: true
