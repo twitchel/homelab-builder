@@ -40,15 +40,6 @@ resource "proxmox_virtual_environment_vm" "{{ inventory_hostname_short }}" {
     size         = var.node_disk0_size
   }
 
-{% if hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master") %}
-  disk {
-    datastore_id = "{{ proxmox.disk_storage_master }}"
-    size         = var.node_disk1_size
-    file_format  = "raw"
-    interface    = "scsi1"
-  }
-{% endif %}
-
   initialization {
     datastore_id = "{{ (hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")) | ternary(proxmox.disk_storage_master, proxmox.disk_storage_worker) }}"
     interface    = "ide2"
