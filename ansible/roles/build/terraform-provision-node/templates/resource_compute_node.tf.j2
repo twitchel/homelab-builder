@@ -14,7 +14,7 @@ resource "proxmox_virtual_environment_vm" "{{ inventory_hostname_short }}" {
   name            = "{{ inventory_hostname_short }}"
   node_name       = local.{{ inventory_hostname_short }}_node_name
   description     = "Managed by Terraform/Homelab Builder"
-  tags            = ["homelab-builder", "{{ env }}", "{{ (hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")) | ternary("master", "worker") }}"]
+  tags            = ["homelab-builder", "{{ env }}", "compute", "{{ (hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")) | ternary("master", "worker") }}"]
   stop_on_destroy = true
 
   machine = "pc"
