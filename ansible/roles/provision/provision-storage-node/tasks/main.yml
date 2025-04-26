@@ -1,7 +1,7 @@
 ---
 - name: "Ensure storage root_dir exists with correct permissions"
   ansible.builtin.file:
-    path: "{{ storage.root_dir }}"
+    path: "/mnt/appdata/data"
     state: directory
     mode: "0777"
     owner: "{{ storage.owner }}"
@@ -21,7 +21,7 @@
     state: present
     line: "{{ item }}"
   with_items:
-    - '"{{ storage.root_dir }}" *(rw,sync,no_subtree_check,all_squash,anonuid={{ storage.owner }},anongid={{ storage.group }},fsid=1,insecure)'
+    - '"/mnt/appdata/data" *(rw,sync,no_subtree_check,all_squash,anonuid={{ storage.owner }},anongid={{ storage.group }},fsid=1,insecure)'
 
 - name: Restart nfs-kernel-server.service
   ansible.builtin.systemd:
