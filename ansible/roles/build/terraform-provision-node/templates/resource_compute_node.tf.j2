@@ -36,6 +36,7 @@ resource "proxmox_virtual_environment_vm" "{{ inventory_hostname_short }}" {
   disk {
     datastore_id = "{{ compute_node.disk_storage }}"
     file_id      = proxmox_virtual_environment_download_file.ubuntu_cloud_image-{{ proxmox_node }}.id
+    file_format  = "raw"
     interface    = "scsi0"
     size         = var.node_disk0_size
   }
