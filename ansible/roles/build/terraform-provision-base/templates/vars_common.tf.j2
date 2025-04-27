@@ -42,12 +42,6 @@ variable "node_disk0_size" {
   default     = {{ cluster_node.disk0_size }}
 }
 
-variable "node_disk1_size" {
-  type        = number
-  description = "Node Disk 1 size in gigabytes"
-  default     = {{ cluster_node.disk1_size }}
-}
-
 variable "node_ubuntu_version" {
   type        = string
   description = "Node ubuntu version"

@@ -32,21 +32,21 @@ resource "proxmox_virtual_environment_vm" "{{ inventory_hostname_short }}" {
   }
 
   disk {
-    datastore_id = "{{ proxmox.disk_storage_boot_drive }}"
+    datastore_id = "{{ storage_node.disk_storage }}"
     file_id      = proxmox_virtual_environment_download_file.ubuntu_cloud_image-{{ proxmox_node }}.id
     interface    = "scsi0"
     size         = var.storage_node_disk0_size
   }
 
   disk {
-    datastore_id = "{{ proxmox.disk_storage_data }}"
+    datastore_id = "{{ storage_node.disk_storage }}"
     size         = var.storage_node_disk1_size
     file_format  = "raw"
     interface    = "scsi1"
   }
 
   initialization {
-    datastore_id = "{{ proxmox.disk_storage_boot_drive }}"
+    datastore_id = "{{ storage_node.disk_storage }}"
     interface    = "ide2"
 
     user_account {

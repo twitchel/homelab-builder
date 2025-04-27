@@ -26,8 +26,8 @@ cluster_node:
   network_gateway: 192.168.1.1
   network_bridge: vmbr0
   ubuntu_version: noble
+  disk_storage: local-lvm
   disk0_size: 20
-  disk1_size: 100 # master nodes only
   username: ubuntu
   public_key: /Users/my-user/.ssh/some-key.pub
   private_key: /Users/my-user/.ssh/some-key
@@ -38,6 +38,7 @@ storage_node:
   network_gateway: 192.168.1.1
   network_bridge: vmbr0
   ubuntu_version: noble
+  disk_storage: local-lvm
   disk0_size: 20 # OS disk
   disk1_size: 100 # data storage
   username: ubuntu
