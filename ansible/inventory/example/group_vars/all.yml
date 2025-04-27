@@ -15,10 +15,6 @@ proxmox:
   host_username: root@pam
   host_password: password
   iso_storage: local
-  disk_storage_master: bigdata
-  disk_storage_worker: local-lvm
-  disk_storage_boot_drive:
-  disk_storage_data:
 
 cluster_node:
   cpu_cores: 2
