@@ -16,7 +16,7 @@ proxmox:
   host_password: password
   iso_storage: local
 
-cluster_node:
+compute_node:
   cpu_cores: 2
   memory: 4096
   network_gateway: 192.168.1.1

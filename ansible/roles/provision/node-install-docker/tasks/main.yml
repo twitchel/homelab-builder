@@ -10,7 +10,7 @@
 
 - name: Install ubuntu docker repository
   ansible.builtin.apt_repository:
-    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ cluster_node.ubuntu_version }} stable
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ compute_node.ubuntu_version }} stable
     state: present
   register: _result
   until: _result.failed == false

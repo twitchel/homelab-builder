@@ -3,7 +3,7 @@
   hosts: compute_nodes[0]
   gather_facts: true
   become: true
-  remote_user: "{{ cluster_node.username }}"
+  remote_user: "{{ compute_node.username }}"
 
   environment:
     DOMAIN_NAME: "{{ dns_domain }}"

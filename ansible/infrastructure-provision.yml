@@ -28,7 +28,7 @@
 - name:  Provision compute nodes
   hosts: compute_nodes
   gather_facts: true
-  remote_user: "{{ cluster_node.username }}"
+  remote_user: "{{ compute_node.username }}"
   become: true
 
   tasks:
