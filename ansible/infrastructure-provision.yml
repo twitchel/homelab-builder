@@ -6,6 +6,13 @@
   become: true
 
   tasks:
+    # - name: Ensure user exists with correct uid, and associate to correct group
+    #   ansible.builtin.user:
+    #     name: "{{ storage.ownerName }}"
+    #     comment: "{{ storage.ownerName }}"
+    #     uid: "{{ storage.owner }}"
+    #     group: "ubuntu"
+
     - name: Add the hosts in the group to /etc/hosts
       ansible.builtin.lineinfile:
         dest: /etc/hosts
@@ -25,13 +32,20 @@
       ansible.builtin.include_role:
         name: provision/provision-storage-node # noqa role-name[path]
 
-- name:  Provision compute nodes
+- name: Provision compute nodes
   hosts: compute_nodes
   gather_facts: true
   remote_user: "{{ compute_node.username }}"
   become: true
 
   tasks:
+    # - name: Ensure user exists with correct uid, and associate to correct group
+    #   ansible.builtin.user:
+    #     name: "{{ storage.ownerName }}"
+    #     comment: "{{ storage.ownerName }}"
+    #     uid: "{{ storage.owner }}"
+    #     group: "ubuntu"
+
     - name: Add the hosts in the group to /etc/hosts
       ansible.builtin.lineinfile:
         dest: /etc/hosts

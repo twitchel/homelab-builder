@@ -39,7 +39,6 @@ services:
   db:
     image: "docker.io/library/postgres:{{ service_config.version.postgres }}"
     env_file: {{ storage.root_dir }}/stack/gitea/.env
-    user: "{{ storage.owner }}:{{ storage.group }}"
     networks:
       - gitea
     volumes:
