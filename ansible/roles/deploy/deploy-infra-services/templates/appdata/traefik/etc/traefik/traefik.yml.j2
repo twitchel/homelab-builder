@@ -45,6 +45,9 @@ entryPoints:
           - main: "{{ dns_domain }}"
             sans:
               - "*.{{ dns_domain }}"
+{% if dns_domain_local %}
+              - "*.{{ dns_domain_local }}"
+{% endif %}
 
 # Let's Encrypt
 certificatesResolvers:

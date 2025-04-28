@@ -2,6 +2,7 @@
 timezone: "Australia/Sydney"
 env: "{{ lookup('env', 'ENVIRONMENT') }}"
 dns_domain: "example.com"
+dns_domain_local: "example.local" # requires network wide DNS rewrites pointing to entrypoint_ip
 private_service_rule: "!HeaderRegexp(`CF-Connecting-IP`, `.*`)"
 entrypoint_ip: 192.168.10.210
 terraform:
