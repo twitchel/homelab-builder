@@ -50,7 +50,7 @@
     state: present
     line: "{{ item }}"
   with_items:
-    - '"/mnt/appdata/data" *(rw,sync,no_subtree_check,all_squash,anonuid={{ storage.owner }},anongid={{ storage.group }},fsid=1,insecure)'
+    - '"/mnt/appdata/data" *(rw,sync,no_subtree_check,no_root_squash,insecure)'
 
 - name: Restart nfs-kernel-server.service
   ansible.builtin.systemd:
