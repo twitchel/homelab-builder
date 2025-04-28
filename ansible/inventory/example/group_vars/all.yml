@@ -1,4 +1,5 @@
 ---
+timezone: "Australia/Sydney"
 env: "{{ lookup('env', 'ENVIRONMENT') }}"
 dns_domain: "example.com"
 private_service_rule: "!HeaderRegexp(`CF-Connecting-IP`, `.*`)"
@@ -14,17 +15,28 @@ proxmox:
   host_username: root@pam
   host_password: password
   iso_storage: local
-  disk_storage_master: bigdata
-  disk_storage_worker: local-lvm
 
-cluster_node:
-  cpu_cores: 1
+compute_node:
+  cpu_cores: 2
   memory: 4096
   network_gateway: 192.168.1.1
   network_bridge: vmbr0
   ubuntu_version: noble
+  disk_storage: local-lvm
   disk0_size: 20
-  disk1_size: 100 # master nodes only
+  username: ubuntu
+  public_key: /Users/my-user/.ssh/some-key.pub
+  private_key: /Users/my-user/.ssh/some-key
+
+storage_node:
+  cpu_cores: 1
+  memory: 2048
+  network_gateway: 192.168.1.1
+  network_bridge: vmbr0
+  ubuntu_version: noble
+  disk_storage: local-lvm
+  disk0_size: 20 # OS disk
+  disk1_size: 100 # data storage
   username: ubuntu
   public_key: /Users/my-user/.ssh/some-key.pub
   private_key: /Users/my-user/.ssh/some-key
@@ -42,17 +54,11 @@ runtime:
     version: v1.30.2+k3s2
 
 storage:
-  engine: "ceph" # 'ceph' or 'glusterfs'
+  engine: "nfs"
   root_dir: "/var/data"
+  media_dir: "/mnt/external"
   owner: 1000
   group: 1000
-
-  ceph:
-    dashboard_username: username
-    dashboard_password: password
-  glusterfs:
-    brick_name: gluster
-    brick_dir: "/gluster-brick"
 
   external:
     nfs:

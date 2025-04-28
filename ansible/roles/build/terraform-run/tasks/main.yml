@@ -42,7 +42,7 @@
       changed_when: true
 
 - name: Don't exit this play until the machines are reachable (they might still be booting up)
-  remote_user: "{{ cluster_node.username }}"
+  remote_user: "{{ compute_node.username }}"
   ansible.builtin.wait_for_connection:
     delay: 5
     timeout: 300

@@ -14,9 +14,9 @@
         state: present
         line: "{{ item }}"
       with_items:
-        - '"{{ storage.root_dir }}" *(rw,sync,no_subtree_check,all_squash,anonuid={{ storage.owner }},anongid={{ storage.group }},fsid=1,insecure)'
+        - '"/mnt/appdata/data" *(rw,sync,no_subtree_check,anonuid={{ storage.owner }},anongid={{ storage.group }},fsid=1,insecure)'
       when:
-        - hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")
+        - hostvars[inventory_hostname_short]["group_names"] is contains("storage_nodes")
 
     - name: Restart nfs-kernel-server.service
       ansible.builtin.systemd:
@@ -28,14 +28,14 @@
       ansible.builtin.command: exportfs -rav
       changed_when: true
       when:
-        - hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")
+        - hostvars[inventory_hostname_short]["group_names"] is contains("storage_nodes")
 
-- name: Mount appdata as nfs share on worker nodes
+- name: Mount appdata as nfs share on compute nodes
   ansible.posix.mount:
-    src: "{{ entrypoint_ip }}:{{ storage.root_dir }}"
+    src: "{{ hostvars[groups['storage_nodes'][0]].ansible_host }}:/mnt/appdata/data"
     path: "{{ storage.root_dir }}"
     opts: rw,sync,hard
     state: mounted
     fstype: nfs
   when:
-    - not hostvars[inventory_hostname_short]["group_names"] is contains("cluster_nodes_master")
+    - not hostvars[inventory_hostname_short]["group_names"] is contains("storage_nodes")
