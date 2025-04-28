@@ -8,25 +8,25 @@
 - name: Enable ceph dashboard in microceph
   when: not _sdb1_partitioned.rc == 0
   block:
-  - name: "Create a new ext4 primary partition on data disk"
-    community.general.parted:
-      device: /dev/sdb
-      number: 1
-      state: present
-      part_end: "100%"
-      resize: true
+    - name: "Create a new ext4 primary partition on data disk"
+      community.general.parted:
+        device: /dev/sdb
+        number: 1
+        state: present
+        part_end: "100%"
+        resize: true
 
-  - name: Define file system for the disk
-    community.general.filesystem:
-      fstype: ext4
-      dev: "/dev/sdb1"
+    - name: Define file system for the disk
+      community.general.filesystem:
+        fstype: ext4
+        dev: "/dev/sdb1"
 
-  - name: "Mount data disk"
-    ansible.posix.mount:
-      path: /mnt/appdata
-      src: /dev/sdb1
-      fstype: ext4
-      state: mounted
+    - name: "Mount data disk"
+      ansible.posix.mount:
+        path: /mnt/appdata
+        src: /dev/sdb1
+        fstype: ext4
+        state: mounted
 
 - name: "Ensure storage root_dir exists with correct permissions"
   ansible.builtin.file:
