@@ -1,0 +1,71 @@
+---
+- name: "Ensure karakeep directories exist"
+  block:
+    - name: Ensure appdata/karakeep/web-data exists
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/karakeep/web-data"
+        state: directory
+        mode: "0775"
+        owner: "{{ storage.owner }}"
+        group: "{{ storage.group }}"
+        recurse: true
+
+    - name: Ensure appdata/karakeep/meilisearch exists
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/karakeep/meilisearch"
+        state: directory
+        mode: "0775"
+        owner: "{{ storage.owner }}"
+        group: "{{ storage.group }}"
+        recurse: true
+
+- name: Write env secrets
+  block:
+    - name: NEXTAUTH_SECRET secret
+      block:
+        - name: Generate NEXTAUTH_SECRET
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: set -o pipefail && openssl rand -base64 36 | tr -d '\n' > {{ storage.root_dir }}/stack/karakeep/secrets/NEXTAUTH_SECRET
+          args:
+            creates: "{{ storage.root_dir }}/stack/karakeep/secrets/NEXTAUTH_SECRET"
+          no_log: true
+
+        - name: Register postgresql password for usage
+          ansible.builtin.command: cat {{ storage.root_dir }}/stack/karakeep/secrets/NEXTAUTH_SECRET
+          register: karakeep_NEXTAUTH_SECRET
+          become: true
+          changed_when: true
+          no_log: true
+
+        - name: Set NEXTAUTH_SECRET env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/karakeep/.env"
+            regexp: "^NEXTAUTH_SECRET="
+            line: "NEXTAUTH_SECRET={{ karakeep_NEXTAUTH_SECRET.stdout }}"
+          no_log: true
+
+    - name: MEILI_MASTER_KEY secret
+      block:
+        - name: Generate MEILI_MASTER_KEY
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: set -o pipefail && openssl rand -base64 36 | tr -d '\n' > {{ storage.root_dir }}/stack/karakeep/secrets/MEILI_MASTER_KEY
+          args:
+            creates: "{{ storage.root_dir }}/stack/karakeep/secrets/MEILI_MASTER_KEY"
+          no_log: true
+
+        - name: Register postgresql password for usage
+          ansible.builtin.command: cat {{ storage.root_dir }}/stack/karakeep/secrets/MEILI_MASTER_KEY
+          register: karakeep_MEILI_MASTER_KEY
+          become: true
+          changed_when: true
+          no_log: true
+
+        - name: Set MEILI_MASTER_KEY env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/karakeep/.env"
+            regexp: "^MEILI_MASTER_KEY="
+            line: "MEILI_MASTER_KEY={{ karakeep_MEILI_MASTER_KEY.stdout }}"
+          no_log: true
+
