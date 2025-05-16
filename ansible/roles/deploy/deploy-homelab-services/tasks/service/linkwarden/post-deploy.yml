@@ -1,0 +1,41 @@
+- name: Write oauth secrets secrets
+  when: 
+  block:
+    - name: client_id secret
+      block:
+        - name: Register client_id for usage
+          ansible.builtin.command: cat {{ storage.root_dir }}/stack/linkwarden/secrets/client_id
+          register: linkwarden_client_id
+          become: true
+          changed_when: true
+          no_log: true
+
+        - name: Set client_id env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/linkwarden/.env"
+            regexp: "^AUTHENTIK_CLIENT_ID="
+            line: "AUTHENTIK_CLIENT_ID={{ linkwarden_client_id.stdout }}"
+          no_log: true
+    - name: client_secret secret
+      block:
+        - name: Register client_secret for usage
+          ansible.builtin.command: cat {{ storage.root_dir }}/stack/linkwarden/secrets/client_secret
+          register: linkwarden_client_secret
+          become: true
+          changed_when: true
+          no_log: true
+
+        - name: Set client_secret env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/linkwarden/.env"
+            regexp: "^AUTHENTIK_CLIENT_SECRET="
+            line: "AUTHENTIK_CLIENT_SECRET={{ linkwarden_client_secret.stdout }}"
+          no_log: true
+
+- name: Restart linkwarden
+  ansible.builtin.include_role:
+    name: deploy/start-service # noqa role-name[path]
+  vars:
+    service_name: "linkwarden"
+    service_enabled: "{{ services[\"linkwarden\"].enabled }}"
+    service_reboot: false

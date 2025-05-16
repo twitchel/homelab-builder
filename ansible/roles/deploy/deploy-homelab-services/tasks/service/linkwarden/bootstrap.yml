@@ -1,0 +1,120 @@
+---
+- name: "Ensure linkwarden directories exist"
+  block:
+    - name: Ensure appdata/linkwarden/postgres exists
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/linkwarden/postgres"
+        state: directory
+        mode: "0775"
+        owner: "{{ storage.owner }}"
+        group: "{{ storage.group }}"
+        recurse: true
+
+    - name: Ensure appdata/linkwarden/app-data exists
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/linkwarden/app-data"
+        state: directory
+        mode: "0775"
+        owner: "{{ storage.owner }}"
+        group: "{{ storage.group }}"
+        recurse: true
+
+    - name: Ensure appdata/linkwarden/meili-data exists
+      ansible.builtin.file:
+        path: "{{ storage.root_dir }}/appdata/linkwarden/meili-data"
+        state: directory
+        mode: "0775"
+        owner: "{{ storage.owner }}"
+        group: "{{ storage.group }}"
+        recurse: true
+
+- name: Write env secrets
+  block:
+    - name: POSTGRES_PASSWORD secret
+      block:
+        - name: Generate linkwarden postgres password
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: set -o pipefail && openssl rand -base64 36 | tr -d '\n' > {{ storage.root_dir }}/stack/linkwarden/secrets/postgres_password
+          args:
+            creates: "{{ storage.root_dir }}/stack/linkwarden/secrets/postgres_password"
+          no_log: true
+
+        - name: Register postgresql password for usage
+          ansible.builtin.command: cat {{ storage.root_dir }}/stack/linkwarden/secrets/postgres_password
+          register: linkwarden_postgres_password
+          become: true
+          changed_when: true
+          no_log: true
+
+        - name: Set POSTGRES_PASSWORD env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/linkwarden/.env"
+            regexp: "^POSTGRES_PASSWORD="
+            line: "POSTGRES_PASSWORD={{ linkwarden_postgres_password.stdout }}"
+          no_log: true
+
+        - name: Set DATABASE_URL env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/linkwarden/.env"
+            regexp: "^DATABASE_URL="
+            line: "DATABASE_URL=postgresql://linkwarden:{{ linkwarden_postgres_password.stdout }}@postgres:5432/linkwarden"
+          no_log: true
+#
+#    - name: NEXTAUTH_URL secret
+#      block:
+#        - name: Set NEXTAUTH_URL env
+#          ansible.builtin.lineinfile:
+#            path: "{{ storage.root_dir }}/stack/linkwarden/.env"
+#            regexp: "^NEXTAUTH_URL="
+#            line: "NEXTAUTH_URL="
+#          no_log: true
+
+    - name: NEXTAUTH_SECRET secret
+      block:
+        - name: Generate NEXTAUTH_SECRET
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: set -o pipefail && openssl rand -base64 36 | tr -d '\n' > {{ storage.root_dir }}/stack/linkwarden/secrets/NEXTAUTH_SECRET
+          args:
+            creates: "{{ storage.root_dir }}/stack/linkwarden/secrets/NEXTAUTH_SECRET"
+          no_log: true
+
+        - name: Register postgresql password for usage
+          ansible.builtin.command: cat {{ storage.root_dir }}/stack/linkwarden/secrets/NEXTAUTH_SECRET
+          register: linkwarden_NEXTAUTH_SECRET
+          become: true
+          changed_when: true
+          no_log: true
+
+        - name: Set NEXTAUTH_SECRET env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/linkwarden/.env"
+            regexp: "^NEXTAUTH_SECRET="
+            line: "NEXTAUTH_SECRET={{ linkwarden_NEXTAUTH_SECRET.stdout }}"
+          no_log: true
+
+    - name: MEILI_MASTER_KEY secret
+      block:
+        - name: Generate MEILI_MASTER_KEY
+          ansible.builtin.shell:
+            executable: /bin/bash
+            cmd: set -o pipefail && openssl rand -base64 36 | tr -d '\n' > {{ storage.root_dir }}/stack/linkwarden/secrets/MEILI_MASTER_KEY
+          args:
+            creates: "{{ storage.root_dir }}/stack/linkwarden/secrets/MEILI_MASTER_KEY"
+          no_log: true
+
+        - name: Register postgresql password for usage
+          ansible.builtin.command: cat {{ storage.root_dir }}/stack/linkwarden/secrets/MEILI_MASTER_KEY
+          register: linkwarden_MEILI_MASTER_KEY
+          become: true
+          changed_when: true
+          no_log: true
+
+        - name: Set MEILI_MASTER_KEY env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/linkwarden/.env"
+            regexp: "^MEILI_MASTER_KEY="
+            line: "MEILI_MASTER_KEY={{ linkwarden_MEILI_MASTER_KEY.stdout }}"
+          no_log: true
+

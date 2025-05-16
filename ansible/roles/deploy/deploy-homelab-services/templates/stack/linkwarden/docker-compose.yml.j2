@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: "postgres:{{ service_config.version.postgres }}"
+    env_file: .env
+    volumes:
+      - {{ storage.root_dir }}/appdata/linkwarden/postgres:/var/lib/postgresql/data
+    networks:
+      - linkwarden
+  linkwarden:
+    image: "ghcr.io/linkwarden/linkwarden:{{ service_config.version.linkwarden }}"
+    env_file: .env
+    volumes:
+      - {{ storage.root_dir }}/appdata/linkwarden/app-data:/data/data
+    networks:
+      - cloud-public
+      - linkwarden
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=true"
+        - "traefik.swarm.network=cloud-public"
+        # HTTP Routers
+        - "traefik.http.routers.linkwarden-rtr.entrypoints=websecure"
+{% if service_config.public %}
+        - "traefik.http.routers.linkwarden-rtr.rule=Host(`{{ service_config.domain }}`)"
+{% else %}
+        # Private service, only accessible via VPN with DNS configured
+        - "traefik.http.routers.linkwarden-rtr.rule=Host(`{{ service_config.domain }}`)"
+{% endif %}
+        # HTTP Services
+        - "traefik.http.routers.linkwarden-rtr.service=linkwarden-svc"
+{% if service_config.auth_enabled and service_config.auth_app_settings.type == 'proxy' %}
+        - "traefik.http.routers.linkwarden-rtr.middlewares=middlewares-authentik@file"
+{% endif %}
+        - "traefik.http.services.linkwarden-svc.loadbalancer.server.port=3000"
+  meilisearch:
+    image: "getmeili/meilisearch:{{ service_config.version.meilisearch }}"
+    env_file:
+      - .env
+    volumes:
+      - {{ storage.root_dir }}/appdata/linkwarden/meili-data:/meili_data
+    networks:
+      - linkwarden
+
+networks:
+  cloud-public:
+    external: true
+  linkwarden:
+    driver: overlay
+    attachable: true

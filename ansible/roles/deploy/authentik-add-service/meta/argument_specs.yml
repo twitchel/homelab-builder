@@ -15,6 +15,13 @@ argument_specs:
         type: dict
         required: true
         options:
+          type:
+            type: str
+            required: false
+            default: proxy
+            choices:
+              - proxy
+              - oauth2
           app_name:
             type: str
             required: true
@@ -24,3 +31,7 @@ argument_specs:
           app_icon_source:
             type: str
             required: true
+          oauth_redirect_uri:
+            type: str
+            required: false 
+            default: None

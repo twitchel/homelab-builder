@@ -26,7 +26,7 @@ services:
 {% endif %}
         # HTTP Services
         - "traefik.http.routers.karakeep-rtr.service=karakeep-svc"
-{% if service_config.auth_enabled %}
+{% if service_config.auth_enabled and service_config.auth_app_settings.type == 'proxy' %}
         - "traefik.http.routers.karakeep-rtr.middlewares=middlewares-authentik@file"
 {% endif %}
         - "traefik.http.services.karakeep-svc.loadbalancer.server.port=3000"
