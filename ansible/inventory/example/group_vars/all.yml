@@ -173,6 +173,23 @@ services:
       app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/homepage.png
       type: proxy
     version: latest
+  linkwarden:
+    domain: "linkwarden.{{ dns_domain }}"
+    enabled: true
+    public: true
+    auth_enabled: true
+    auth_app_settings:
+      app_name: Link Warden
+      app_slug: linkwarden
+      app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/linkwarden.png
+      type: oauth2
+      oauth_redirect_uri: "https://linkwarden.{{ dns_domain }}/api/v1/auth/callback/authentik"
+    env:
+      NEXTAUTH_URL: https://linkwarden.{{ dns_domain }}/api/v1/auth
+    version:
+      postgres: 16-alpine
+      linkwarden: v2.10.2
+      meilisearch: v1.12.8
   overseerr:
     domain: overseerr.{{ dns_domain }}
     enabled: true
