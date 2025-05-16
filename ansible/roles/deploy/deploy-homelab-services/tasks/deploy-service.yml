@@ -116,6 +116,14 @@
 - name: Post start tasks
   when: service_config.enabled
   block:
+    - name: Add app to authentik for Authorization
+      ansible.builtin.import_role:
+        name: deploy/authentik-add-service # noqa role-name[path]
+      vars:
+        domain: "{{ service_config.domain }}"
+        auth_enabled: "{{ service_config.auth_enabled }}"
+        auth_app_settings: "{{ service_config.auth_app_settings }}"
+
     - name: Run service post-deploy tasks if taskfile exists
       ansible.builtin.include_tasks: "service/{{ service_name }}/post-deploy.yml"
       with_first_found:
@@ -124,11 +132,3 @@
           skip: true
       loop_control:
         loop_var: postdeploy_task
-
-    - name: Add app to authentik for Authorization
-      ansible.builtin.import_role:
-        name: deploy/authentik-add-service # noqa role-name[path]
-      vars:
-        domain: "{{ service_config.domain }}"
-        auth_enabled: "{{ service_config.auth_enabled }}"
-        auth_app_settings: "{{ service_config.auth_app_settings }}"
