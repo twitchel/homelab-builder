@@ -1,0 +1,41 @@
+- name: Write oauth secrets secrets
+  when: 
+  block:
+    - name: client_id secret
+      block:
+        - name: Register client_id for usage
+          ansible.builtin.command: cat {{ storage.root_dir }}/stack/karakeep/secrets/client_id
+          register: karakeep_client_id
+          become: true
+          changed_when: true
+          no_log: true
+
+        - name: Set client_id env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/karakeep/.env"
+            regexp: "^OAUTH_CLIENT_ID="
+            line: "OAUTH_CLIENT_ID={{ karakeep_client_id.stdout }}"
+          no_log: true
+    - name: client_secret secret
+      block:
+        - name: Register client_secret for usage
+          ansible.builtin.command: cat {{ storage.root_dir }}/stack/karakeep/secrets/client_secret
+          register: karakeep_client_secret
+          become: true
+          changed_when: true
+          no_log: true
+
+        - name: Set client_secret env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/karakeep/.env"
+            regexp: "^OAUTH_CLIENT_SECRET="
+            line: "OAUTH_CLIENT_SECRET={{ karakeep_client_secret.stdout }}"
+          no_log: true
+
+- name: Restart karakeep
+  ansible.builtin.include_role:
+    name: deploy/start-service # noqa role-name[path]
+  vars:
+    service_name: "karakeep"
+    service_enabled: "{{ services[\"karakeep\"].enabled }}"
+    service_reboot: false

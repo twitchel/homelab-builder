@@ -21,6 +21,15 @@
 
 - name: Write env secrets
   block:
+    - name: NEXTAUTH_URL secret
+      block:
+        - name: Set NEXTAUTH_URL env
+          ansible.builtin.lineinfile:
+            path: "{{ storage.root_dir }}/stack/karakeep/.env"
+            regexp: "^NEXTAUTH_URL="
+            line: "NEXTAUTH_URL=https://{{ service_config.domain }}"
+          no_log: true
+
     - name: NEXTAUTH_SECRET secret
       block:
         - name: Generate NEXTAUTH_SECRET
