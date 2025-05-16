@@ -108,7 +108,7 @@
         validate_certs: false
       register: _result_provider_flow_invalidation
 
-    - name: Create Provider in Authentik
+    - name: Create Proxy Provider in Authentik
       ansible.builtin.uri:
         url: "{{ authentik_base_url }}/providers/proxy/"
         method: POST
@@ -130,6 +130,69 @@
           Authorization: "Bearer {{ authentik_token }}"
         validate_certs: false
       register: _result_provider_create
+      when: auth_app_settings.type == "proxy"
+
+    - name: Set proxy_output fact
+      ansible.builtin.set_fact:
+        proxy_output: "{{ _result_provider_create }}"
+      when: auth_app_settings.type == "proxy"
+
+    - name: Create OAuth2 Provider in Authentik
+      ansible.builtin.uri:
+        url: "{{ authentik_base_url }}/providers/oauth2/"
+        method: POST
+        body_format: json
+        body: |
+          {
+            "name": "{{ auth_app_settings.app_name }} Provider",
+            "authorization_flow": "{{ _result_provider_flow_auth.json.pk }}",
+            "invalidation_flow": "{{ _result_provider_flow_invalidation.json.pk }}",
+            "external_host": "https://{{ domain }}",
+            "client_type": "confidential",
+            "redirect_uris": [
+              {
+                "matching_mode": "strict",
+                "url": "{{ auth_app_settings.oauth_redirect_uri }}",
+              },
+            ],
+            "access_token_validity": "hours=24",
+            "refresh_token_validity": "days=30",
+          }
+        status_code:
+          - 201
+        headers:
+          Accept: application/json
+          Authorization: "Bearer {{ authentik_token }}"
+        validate_certs: false
+      register: _result_provider_create
+      when: auth_app_settings.type == "oauth2"
+
+    - name: Set proxy_output fact
+      ansible.builtin.set_fact:
+        proxy_output: "{{ _result_provider_create }}"
+      when: auth_app_settings.type == "oauth2"
+
+    - name: Register client_id secret for use in application env
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: >
+          set -o pipefail &&
+            echo "{{ proxy_output.json.client_id }}" > "{{ storage.root_dir }}/stack/{{ auth_app_settings.app_slug }}/secrets/client_id"
+      args:
+        creates: "{{ storage.root_dir }}/stack/{{ auth_app_settings.app_slug }}/secrets/client_id"
+      no_log: true
+      when: auth_app_settings.type == "oauth2"
+
+    - name: Register client_secret secret for use in application env
+      ansible.builtin.shell:
+        executable: /bin/bash
+        cmd: >
+          set -o pipefail &&
+            echo "{{ proxy_output.json.client_secret }}" > "{{ storage.root_dir }}/stack/{{ auth_app_settings.app_slug }}/secrets/client_secret"
+      args:
+        creates: "{{ storage.root_dir }}/stack/{{ auth_app_settings.app_slug }}/secrets/client_secret"
+      no_log: true
+      when: auth_app_settings.type == "oauth2"
 
     - name: Associate Provider to App in Authentik
       ansible.builtin.uri:
@@ -138,7 +201,7 @@
         body_format: json
         body: |
           {
-            "provider": {{ _result_provider_create.json.pk }}
+            "provider": {{ proxy_output.json.pk }}
           }
         status_code:
           - 200
