@@ -127,6 +127,7 @@ services:
       app_name: Actual Budget
       app_slug: actual-budget
       app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/actual-budget.png
+      type: proxy
     version: 25.1.0
   gitea:
     domain: gitea.{{ dns_domain }}
@@ -137,6 +138,7 @@ services:
       app_name: Gitea
       app_slug: gitea
       app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/gitea.png
+      type: proxy
     env:
       DISABLE_REGISTRATION: true
     version:
@@ -151,6 +153,7 @@ services:
       app_name: Karakeep
       app_slug: karakeep
       app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/karakeep-light.png
+      type: proxy
     env:
       MEILI_ADDR: http://meilisearch:7700
       BROWSER_WEB_URL: http://chrome:9222
@@ -168,6 +171,7 @@ services:
       app_name: Homepage
       app_slug: homepage
       app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/homepage.png
+      type: proxy
     version: latest
   overseerr:
     domain: overseerr.{{ dns_domain }}
@@ -178,6 +182,7 @@ services:
       app_name: Overseerr
       app_slug: overseerr
       app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/overseerr.png
+      type: proxy
     version: latest
   portainer:
     domain: portainer.{{ dns_domain }}
@@ -188,6 +193,7 @@ services:
       app_name: Portainer
       app_slug: portainer
       app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/portainer.png
+      type: proxy
     version:
       agent: 2.21.5
       portainer: 2.21.5
@@ -200,6 +206,7 @@ services:
       app_name: WhoAmI Debugger
       app_slug: whoami
       app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/traefik.png
+      type: proxy
     version: v1.10
 
 external_services:
