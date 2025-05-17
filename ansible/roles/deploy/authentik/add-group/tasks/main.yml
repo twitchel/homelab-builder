@@ -1,0 +1,43 @@
+---
+- name: Fetch authentik API bootstrap token
+  ansible.builtin.command: cat {{ storage.root_dir }}/stack/authentik/secrets/authentik_bootstrap_token
+  register: authentik_bootstrap_token
+  changed_when: true
+  become: true
+
+- name: Set authentik API facts
+  ansible.builtin.set_fact:
+    authentik_base_url: "{{ infrastructure_services.authentik.api_base_url }}"
+    authentik_token: "{{ authentik_bootstrap_token.stdout }}"
+
+- name: Get Group from Authentik
+  ansible.builtin.uri:
+    url: "{{ authentik_base_url }}/core/groups/?search={{ item | urlencode }}"
+    method: GET
+    status_code:
+      - 200
+      - 404
+    headers:
+      Accept: application/json
+      Authorization: 'Bearer {{ authentik_token }}'
+    validate_certs: false
+  register: _result_groups_list
+
+- name: Create Group in Authentik
+  when: _result_groups_list.json.pagination.count == 0
+  ansible.builtin.uri:
+    url: "{{ authentik_base_url }}/core/groups/"
+    method: POST
+    body_format: json
+    body: |
+      {
+        "name": "{{ item }}",
+        "is_superuser": false,
+      }
+    status_code:
+      - 201
+    headers:
+      Accept: application/json
+      Authorization: 'Bearer {{ authentik_token }}'
+    validate_certs: false
+  register: _result_groups_create
