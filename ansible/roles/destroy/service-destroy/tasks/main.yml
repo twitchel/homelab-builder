@@ -1,0 +1,49 @@
+- name: Destroy Service templates
+  block:
+    - name: Set service config
+      ansible.builtin.set_fact:
+        service_config: "{{ services[service_name] | default(\"None\") }}"
+
+    - name: Set service config
+      ansible.builtin.set_fact:
+        service_config: "{{ infrastructure_services[service_name] | default(\"None\") }}"
+      when: service_config == "None"
+
+    - name: Check if service config is valid
+      ansible.builtin.fail:
+        msg: "Service config is not valid"
+      when: service_config == "None"
+
+    - name: Log service config
+      ansible.builtin.debug:
+        msg: "Service config: {{ service_config }}"
+
+    - name: Remove service stack
+      ansible.builtin.docker_stack:
+        state: absent
+        name: "{{ service_name }}"
+        compose: "{{ storage.root_dir }}/stack/{{ service_name }}/docker-compose.yml"
+        with_registry_auth: true
+      register: _result
+      until: _result.failed == false
+      retries: 20 # retry X times
+      delay: 30 # pause for X sec b/w each call
+
+    - name: Remove service appdata dir
+      ansible.builtin.file:
+        state: absent
+        path: "{{ storage.root_dir }}/appdata/{{ service_name }}"
+      register: _result
+      until: _result.failed == false
+      retries: 20 # retry X times
+      delay: 30 # pause for X sec b/w each call
+
+    - name: Remove service stack dir
+      ansible.builtin.file:
+        state: absent
+        path: "{{ storage.root_dir }}/stack/{{ service_name }}"
+      register: _result
+      until: _result.failed == false
+      retries: 20 # retry X times
+      delay: 30 # pause for X sec b/w each call
+    

@@ -17,6 +17,7 @@ MAKE_LIB:=$(PROJECT_ROOT)/make
 -include $(MAKE_LIB)/bootstrap.mk
 -include $(MAKE_LIB)/infrastructure.mk
 -include $(MAKE_LIB)/stack-management.mk
+-include $(MAKE_LIB)/service-management.mk
 -include $(MAKE_LIB)/utils.mk
 
 #####################
