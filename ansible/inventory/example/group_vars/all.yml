@@ -54,6 +54,10 @@ runtime:
   kubernetes: # Not implemented
     version: v1.30.2+k3s2
 
+keepalived:
+  enabled: true
+  version: 2.0.20
+
 storage:
   engine: "nfs"
   root_dir: "/var/data"
