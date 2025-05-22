@@ -191,6 +191,25 @@ services:
       postgres: 16-alpine
       linkwarden: v2.10.2
       meilisearch: v1.12.8
+  mealie:
+    domain: "mealie.{{ dns_domain }}"
+    healthcheck_service: mealie_server
+    enabled: true
+    public: true
+    auth_enabled: true
+    auth_app_settings:
+      app_name: Mealie
+      app_slug: mealie
+      app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/mealie.png
+      type: oauth2
+      oauth_redirect_uri: "https://mealie.{{ dns_domain }}/login"
+    env:
+      NEXTAUTH_URL: https://mealie.{{ dns_domain }}/api/v1/auth
+      OIDC_ADMIN_GROUP: app-mealie-admin
+      OIDC_USER_GROUP: app-mealie-user
+    version:
+      postgres: 15.12
+      mealie: v2.8.0
   overseerr:
     domain: overseerr.{{ dns_domain }}
     enabled: true
