@@ -11,10 +11,10 @@ services:
   postgresql:
     image: "docker.io/library/postgres:{{ infrastructure_services.authentik.version.postgres }}"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
-      start_period: 20s
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      start_period: 40s
       interval: 30s
-      retries: 5
+      retries: 10
       timeout: 5s
     volumes:
       - {{ storage.root_dir }}/appdata/authentik/database:/var/lib/postgresql/data

@@ -4,6 +4,12 @@ services:
   postgres:
     image: "postgres:{{ service_config.version.postgres }}"
     env_file: {{ storage.root_dir }}/stack/mealie/.env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      start_period: 40s
+      interval: 30s
+      retries: 10
+      timeout: 5s
     volumes:
       - {{ storage.root_dir }}/appdata/mealie/postgresql:/var/lib/postgresql/data
     networks:
