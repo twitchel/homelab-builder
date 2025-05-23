@@ -21,8 +21,7 @@ services:
     deploy:
       mode: replicated
       replicas: 1
-    env_file:
-      - {{ storage.root_dir }}/stack/authentik/.env
+    env_file: {{ storage.root_dir }}/stack/authentik/.env
     networks:
       - authentik
   redis:

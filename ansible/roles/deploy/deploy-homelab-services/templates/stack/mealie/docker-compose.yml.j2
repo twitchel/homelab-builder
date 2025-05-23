@@ -3,14 +3,14 @@ version: "3.8"
 services:
   postgres:
     image: "postgres:{{ service_config.version.postgres }}"
-    env_file: .env
+    env_file: {{ storage.root_dir }}/stack/mealie/.env
     volumes:
       - {{ storage.root_dir }}/appdata/mealie/postgresql:/var/lib/postgresql/data
     networks:
       - mealie
   server:
     image: "ghcr.io/mealie-recipes/mealie:{{ service_config.version.mealie }}"
-    env_file: .env
+    env_file: {{ storage.root_dir }}/stack/mealie/.env
     volumes:
       - {{ storage.root_dir }}/appdata/mealie/app-data:/app/data/
       - {{ storage.root_dir }}/appdata/mealie/app-nltk-data:/app/nltk_data/
