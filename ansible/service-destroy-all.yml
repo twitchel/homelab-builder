@@ -1,0 +1,29 @@
+---
+- name: Destroy service
+  # This playbook is used to destroy a service
+  hosts: compute_nodes[0]
+  gather_facts: true
+  become: true
+  remote_user: "{{ compute_node.username }}"
+
+  environment:
+    DOMAIN_NAME: "{{ dns_domain }}"
+
+  tasks:
+    - name: Destroy homelab services
+      with_items: "{{ services | dict2items }}"
+      vars:
+        service_name: "{{ item.key }}"
+      loop_control:
+        label: "{{ item.key }}"
+      ansible.builtin.include_role:
+        name: destroy/service-destroy # noqa role-name[path]
+
+    - name: Destroy infra services
+      with_items: "{{ infrastructure_services | dict2items }}"
+      vars:
+        service_name: "{{ item.key }}"
+      loop_control:
+        label: "{{ item.key }}"
+      ansible.builtin.include_role:
+        name: destroy/service-destroy # noqa role-name[path]

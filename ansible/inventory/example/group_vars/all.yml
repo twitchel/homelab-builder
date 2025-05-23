@@ -2,7 +2,6 @@
 timezone: "Australia/Sydney"
 env: "{{ lookup('env', 'ENVIRONMENT') }}"
 dns_domain: "example.com"
-dns_domain_local: "example.local" # requires network wide DNS rewrites pointing to entrypoint_ip
 private_service_rule: "!HeaderRegexp(`CF-Connecting-IP`, `.*`)"
 entrypoint_ip: 192.168.10.210
 terraform:
@@ -54,6 +53,10 @@ runtime:
   kubernetes: # Not implemented
     version: v1.30.2+k3s2
 
+keepalived:
+  enabled: true
+  version: 2.0.20
+
 storage:
   engine: "nfs"
   root_dir: "/var/data"
@@ -98,9 +101,6 @@ infrastructure_services:
     version:
       crowdsec: latest
       bouncer: latest
-  keepalived:
-    enabled: true
-    version: 2.0.20
   traefik:
     domain: traefik.{{ dns_domain }}
     enabled: true
@@ -115,6 +115,7 @@ infrastructure_services:
       DOMAIN_NAME: "{{ dns_domain }}"
     localIps: "127.0.0.1/32,10.0.0.0/8,192.168.0.0/16,172.16.0.0/12"
     cloudflareIps: "173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22"
+    staging_ca_server: false
     version: v3.3.6
 
 services:
@@ -190,6 +191,25 @@ services:
       postgres: 16-alpine
       linkwarden: v2.10.2
       meilisearch: v1.12.8
+  mealie:
+    domain: "mealie.{{ dns_domain }}"
+    healthcheck_service: mealie_server
+    enabled: true
+    public: true
+    auth_enabled: true
+    auth_app_settings:
+      app_name: Mealie
+      app_slug: mealie
+      app_icon_source: https://cdn.jsdelivr.net/gh/selfhst/icons/png/mealie.png
+      type: oauth2
+      oauth_redirect_uri: "https://mealie.{{ dns_domain }}/login"
+    env:
+      NEXTAUTH_URL: https://mealie.{{ dns_domain }}/api/v1/auth
+      OIDC_ADMIN_GROUP: app-mealie-admin
+      OIDC_USER_GROUP: app-mealie-user
+    version:
+      postgres: 15.12
+      mealie: v2.8.0
   overseerr:
     domain: overseerr.{{ dns_domain }}
     enabled: true

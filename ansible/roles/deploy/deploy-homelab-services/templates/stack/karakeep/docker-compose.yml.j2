@@ -52,8 +52,7 @@ services:
     image: "getmeili/meilisearch:{{ service_config.version.meilisearch }}"
     deploy:
       replicas: 1
-    env_file:
-      - .env
+    env_file: {{ storage.root_dir }}/stack/karakeep/.env
     networks:
       - karakeep
     volumes:

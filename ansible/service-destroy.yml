@@ -1,0 +1,15 @@
+---
+- name: Destroy service
+  # This playbook is used to destroy a service
+  hosts: compute_nodes[0]
+  gather_facts: true
+  become: true
+  remote_user: "{{ compute_node.username }}"
+
+  environment:
+    DOMAIN_NAME: "{{ dns_domain }}"
+
+  tasks:
+    - name: Destroy service
+      ansible.builtin.import_role:
+        name: destroy/service-destroy # noqa role-name[path]
