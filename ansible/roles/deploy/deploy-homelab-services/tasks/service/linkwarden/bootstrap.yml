@@ -35,7 +35,7 @@
         - name: Generate linkwarden postgres password
           ansible.builtin.shell:
             executable: /bin/bash
-            cmd: set -o pipefail && openssl rand -base64 36 | tr -d '\n' > {{ storage.root_dir }}/stack/linkwarden/secrets/postgres_password
+            cmd: set -o pipefail && openssl rand -hex 16 | tr -d '\n' > {{ storage.root_dir }}/stack/linkwarden/secrets/postgres_password
           args:
             creates: "{{ storage.root_dir }}/stack/linkwarden/secrets/postgres_password"
           no_log: true
@@ -75,7 +75,7 @@
         - name: Generate NEXTAUTH_SECRET
           ansible.builtin.shell:
             executable: /bin/bash
-            cmd: set -o pipefail && openssl rand -base64 36 | tr -d '\n' > {{ storage.root_dir }}/stack/linkwarden/secrets/NEXTAUTH_SECRET
+            cmd: set -o pipefail && openssl rand -hex 16 | tr -d '\n' > {{ storage.root_dir }}/stack/linkwarden/secrets/NEXTAUTH_SECRET
           args:
             creates: "{{ storage.root_dir }}/stack/linkwarden/secrets/NEXTAUTH_SECRET"
           no_log: true
@@ -99,7 +99,7 @@
         - name: Generate MEILI_MASTER_KEY
           ansible.builtin.shell:
             executable: /bin/bash
-            cmd: set -o pipefail && openssl rand -base64 36 | tr -d '\n' > {{ storage.root_dir }}/stack/linkwarden/secrets/MEILI_MASTER_KEY
+            cmd: set -o pipefail && openssl rand -hex 16 | tr -d '\n' > {{ storage.root_dir }}/stack/linkwarden/secrets/MEILI_MASTER_KEY
           args:
             creates: "{{ storage.root_dir }}/stack/linkwarden/secrets/MEILI_MASTER_KEY"
           no_log: true
